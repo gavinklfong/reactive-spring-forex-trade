@@ -22,7 +22,7 @@ public class TradingService {
 	public Mono<TradeOrder> postOrder(TradeOrderRequest request) {
 		
 		// validate rate
-		if (rateService.validateRate(request.getRate()).
+//		if (rateService.validateRate(request.getRate()).
 		
 		
 		// post order

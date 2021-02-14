@@ -1,4 +1,4 @@
-package space.gavinklfong.forex;
+package space.gavinklfong.forex.config;
 
 import org.springframework.context.annotation.Configuration;
 
