@@ -12,7 +12,7 @@
 	<artifactId>forex</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>forex</name>
-	<description>Demo project for Spring Boot</description>
+	<description>Forex Trade</description>
 	<properties>
 		<java.version>11</java.version>
 	</properties>
@@ -34,15 +34,6 @@
 	      <groupId>com.h2database</groupId>
 	      <artifactId>h2</artifactId>
 	    </dependency>
-<!--  	    <dependency>
-	      <groupId>io.r2dbc</groupId>
-	      <artifactId>r2dbc-h2</artifactId>
-	    </dependency>
-	    <dependency>
-	      <groupId>org.springframework.boot</groupId>
-	      <artifactId>spring-boot-starter-data-r2dbc</artifactId>
-	    </dependency>  -->
-
 		
 		<dependency>
 	      <groupId>org.springframework.boot</groupId>

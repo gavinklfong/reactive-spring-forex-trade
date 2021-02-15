@@ -16,17 +16,16 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import space.gavinklfong.forex.models.Rate;
-import space.gavinklfong.forex.models.TradeOrderRequest;
-import space.gavinklfong.forex.repos.ForexRepos;
+import space.gavinklfong.forex.repos.RateBookingRepo;
 
 @RestController
-@RequestMapping("/")
-public class ForexRestController {
+@RequestMapping("/rates")
+public class RateRestController {
 
-	private static Logger logger = LoggerFactory.getLogger(ForexRestController.class);
+	private static Logger logger = LoggerFactory.getLogger(RateRestController.class);
 	
 	@Autowired
-	private ForexRepos repos;
+	private RateBookingRepo repos;
 	
 	@GetMapping(path = "rates/latest", produces = "application/json")
 	public Mono<String> getLatestRates() {
@@ -41,21 +40,4 @@ public class ForexRestController {
 		return response;
 	}
 		
-	@PostMapping(path = "orders", consumes = "application/json")
-	public Mono<ResponseEntity> postOrder(@RequestBody TradeOrderRequest request) {
-		
-		
-		return Mono.just(ResponseEntity.ok().build());
-	}
-	
-	@GetMapping("rates/cache")
-	public Flux<Rate> test() {
-		
-		Iterable<Rate> result = repos.findAll();		
-		Flux<Rate> fluxResult = Flux.fromIterable(result);
-		return fluxResult;
-		
-//		return repos.findAll();
-		
-	}
 }

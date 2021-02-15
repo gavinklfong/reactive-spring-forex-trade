@@ -11,8 +11,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "traders")
-public class Trader {
+@Table(name = "customer")
+public class Customer {
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -20,10 +20,10 @@ public class Trader {
 	
 	private String name;
 	
-	private Integer ranking;
+	private Integer tier;
 	
-	@OneToMany (cascade = CascadeType.ALL, mappedBy = "trader", orphanRemoval = true)
-	private Collection<TradeOrder> order;
+	@OneToMany (cascade = CascadeType.ALL, mappedBy = "customer", orphanRemoval = true)
+	private Collection<TradeDeal> deals;
 	
 
 	public Long getId() {
@@ -42,20 +42,20 @@ public class Trader {
 		this.name = name;
 	}
 
-	public Integer getRanking() {
-		return ranking;
+	public Integer getTier() {
+		return tier;
 	}
 
-	public void setRanking(Integer ranking) {
-		this.ranking = ranking;
+	public void setTier(Integer tier) {
+		this.tier = tier;
 	}
 
-	public Collection<TradeOrder> getOrder() {
-		return order;
+	public Collection<TradeDeal> getDeals() {
+		return deals;
 	}
 
-	public void setOrder(Collection<TradeOrder> order) {
-		this.order = order;
+	public void setDeals(Collection<TradeDeal> deals) {
+		this.deals = deals;
 	}
 
 }

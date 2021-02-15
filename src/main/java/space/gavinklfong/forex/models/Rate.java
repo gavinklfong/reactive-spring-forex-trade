@@ -1,49 +1,26 @@
 package space.gavinklfong.forex.models;
 
-import java.time.LocalDate;
+import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDateTime;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
 
-@Entity
-@Table(name="rates")
 public class Rate {
-	
-	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	private Long id;
-	
-	private LocalDate date;
+		
+	private LocalDateTime timestamp;
 	
 	private String baseCurrency;
 	
-	private String currency;
+	private String counterCurrency;
 	
-	private Double rate;
-	
-	private LocalDateTime expiredTime;
-	
-	private String reservationCode;
-
-	public Long getId() {
-		return id;
+	private BigDecimal rate;
+		
+	public LocalDateTime getDateTIme() {
+		return timestamp;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public LocalDate getDate() {
-		return date;
-	}
-
-	public void setDate(LocalDate date) {
-		this.date = date;
+	public void setTimestamp(LocalDateTime timestamp) {
+		this.timestamp = timestamp;
 	}
 
 	public String getBaseCurrency() {
@@ -54,37 +31,21 @@ public class Rate {
 		this.baseCurrency = baseCurrency;
 	}
 
-	public String getCurrency() {
-		return currency;
+	public String getCounterCurrency() {
+		return counterCurrency;
 	}
 
-	public void setCurrency(String currency) {
-		this.currency = currency;
+	public void setCounterCurrency(String counterCurrency) {
+		this.counterCurrency = counterCurrency;
 	}
 
-	public Double getRate() {
+	public BigDecimal getRate() {
 		return rate;
 	}
 
-	public void setRate(Double rate) {
+	public void setRate(BigDecimal rate) {
 		this.rate = rate;
 	}
 
-	public LocalDateTime getExpiredTime() {
-		return expiredTime;
-	}
-
-	public void setExpiredTime(LocalDateTime expiredTime) {
-		this.expiredTime = expiredTime;
-	}
-
-	public String getReservationCode() {
-		return reservationCode;
-	}
-
-	public void setReservationCode(String reservationCode) {
-		this.reservationCode = reservationCode;
-	}
-	
 	
 }
