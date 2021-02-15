@@ -26,7 +26,7 @@ public class RateBooking {
 	
 	private String counterCurrency;
 	
-	@Column(precision = 10, scale = 14)
+	@Column(precision = 14, scale = 8)
 	private BigDecimal rate;
 	
 	@Column(unique = true)
