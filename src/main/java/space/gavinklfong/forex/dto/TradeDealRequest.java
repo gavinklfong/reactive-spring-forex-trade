@@ -1,4 +1,4 @@
-package space.gavinklfong.forex.models;
+package space.gavinklfong.forex.dto;
 
 import java.math.BigDecimal;
 import java.time.Instant;

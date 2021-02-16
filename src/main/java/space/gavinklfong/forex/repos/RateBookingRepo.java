@@ -8,4 +8,5 @@ import space.gavinklfong.forex.models.RateBooking;
 @Repository
 public interface RateBookingRepo extends CrudRepository <RateBooking, Long>{
 
+	Iterable<RateBooking> findByCustomerId(Long customerId);
 }

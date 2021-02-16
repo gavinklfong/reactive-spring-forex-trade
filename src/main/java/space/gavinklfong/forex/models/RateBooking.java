@@ -94,5 +94,13 @@ public class RateBooking {
 		this.expiryTime = expiryTime;
 	}
 
+	public Customer getCustomer() {
+		return customer;
+	}
+
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
+	}
+
 	
 }
