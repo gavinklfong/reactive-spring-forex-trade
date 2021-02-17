@@ -26,8 +26,7 @@ public class RateBooking {
 	
 	private String counterCurrency;
 	
-	@Column(precision = 14, scale = 8)
-	private BigDecimal rate;
+	private Double rate;
 	
 	@Column(unique = true)
 	private String bookingRef;
@@ -38,6 +37,16 @@ public class RateBooking {
 	@JoinColumn(name = "customer_id", referencedColumnName = "id")
 	private Customer customer;
 
+	public RateBooking() {
+		super();
+	}
+	
+	public RateBooking(String baseCurrency, String counterCurrency, Long customerId) {
+		this.baseCurrency = baseCurrency;
+		this.counterCurrency = counterCurrency;
+		this.customer = new Customer(customerId);
+	}
+	
 	public String getBaseCurrency() {
 		return baseCurrency;
 	}
@@ -54,11 +63,11 @@ public class RateBooking {
 		this.counterCurrency = counterCurrency;
 	}
 
-	public BigDecimal getRate() {
+	public Double getRate() {
 		return rate;
 	}
 
-	public void setRate(BigDecimal rate) {
+	public void setRate(Double rate) {
 		this.rate = rate;
 	}
 

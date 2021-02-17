@@ -2,6 +2,7 @@ package space.gavinklfong.forex.models;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -23,14 +24,13 @@ public class TradeDeal {
 	@Column(unique = true)
 	private String dealRef;
 	
-	private Instant timestamp;
+	private LocalDateTime timestamp;
 		
 	private String baseCurrency;
 	
 	private String counterCurrency;
 	
-	@Column(precision = 14, scale = 8)
-	private BigDecimal rate;
+	private Double rate;
 	
 	private BigDecimal baseCurrencyAmount;
 	
@@ -48,11 +48,11 @@ public class TradeDeal {
 		this.id = id;
 	}
 
-	public Instant getTimestamp() {
+	public LocalDateTime getTimestamp() {
 		return timestamp;
 	}
 
-	public void setTimestamp(Instant timestamp) {
+	public void setTimestamp(LocalDateTime timestamp) {
 		this.timestamp = timestamp;
 	}
 
@@ -72,11 +72,11 @@ public class TradeDeal {
 		this.counterCurrency = targetCurrency;
 	}
 
-	public BigDecimal getRate() {
+	public Double getRate() {
 		return rate;
 	}
 
-	public void setRate(BigDecimal rate) {
+	public void setRate(Double rate) {
 		this.rate = rate;
 	}
 

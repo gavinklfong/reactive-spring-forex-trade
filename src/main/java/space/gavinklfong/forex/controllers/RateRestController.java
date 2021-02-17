@@ -1,5 +1,6 @@
 package space.gavinklfong.forex.controllers;
 
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import space.gavinklfong.forex.models.Rate;
+import space.gavinklfong.forex.dto.Rate;
 import space.gavinklfong.forex.repos.RateBookingRepo;
 
 @RestController
@@ -27,7 +28,7 @@ public class RateRestController {
 	@Autowired
 	private RateBookingRepo repos;
 	
-	@GetMapping(path = "rates/latest", produces = "application/json")
+	@GetMapping(path = "latest", produces = "application/json")
 	public Mono<String> getLatestRates() {
 		WebClient client = WebClient.create("https://api.exchangeratesapi.io");
 		

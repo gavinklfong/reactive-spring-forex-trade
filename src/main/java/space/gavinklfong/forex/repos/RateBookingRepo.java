@@ -1,5 +1,8 @@
 package space.gavinklfong.forex.repos;
 
+import java.util.Collection;
+import java.util.List;
+
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -8,5 +11,7 @@ import space.gavinklfong.forex.models.RateBooking;
 @Repository
 public interface RateBookingRepo extends CrudRepository <RateBooking, Long>{
 
-	Iterable<RateBooking> findByCustomerId(Long customerId);
+	List<RateBooking> findByBookingRef(String bookingRef);
+	
+	
 }

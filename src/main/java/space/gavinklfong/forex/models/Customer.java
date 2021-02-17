@@ -25,6 +25,18 @@ public class Customer {
 	@OneToMany (cascade = CascadeType.ALL, mappedBy = "customer", orphanRemoval = true)
 	private Collection<TradeDeal> deals;
 	
+	public Customer() {
+		super();
+	}
+	
+	public Customer(Long id) {
+		this.id = id;
+	}
+	
+	public Customer(String name, Integer tier) {
+		this.name = name;
+		this.tier = tier;
+	}
 
 	public Long getId() {
 		return id;

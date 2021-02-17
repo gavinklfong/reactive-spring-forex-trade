@@ -1,4 +1,4 @@
-package space.gavinklfong.forex.models;
+package space.gavinklfong.forex.dto;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -13,7 +13,7 @@ public class Rate {
 	
 	private String counterCurrency;
 	
-	private BigDecimal rate;
+	private Double rate;
 		
 	public LocalDateTime getDateTIme() {
 		return timestamp;
@@ -39,11 +39,11 @@ public class Rate {
 		this.counterCurrency = counterCurrency;
 	}
 
-	public BigDecimal getRate() {
+	public Double getRate() {
 		return rate;
 	}
 
-	public void setRate(BigDecimal rate) {
+	public void setRate(Double rate) {
 		this.rate = rate;
 	}
 

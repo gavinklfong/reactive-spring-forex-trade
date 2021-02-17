@@ -1,3 +1,8 @@
+app:
+  rate-booking-duration: 120
+  forex-rate-api-url: https://api.exchangeratesapi.io
+
+
 debug: false
 
 spring:
