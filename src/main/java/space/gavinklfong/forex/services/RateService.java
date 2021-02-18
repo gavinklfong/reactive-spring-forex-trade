@@ -1,20 +1,18 @@
 package space.gavinklfong.forex.services;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import space.gavinklfong.forex.dto.ForexRateApiResp;
 import space.gavinklfong.forex.dto.Rate;
 import space.gavinklfong.forex.dto.RateBookingReq;
 import space.gavinklfong.forex.exceptions.UnknownCustomerException;
@@ -28,12 +26,9 @@ public class RateService {
 
 	@Value("${app.rate-booking-duration}")
 	private long bookingDuration = 120l;
-	
-	@Value("${app.forex-rate-api-url}")
-	private String forexApiUrl;
-	
-	private WebClient forexRateApiClient = WebClient.create(forexApiUrl);
-
+		
+	@Autowired
+	private ForexRateApiClient forexRateApiClient;
 	
 	@Autowired
 	private RateBookingRepo rateBookingRepo;
@@ -49,6 +44,9 @@ public class RateService {
 	 */
 	public Flux<Rate> fetchLatestRates(String baseCurrency) {
 		
+//		forexRateApiClient.fetchLatestRates(baseCurrency)
+//		.flatMap(resp -> Flux.just(new Rate()))
+		
 		return Flux.just(new Rate());
 	}
 	
@@ -60,39 +58,52 @@ public class RateService {
 	 */
 	public Mono<RateBooking> obtainBooking(RateBookingReq request) throws UnknownCustomerException {
 
-		// fetch rate from external API
-//		Mono<String> response =  
-//				forexRateApiClient.get().uri("/latest?base={base}", "GBP")
-//				.accept(MediaType.APPLICATION_JSON)
-//				.retrieve()
-//				.bodyToMono(String.class);
-		
 		// retrieve customer tier
 		Optional<Customer> customer = customerRepo.findById(request.getCustomerId());
 		if (customer.isEmpty()) throw new UnknownCustomerException();
 		
+		// fetch rate from external API
+		Mono<ForexRateApiResp> forexRateApiResp = forexRateApiClient.fetchLatestRates(request.getBaseCurrency());
+		
+		return forexRateApiResp.map(record -> 
+			generateRateBooking(request, customer.get(), record.getRates().get(request.getCounterCurrency()))
+		);
+				
+	}
+	
+	private RateBooking generateRateBooking(RateBookingReq request, Customer customer, Double rate) {
+		
 		// determine rate
-		double rate = 0.25;
-		if (customer.get().getTier() > 0) {
-			rate = 0.5;
+		switch (customer.getTier()) {
+		case 1:
+			rate += 0.025;
+			break;
+		case 2:
+			rate += 0.05;
+			break;
+		case 3:
+			rate += 0.1;
+			break;
+		default:
+			rate += 0.5;
 		}
+		
 		
 		// build rate booking record
 		RateBooking bookingRecord = new RateBooking(request.getBaseCurrency(), request.getCounterCurrency(), request.getCustomerId());
 
 		UUID bookingRef = UUID.randomUUID();
-		LocalDateTime timestamp = LocalDateTime.now();
-		LocalDateTime expiryTime = timestamp.plusSeconds(bookingDuration);
 		bookingRecord.setBookingRef(bookingRef.toString());
+
+		LocalDateTime timestamp = LocalDateTime.now();
 		bookingRecord.setTimestamp(timestamp);
+
+		LocalDateTime expiryTime = timestamp.plusSeconds(bookingDuration);
 		bookingRecord.setExpiryTime(expiryTime);
+
 		bookingRecord.setRate(rate);
 
-		
-		return Mono.<RateBooking>fromCallable(() -> 
-			 rateBookingRepo.save(bookingRecord)
-		);
-		
+		return rateBookingRepo.save(bookingRecord);
 	}
 	
 	/**

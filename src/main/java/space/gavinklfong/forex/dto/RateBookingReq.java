@@ -11,7 +11,19 @@ public class RateBookingReq {
 	private BigDecimal baseCurrencyAmount;
 	
 	private Long customerId;
-
+	
+	public RateBookingReq() {
+		super();
+	}
+	
+	public RateBookingReq(String baseCurrency, String counterCurrency, BigDecimal baseCurrencyAmount, Long customerId) {
+		super();
+		this.baseCurrency = baseCurrency;
+		this.counterCurrency = counterCurrency;
+		this.baseCurrencyAmount = baseCurrencyAmount;
+		this.customerId = customerId;
+	}
+	
 	public String getBaseCurrency() {
 		return baseCurrency;
 	}

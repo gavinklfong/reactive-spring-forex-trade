@@ -1,6 +1,5 @@
 package space.gavinklfong.forex.models;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import javax.persistence.Column;
@@ -40,7 +39,7 @@ public class RateBooking {
 	public RateBooking() {
 		super();
 	}
-	
+		
 	public RateBooking(String baseCurrency, String counterCurrency, Long customerId) {
 		this.baseCurrency = baseCurrency;
 		this.counterCurrency = counterCurrency;

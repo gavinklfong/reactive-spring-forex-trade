@@ -1,7 +1,5 @@
 package space.gavinklfong.forex.dto;
 
-import java.math.BigDecimal;
-import java.time.Instant;
 import java.time.LocalDateTime;
 
 
@@ -14,6 +12,17 @@ public class Rate {
 	private String counterCurrency;
 	
 	private Double rate;
+	
+	public Rate() {
+		super();
+	}
+	
+	public Rate(LocalDateTime timestamp, String baseCurrency, String counterCurrecy, Double rate) {
+		this.timestamp = timestamp;
+		this.baseCurrency = baseCurrency;
+		this.counterCurrency = counterCurrency;
+		this.rate = rate;
+	}
 		
 	public LocalDateTime getDateTIme() {
 		return timestamp;

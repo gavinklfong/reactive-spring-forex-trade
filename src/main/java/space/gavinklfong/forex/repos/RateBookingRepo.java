@@ -1,6 +1,5 @@
 package space.gavinklfong.forex.repos;
 
-import java.util.Collection;
 import java.util.List;
 
 import org.springframework.data.repository.CrudRepository;
