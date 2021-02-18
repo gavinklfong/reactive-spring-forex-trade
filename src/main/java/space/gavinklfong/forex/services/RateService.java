@@ -1,8 +1,11 @@
 package space.gavinklfong.forex.services;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,10 +47,20 @@ public class RateService {
 	 */
 	public Flux<Rate> fetchLatestRates(String baseCurrency) {
 		
-//		forexRateApiClient.fetchLatestRates(baseCurrency)
-//		.flatMap(resp -> Flux.just(new Rate()))
+		LocalDateTime timestamp = LocalDateTime.now();
 		
-		return Flux.just(new Rate());
+		return forexRateApiClient.fetchLatestRates(baseCurrency)
+		.flatMapMany(resp -> { 
+			
+			List<Rate> rates = new ArrayList<>();
+			
+			resp.getRates().forEach((counterCurrency, rate) -> {
+				rates.add(new Rate(timestamp, baseCurrency, counterCurrency, rate));
+			});
+			
+			return Flux.fromStream(rates.stream());
+		});
+		
 	}
 	
 	/**

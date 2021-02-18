@@ -20,7 +20,7 @@ public class Rate {
 	public Rate(LocalDateTime timestamp, String baseCurrency, String counterCurrecy, Double rate) {
 		this.timestamp = timestamp;
 		this.baseCurrency = baseCurrency;
-		this.counterCurrency = counterCurrency;
+		this.counterCurrency = counterCurrecy;
 		this.rate = rate;
 	}
 		
