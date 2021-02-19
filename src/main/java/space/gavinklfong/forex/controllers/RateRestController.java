@@ -1,16 +1,27 @@
 package space.gavinklfong.forex.controllers;
 
+import java.math.BigDecimal;
+
 import org.slf4j.Logger;
+
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import space.gavinklfong.forex.repos.RateBookingRepo;
+import space.gavinklfong.forex.services.RateService;
+import space.gavinklfong.forex.dto.Rate;
+import space.gavinklfong.forex.dto.RateBookingReq;
+import space.gavinklfong.forex.models.RateBooking;
 
 @RestController
 @RequestMapping("/rates")
@@ -18,20 +29,32 @@ public class RateRestController {
 
 	private static Logger logger = LoggerFactory.getLogger(RateRestController.class);
 	
+	@Value("${app.default-base-currency")
+	private String defaultBaseCurrency;
+		
 	@Autowired
-	private RateBookingRepo repos;
+	private RateService rateService;
+		
 	
-	@GetMapping(path = "latest", produces = "application/json")
-	public Mono<String> getLatestRates() {
-		WebClient client = WebClient.create("https://api.exchangeratesapi.io");
+	@GetMapping(path = "latest/{baseCurrency}", produces = "application/json")
+	public Flux<Rate> getLatestRates(@PathVariable String baseCurrency) {
+
+		if (baseCurrency == null || baseCurrency.trim().length() == 0) {
+			baseCurrency = defaultBaseCurrency;
+		}
 		
-		Mono<String> response =  
-				client.get().uri("/latest?base={base}", "GBP")
-				.accept(MediaType.APPLICATION_JSON)
-				.retrieve()
-				.bodyToMono(String.class);
+		return rateService.fetchLatestRates(baseCurrency);
 		
-		return response;
+	}
+	
+	@GetMapping(path = "book", produces = "application/json")
+	public Mono<RateBooking> bookRate(RateBookingReq req) {
+		
+		// TODO validate request
+		
+		// obtain booking
+		return rateService.obtainBooking(req);
+		
 	}
 		
 }
