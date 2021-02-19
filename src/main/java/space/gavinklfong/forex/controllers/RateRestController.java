@@ -1,6 +1,9 @@
 package space.gavinklfong.forex.controllers;
 
 import java.math.BigDecimal;
+import java.util.List;
+
+import javax.validation.Valid;
 
 import org.slf4j.Logger;
 
@@ -8,6 +11,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +27,7 @@ import space.gavinklfong.forex.services.RateService;
 import space.gavinklfong.forex.dto.Rate;
 import space.gavinklfong.forex.dto.RateBookingReq;
 import space.gavinklfong.forex.models.RateBooking;
+import space.gavinklfong.forex.exceptions.InvalidRequestException;
 
 @RestController
 @RequestMapping("/rates")
@@ -48,9 +54,13 @@ public class RateRestController {
 	}
 	
 	@GetMapping(path = "book", produces = "application/json")
-	public Mono<RateBooking> bookRate(RateBookingReq req) {
+	public Mono<RateBooking> bookRate(@Valid RateBookingReq req, BindingResult bindingResult) throws InvalidRequestException {
 		
-		// TODO validate request
+		// validate request
+		if (bindingResult.hasErrors()) {
+			List<ObjectError> errors = bindingResult.getAllErrors();
+			return Mono.error(new InvalidRequestException(errors));
+		}
 		
 		// obtain booking
 		return rateService.obtainBooking(req);

@@ -40,6 +40,19 @@ public class RateBooking {
 		super();
 	}
 	
+	public RateBooking(Long id, LocalDateTime timestamp, String baseCurrency, String counterCurrency, Double rate,
+			String bookingRef, LocalDateTime expiryTime, Customer customer) {
+		super();
+		this.id = id;
+		this.timestamp = timestamp;
+		this.baseCurrency = baseCurrency;
+		this.counterCurrency = counterCurrency;
+		this.rate = rate;
+		this.bookingRef = bookingRef;
+		this.expiryTime = expiryTime;
+		this.customer = customer;
+	}
+	
 	public RateBooking(String baseCurrency, String counterCurrency, Double rate, String bookingRef) {
 		super();
 		this.baseCurrency = baseCurrency;

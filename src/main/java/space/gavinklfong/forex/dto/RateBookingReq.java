@@ -2,14 +2,24 @@ package space.gavinklfong.forex.dto;
 
 import java.math.BigDecimal;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+
 public class RateBookingReq {
 
+	@NotEmpty
 	private String baseCurrency;
-	
+
+	@NotEmpty
 	private String counterCurrency;
 	
+	@NotNull
+	@Positive
 	private BigDecimal baseCurrencyAmount;
 	
+	@NotNull
 	private Long customerId;
 	
 	public RateBookingReq() {

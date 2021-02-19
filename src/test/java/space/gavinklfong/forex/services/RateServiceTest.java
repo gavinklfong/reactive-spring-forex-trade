@@ -45,6 +45,7 @@ import reactor.core.publisher.Mono;
 import space.gavinklfong.forex.dto.ForexRateApiResp;
 import space.gavinklfong.forex.dto.Rate;
 import space.gavinklfong.forex.dto.RateBookingReq;
+import space.gavinklfong.forex.exceptions.UnknownCustomerException;
 import space.gavinklfong.forex.models.Customer;
 import space.gavinklfong.forex.models.RateBooking;
 import space.gavinklfong.forex.repos.CustomerRepo;
@@ -142,7 +143,7 @@ public class RateServiceTest {
 	}
 	
 	@Test
-	public void obtainBookingTest_CustomerTier1() throws JsonProcessingException {
+	public void obtainBookingTest_CustomerTier1() throws JsonProcessingException, UnknownCustomerException {
 		
 		RateBooking rateBooking = obtainBookingTest(1);
 		assertNotNull(rateBooking);
@@ -158,7 +159,7 @@ public class RateServiceTest {
 	}
 	
 	@Test
-	public void obtainBookingTest_CustomerTier2() throws JsonProcessingException {
+	public void obtainBookingTest_CustomerTier2() throws JsonProcessingException, UnknownCustomerException {
 		
 		RateBooking rateBooking = obtainBookingTest(2);
 		assertNotNull(rateBooking);
@@ -174,7 +175,7 @@ public class RateServiceTest {
 	}
 	
 	@Test
-	public void obtainBookingTest_CustomerTier3() throws JsonProcessingException {
+	public void obtainBookingTest_CustomerTier3() throws JsonProcessingException, UnknownCustomerException {
 		
 		RateBooking rateBooking = obtainBookingTest(3);
 		assertNotNull(rateBooking);
@@ -190,7 +191,7 @@ public class RateServiceTest {
 	}
 	
 	@Test
-	public void obtainBookingTest_CustomerTier4() throws JsonProcessingException {
+	public void obtainBookingTest_CustomerTier4() throws JsonProcessingException, UnknownCustomerException {
 		
 		RateBooking rateBooking = obtainBookingTest(4);
 		assertNotNull(rateBooking);
@@ -205,7 +206,7 @@ public class RateServiceTest {
 		
 	}
 	
-	private RateBooking obtainBookingTest(Integer tier) throws JsonProcessingException {
+	private RateBooking obtainBookingTest(Integer tier) throws JsonProcessingException, UnknownCustomerException {
 		
 		
 		when(forexRateApiClient.fetchLatestRates(anyString(), anyString()))

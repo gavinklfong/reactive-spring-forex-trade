@@ -37,7 +37,7 @@ public class TradeService {
 	public Mono<TradeDeal> postTradeDeal(TradeDealReq req) {
 		
 		Optional<Customer> customer = customerRepo.findById(req.getCustomerId());
-		if (customer.isEmpty()) throw new UnknownCustomerException();
+		if (customer.isEmpty()) return Mono.error(new UnknownCustomerException());
 		
 		RateBooking rateBooking = new RateBooking(req.getBaseCurrency(), req.getCounterCurrency(), req.getRate(), req.getRateBookingRef());
 		
