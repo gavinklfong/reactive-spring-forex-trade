@@ -4,11 +4,13 @@ import java.math.BigDecimal;
 
 public class TradeDealReq {
 				
+
+
 	private String baseCurrency;
 	
 	private String counterCurrency;
 	
-	private BigDecimal rate;
+	private Double rate;
 	
 	private BigDecimal baseCurrencyAmount;
 
@@ -16,6 +18,21 @@ public class TradeDealReq {
 
 	private String rateBookingRef;
 
+	public TradeDealReq() {
+		super();
+	}
+	
+	public TradeDealReq(String baseCurrency, String counterCurrency, Double rate, BigDecimal baseCurrencyAmount,
+			Long customerId, String rateBookingRef) {
+		super();
+		this.baseCurrency = baseCurrency;
+		this.counterCurrency = counterCurrency;
+		this.rate = rate;
+		this.baseCurrencyAmount = baseCurrencyAmount;
+		this.customerId = customerId;
+		this.rateBookingRef = rateBookingRef;
+	}
+	
 	public String getBaseCurrency() {
 		return baseCurrency;
 	}
@@ -32,11 +49,11 @@ public class TradeDealReq {
 		this.counterCurrency = counterCurrency;
 	}
 
-	public BigDecimal getRate() {
+	public Double getRate() {
 		return rate;
 	}
 
-	public void setRate(BigDecimal rate) {
+	public void setRate(Double rate) {
 		this.rate = rate;
 	}
 

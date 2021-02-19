@@ -78,7 +78,7 @@
         <appender-ref ref="roll-by-time-and-size"/>
     </logger>
 
-    <root level="INFO">
+    <root level="DEBUG">
         <appender-ref ref="stdout"/>
     </root>
 </configuration>

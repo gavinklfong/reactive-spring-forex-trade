@@ -8,6 +8,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -27,6 +29,8 @@ import space.gavinklfong.forex.repos.RateBookingRepo;
 @Component
 public class RateService {
 
+	private static Logger logger = LoggerFactory.getLogger(RateService.class);
+	
 	@Value("${app.rate-booking-duration}")
 	private long bookingDuration = 120l;
 		
@@ -43,7 +47,7 @@ public class RateService {
 	 * Retrieve the latest rates for list of counter currencies
 	 * 
 	 * @param baseCurrency
-	 * @return
+	 * @return Flux - Rate
 	 */
 	public Flux<Rate> fetchLatestRates(String baseCurrency) {
 		
@@ -67,20 +71,21 @@ public class RateService {
 	 * Generate rate booking based on the latest rate and customer tier
 	 * 
 	 * @param request
-	 * @return
+	 * @return Mono - RateBooking
 	 */
 	public Mono<RateBooking> obtainBooking(RateBookingReq request) throws UnknownCustomerException {
 
 		// retrieve customer tier
+		logger.debug("Retrieve customer record - id = " + request.getCustomerId());
 		Optional<Customer> customer = customerRepo.findById(request.getCustomerId());
 		if (customer.isEmpty()) throw new UnknownCustomerException();
 		
 		// fetch rate from external API
-		Mono<ForexRateApiResp> forexRateApiResp = forexRateApiClient.fetchLatestRates(request.getBaseCurrency());
-		
-		return forexRateApiResp.map(record -> 
-			generateRateBooking(request, customer.get(), record.getRates().get(request.getCounterCurrency()))
-		);
+		logger.debug("fetch rate from external API");
+		return forexRateApiClient.fetchLatestRates(request.getBaseCurrency(), request.getCounterCurrency())
+				.map(record -> 
+						 generateRateBooking(request, customer.get(), record.getRates().get(request.getCounterCurrency()))
+				);
 				
 	}
 	
@@ -103,6 +108,7 @@ public class RateService {
 		
 		
 		// build rate booking record
+		logger.debug("build rate booking record - rate = " + rate);
 		RateBooking bookingRecord = new RateBooking(request.getBaseCurrency(), request.getCounterCurrency(), request.getCustomerId());
 
 		UUID bookingRef = UUID.randomUUID();
@@ -116,6 +122,9 @@ public class RateService {
 
 		bookingRecord.setRate(rate);
 
+		// save rate booking to repo
+		logger.debug("save rate booking to repo");
+		
 		return rateBookingRepo.save(bookingRecord);
 	}
 	
@@ -132,7 +141,7 @@ public class RateService {
 		// Check existence of booking reference
 		List<RateBooking> repoRecords = rateBookingRepo.findByBookingRef(rateBooking.getBookingRef());
 		
-		if (repoRecords.size() <= 0) {
+		if (repoRecords == null || repoRecords.size() <= 0) {
 			return Mono.just(false);
 		}
 		

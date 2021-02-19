@@ -33,12 +33,26 @@ public class TradeDeal {
 	
 	private BigDecimal baseCurrencyAmount;
 	
-	private String note;
-	
 	@ManyToOne
 	@JoinColumn(name="customer_id", referencedColumnName="id")
 	private Customer customer;
+	
+	public TradeDeal() {
+		super();
+	}
 
+	public TradeDeal(String dealRef, LocalDateTime timestamp, String baseCurrency, String counterCurrency, Double rate,
+			BigDecimal baseCurrencyAmount, Customer customer) {
+		super();
+		this.dealRef = dealRef;
+		this.timestamp = timestamp;
+		this.baseCurrency = baseCurrency;
+		this.counterCurrency = counterCurrency;
+		this.rate = rate;
+		this.baseCurrencyAmount = baseCurrencyAmount;
+		this.customer = customer;
+	}
+	
 	public Long getId() {
 		return id;
 	}
@@ -85,14 +99,6 @@ public class TradeDeal {
 
 	public void setBaseCurrencyAmount(BigDecimal sourceCurrencyAmount) {
 		this.baseCurrencyAmount = sourceCurrencyAmount;
-	}
-
-	public String getNote() {
-		return note;
-	}
-
-	public void setNote(String note) {
-		this.note = note;
 	}
 	
 }

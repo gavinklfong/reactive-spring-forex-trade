@@ -14,7 +14,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "forex_rate_booking")
 public class RateBooking {
-		
+
 	@Id
 	@GeneratedValue (strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -39,8 +39,17 @@ public class RateBooking {
 	public RateBooking() {
 		super();
 	}
+	
+	public RateBooking(String baseCurrency, String counterCurrency, Double rate, String bookingRef) {
+		super();
+		this.baseCurrency = baseCurrency;
+		this.counterCurrency = counterCurrency;
+		this.rate = rate;
+		this.bookingRef = bookingRef;
+	}
 		
 	public RateBooking(String baseCurrency, String counterCurrency, Long customerId) {
+		super();
 		this.baseCurrency = baseCurrency;
 		this.counterCurrency = counterCurrency;
 		this.customer = new Customer(customerId);
