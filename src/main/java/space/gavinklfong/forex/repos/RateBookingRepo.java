@@ -2,15 +2,15 @@ package space.gavinklfong.forex.repos;
 
 import java.util.List;
 
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.r2dbc.repository.Query;
+import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 
+import reactor.core.publisher.Flux;
 import space.gavinklfong.forex.models.RateBooking;
 
-@Repository
-public interface RateBookingRepo extends CrudRepository <RateBooking, Long>{
+public interface RateBookingRepo extends ReactiveCrudRepository <RateBooking, Long>{
 
-	List<RateBooking> findByBookingRef(String bookingRef);
-	
+	@Query("SELECT * FROM forex_rate_booking WHERE booking_ref = :bookingref")
+	Flux<RateBooking> findByBookingRef(String bookingRef);
 	
 }

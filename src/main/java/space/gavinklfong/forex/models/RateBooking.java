@@ -3,21 +3,17 @@ package space.gavinklfong.forex.models;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
-@Entity
-@Table(name = "forex_rate_booking")
+import lombok.Data;
+
+@Data
+@Table("forex_rate_booking")
 public class RateBooking {
 
 	@Id
-	@GeneratedValue (strategy = GenerationType.IDENTITY)
 	private Long id;
 	
 	private LocalDateTime timestamp;
@@ -30,13 +26,10 @@ public class RateBooking {
 	
 	private BigDecimal baseCurrencyAmount;
 	
-	@Column(unique = true)
 	private String bookingRef;
 	
 	private LocalDateTime expiryTime;
 
-	@ManyToOne
-	@JoinColumn(name = "customer_id", referencedColumnName = "id")
 	private Customer customer;
 
 	public RateBooking() {
@@ -143,6 +136,12 @@ public class RateBooking {
 
 	public void setBaseCurrencyAmount(BigDecimal baseCurrencyAmount) {
 		this.baseCurrencyAmount = baseCurrencyAmount;
+	}
+	
+	@Override
+	public String toString() {
+		return String.format("RateBooking[id=%d, timestamp=%tF %tT, baseCurrency='%s', counterCurrency='%s', rate=%d, baseCurrencyAmount=d%, bookingRef='%s', expiryTime=%tF %tT, customerId=%d]", 
+				id, baseCurrency, counterCurrency, rate, baseCurrencyAmount, bookingRef, expiryTime, customer.getId());
 	}
 
 	
