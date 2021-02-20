@@ -42,6 +42,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import antlr.collections.List;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 import space.gavinklfong.forex.dto.ForexRateApiResp;
 import space.gavinklfong.forex.dto.Rate;
 import space.gavinklfong.forex.dto.RateBookingReq;
@@ -60,11 +61,6 @@ public class RateServiceTest {
 	
 	private static Logger logger = LoggerFactory.getLogger(RateServiceTest.class);
 	
-//	@Mock
-//	private ForexRateApiClient forexRateApiClient;
-//	@InjectMocks
-//	private RateService rateService = new RateService();
-
 	@MockBean
 	private ForexRateApiClient forexRateApiClient;
 	
@@ -84,13 +80,12 @@ public class RateServiceTest {
 		mockRecord.setExpiryTime(LocalDateTime.now().plusMinutes(15));
 		when(rateBookingRepo.findByBookingRef(anyString())).thenReturn(Arrays.asList(mockRecord));
 		
-		
 		RateBooking rateBooking = new RateBooking("GBP", "USD", 0.25, "ABC");
 		
-		Boolean result = rateService.validateRateBooking(rateBooking).block();
-		
-		assertTrue(result);
-		
+		Mono<Boolean> result = rateService.validateRateBooking(rateBooking);
+		StepVerifier.create(result)
+		.expectNext(true)
+		.verifyComplete();		
 	}
 	
 	@Test
@@ -98,13 +93,12 @@ public class RateServiceTest {
 		
 		when(rateBookingRepo.findByBookingRef(anyString())).thenReturn(null);
 		
-		
 		RateBooking rateBooking = new RateBooking("GBP", "USD", 0.25, "ABC");
 		
-		Boolean result = rateService.validateRateBooking(rateBooking).block();
-		
-		assertFalse(result);
-		
+		Mono<Boolean> result = rateService.validateRateBooking(rateBooking);
+		StepVerifier.create(result)
+		.expectNext(false)
+		.verifyComplete();		
 	}
 	
 	@Test
@@ -116,9 +110,10 @@ public class RateServiceTest {
 		
 		RateBooking rateBooking = new RateBooking("GBP", "USD", 0.25, "ABC");
 		
-		Boolean result = rateService.validateRateBooking(rateBooking).block();
-		
-		assertFalse(result);
+		Mono<Boolean> result = rateService.validateRateBooking(rateBooking);
+		StepVerifier.create(result)
+		.expectNext(false)
+		.verifyComplete();	
 		
 	}
 	
@@ -126,19 +121,24 @@ public class RateServiceTest {
 	@Test
 	public void fetchLatestRatesTest() {
 		
+		final double USD_RATE = 1.3868445262;
+		final double EUR_RATE = 1.1499540018;
+		
 		Map<String, Double> rates = new HashMap<>();
-		rates.put("USD", Double.valueOf(1.3868445262));
-		rates.put("EUR", Double.valueOf(1.1499540018));
+		rates.put("USD", Double.valueOf(USD_RATE));
+		rates.put("EUR", Double.valueOf(EUR_RATE));
 		ForexRateApiResp forexRateApiResp = new ForexRateApiResp("GBP", LocalDate.now(), rates);
 		
 		when(forexRateApiClient.fetchLatestRates("GBP"))
 		.thenReturn(Mono.just(forexRateApiResp));
 		
 		Flux<Rate> resp = rateService.fetchLatestRates("GBP");
-		
-		resp.subscribe(rate -> {
-			logger.info("currency = " + rate.getCounterCurrency() + ", rate = " + rate.getRate());
-		});
+		StepVerifier.create(resp)
+		.expectNextMatches(rate -> rate.getBaseCurrency().equals("GBP") && rate.getCounterCurrency().equals("USD") 
+				&& rate.getRate() ==   USD_RATE)
+		.expectNextMatches(rate -> rate.getBaseCurrency().equals("GBP") && rate.getCounterCurrency().equals("EUR") 
+				&& rate.getRate() ==  EUR_RATE)		
+		.verifyComplete();	
 		
 	}
 	

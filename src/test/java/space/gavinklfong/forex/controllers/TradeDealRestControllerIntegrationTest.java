@@ -25,10 +25,13 @@ import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
+import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -44,11 +47,9 @@ import space.gavinklfong.forex.models.Customer;
 import space.gavinklfong.forex.models.RateBooking;
 import space.gavinklfong.forex.models.TradeDeal;
 
-@WebFluxTest(controllers = {TradeDealRestController.class})
-public class TradeDealRestControllerTest {
-
-	@MockBean
-	private TradeService tradeService;
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("integrationtest")
+public class TradeDealRestControllerIntegrationTest {
 	
 	@Autowired
 	WebTestClient webTestClient;
@@ -57,16 +58,24 @@ public class TradeDealRestControllerTest {
 	@Test
 	public void submitDeal() throws Exception {
 
-		when(tradeService.postTradeDeal(any(TradeDealReq.class)))
-		.thenAnswer(invocation -> {
-			TradeDealReq req = (TradeDealReq)invocation.getArgument(0);
-			LocalDateTime timestamp = LocalDateTime.now();
-			return Mono.just(new TradeDeal(1l, UUID.randomUUID().toString(),  timestamp, req.getBaseCurrency(), req.getCounterCurrency(),
-					 req.getRate(), req.getBaseCurrencyAmount(), new Customer(1l, "Tester 1", 1)));
-		});
-			
-		TradeDealReq req = new TradeDealReq("GBP", "USD", 0.25, BigDecimal.valueOf(10000),
-				 1l,  "ABC");
+		EntityExchangeResult<RateBooking> result = webTestClient.get()
+		.uri(uriBuilder -> uriBuilder
+				.path("/rates/book")
+				.queryParam("baseCurrency", "GBP")
+				.queryParam("counterCurrency", "USD")
+				.queryParam("baseCurrencyAmount", 1000)
+				.queryParam("customerId", 1)
+				.build()
+				)
+		.exchange()
+		.expectStatus().isOk()
+		.expectBody(RateBooking.class)
+		.returnResult();
+		
+		RateBooking rateBooking = result.getResponseBody();
+		
+		TradeDealReq req = new TradeDealReq("GBP", "USD", rateBooking.getRate(), BigDecimal.valueOf(1000),
+				 1l,  rateBooking.getBookingRef());
 		
 		webTestClient.post()
 		.uri("/deals")
@@ -82,13 +91,6 @@ public class TradeDealRestControllerTest {
 	@Test
 	public void submitDeal_invalidReq() throws Exception {
 
-		when(tradeService.postTradeDeal(any(TradeDealReq.class)))
-		.thenAnswer(invocation -> {
-			TradeDealReq req = (TradeDealReq)invocation.getArgument(0);
-			LocalDateTime timestamp = LocalDateTime.now();
-			return Mono.just(new TradeDeal(1l, UUID.randomUUID().toString(),  timestamp, req.getBaseCurrency(), req.getCounterCurrency(),
-					 req.getRate(), req.getBaseCurrencyAmount(), new Customer(1l, "Tester 1", 1)));
-		});
 			
 		TradeDealReq req = new TradeDealReq();
 		
@@ -106,15 +108,6 @@ public class TradeDealRestControllerTest {
 	@Test
 	public void getDeals() throws Exception {
 
-		TradeDeal deal1 = new TradeDeal(UUID.randomUUID().toString(), LocalDateTime.now(), "GBP", "USD",  Math.random(),
-				BigDecimal.valueOf(1000), new Customer(1l, "Tester 1", 1));
-		TradeDeal deal2 = new TradeDeal(UUID.randomUUID().toString(), LocalDateTime.now(), "GBP", "USD",  Math.random(),
-				BigDecimal.valueOf(1000), new Customer(1l, "Tester 1", 1));
-		TradeDeal deal3 = new TradeDeal(UUID.randomUUID().toString(), LocalDateTime.now(), "GBP", "USD",  Math.random(),
-				BigDecimal.valueOf(1000), new Customer(1l, "Tester 1", 1));
-				
-		when(tradeService.retrieveTradeDealByCustomer((anyLong())))
-		.thenReturn(Flux.just(deal1, deal2, deal3));
 		
 		webTestClient.get()
 		.uri(uriBuilder -> uriBuilder

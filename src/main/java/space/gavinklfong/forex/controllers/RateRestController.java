@@ -42,7 +42,7 @@ public class RateRestController {
 	private RateService rateService;
 		
 	
-	@GetMapping(path = "latest/{baseCurrency}", produces = "application/json")
+	@GetMapping(path = "latest/{baseCurrency}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public Flux<Rate> getLatestRates(@PathVariable String baseCurrency) {
 
 		if (baseCurrency == null || baseCurrency.trim().length() == 0) {
@@ -53,7 +53,7 @@ public class RateRestController {
 		
 	}
 	
-	@GetMapping(path = "book", produces = "application/json")
+	@GetMapping(path = "book", produces = MediaType.APPLICATION_JSON_VALUE)
 	public Mono<RateBooking> bookRate(@Valid RateBookingReq req, BindingResult bindingResult) throws InvalidRequestException {
 		
 		// validate request

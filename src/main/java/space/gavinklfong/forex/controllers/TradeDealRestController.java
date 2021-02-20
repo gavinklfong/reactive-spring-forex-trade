@@ -5,7 +5,10 @@ import java.util.Optional;
 
 import javax.validation.Valid;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,37 +28,28 @@ import space.gavinklfong.forex.services.TradeService;
 @RestController
 @RequestMapping("/deals")
 public class TradeDealRestController {
+	
+	private static Logger logger = LoggerFactory.getLogger(TradeDealRestController.class);
 
 	@Autowired
 	private TradeService tradeService;
 	
 	
-	@PostMapping(produces = "application/json")
-	public Mono<TradeDeal> submitDeal(@Valid @RequestBody Mono<TradeDealReq> monoReq, BindingResult bindingResult) {
-		
-		// validate request
-		if (bindingResult.hasErrors()) {
-			List<ObjectError> errors = bindingResult.getAllErrors();
-			return Mono.error(new InvalidRequestException(errors));
-		}
+	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	public Mono<TradeDeal> submitDeal(@Valid @RequestBody Mono<TradeDealReq> req) {
 		
 		// submit trade deal
-		return monoReq.flatMap(req -> tradeService.postTradeDeal(req));	
+		return req.flatMap(dealReq -> tradeService.postTradeDeal(dealReq));	
 	}
 	
-	@GetMapping(produces = "application/json")
-	public Flux<TradeDeal> getDeals(@RequestParam Optional<Long> customerId, BindingResult bindingResult) {
+	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+	public Flux<TradeDeal> getDeals(@RequestParam Long customerId) {
 		
-		// validate request
-		if (bindingResult.hasErrors()) {
-			List<ObjectError> errors = bindingResult.getAllErrors();
-			return Flux.error(new InvalidRequestException(errors));
-		}
 		
-		if (customerId.isEmpty()) {
+		if (customerId == null) {
 			return Flux.error(new InvalidRequestException("customerId", "customer Id cannot be blank"));
 		}
 				
-		return tradeService.retrieveTradeDealByCustomer(customerId.get());
+		return tradeService.retrieveTradeDealByCustomer(customerId);
 	}
 }

@@ -91,6 +91,8 @@ public class RateService {
 	
 	private RateBooking generateRateBooking(RateBookingReq request, Customer customer, Double rate) {
 		
+		logger.debug("customer: " + customer.getId() + ", " + customer.getName() + ", " + customer.getTier());
+		
 		// determine rate
 		switch (customer.getTier()) {
 		case 1:

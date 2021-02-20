@@ -68,10 +68,10 @@ public class TradeServiceTest {
 		TradeDealReq req = new TradeDealReq("GBP", "USD", 0.25, BigDecimal.valueOf(10000),
 				 1l,  "ABC");
 		
-		TradeDeal deal = tradeService.postTradeDeal(req).block();
-		
-		assertNotNull(deal);
-		assertEquals(99l, deal.getId());
+		Mono<TradeDeal> deal = tradeService.postTradeDeal(req);
+		StepVerifier.create(deal)
+		.expectNextMatches(record -> record.getId() == 99l)
+		.verifyComplete();		
 	}
 	
 	@Test
@@ -91,12 +91,10 @@ public class TradeServiceTest {
 		TradeDealReq req = new TradeDealReq("GBP", "USD", 0.25, BigDecimal.valueOf(10000),
 				 1l,  "ABC");
 		
-		Exception exception = assertThrows(InvalidRateBookingException.class, () -> {
-			TradeDeal deal = tradeService.postTradeDeal(req).block();			
-		});
-
-		assertTrue(exception instanceof InvalidRateBookingException);
-		
+		Mono<TradeDeal> deal = tradeService.postTradeDeal(req);
+		StepVerifier.create(deal)
+		.expectError(InvalidRateBookingException.class)
+		.verify();
 	}
 	
 	@Test
@@ -116,12 +114,11 @@ public class TradeServiceTest {
 		TradeDealReq req = new TradeDealReq("GBP", "USD", 0.25, BigDecimal.valueOf(10000),
 				 1l,  "ABC");
 		
-		Exception exception = assertThrows(UnknownCustomerException.class, () -> {
-			TradeDeal deal = tradeService.postTradeDeal(req).block();			
-		});
-
-		assertTrue(exception instanceof UnknownCustomerException);
 		
+		Mono<TradeDeal> deal = tradeService.postTradeDeal(req);
+		StepVerifier.create(deal)
+		.expectError(UnknownCustomerException.class)
+		.verify();
 	}
 	
 	@Test
