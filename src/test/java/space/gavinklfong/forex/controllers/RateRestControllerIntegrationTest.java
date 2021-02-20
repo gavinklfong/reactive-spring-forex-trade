@@ -1,34 +1,21 @@
 package space.gavinklfong.forex.controllers;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
-
-import java.time.LocalDateTime;
-import java.util.UUID;
-
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import space.gavinklfong.forex.dto.Rate;
-import space.gavinklfong.forex.dto.RateBookingReq;
 import space.gavinklfong.forex.exceptions.UnknownCustomerException;
-import space.gavinklfong.forex.models.Customer;
 import space.gavinklfong.forex.models.RateBooking;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("integrationtest")
+@Tag("IntegrationTest")
 public class RateRestControllerIntegrationTest {
 
     @LocalServerPort

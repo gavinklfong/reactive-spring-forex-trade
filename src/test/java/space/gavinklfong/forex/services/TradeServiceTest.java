@@ -1,12 +1,7 @@
 package space.gavinklfong.forex.services;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
@@ -16,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.assertj.core.util.Arrays;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -37,6 +32,7 @@ import space.gavinklfong.forex.repos.TradeDealRepo;
 
 @SpringJUnitConfig
 @ContextConfiguration(classes = {TradeService.class})
+@Tag("UnitTest")
 public class TradeServiceTest {
 
 	@MockBean

@@ -2,10 +2,8 @@ package space.gavinklfong.forex.services;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -13,11 +11,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.web.reactive.function.client.WebClient;
-
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import space.gavinklfong.forex.dto.ForexRateApiResp;
 import space.gavinklfong.forex.dto.Rate;
 import space.gavinklfong.forex.dto.RateBookingReq;
 import space.gavinklfong.forex.exceptions.UnknownCustomerException;
