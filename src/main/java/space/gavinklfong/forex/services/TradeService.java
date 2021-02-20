@@ -38,7 +38,7 @@ public class TradeService {
 		Optional<Customer> customer = customerRepo.findById(req.getCustomerId());
 		if (customer.isEmpty()) return Mono.error(new UnknownCustomerException());
 		
-		RateBooking rateBooking = new RateBooking(req.getBaseCurrency(), req.getCounterCurrency(), req.getRate(), req.getRateBookingRef());
+		RateBooking rateBooking = new RateBooking(req.getBaseCurrency(), req.getCounterCurrency(), req.getRate(), req.getBaseCurrencyAmount(), req.getRateBookingRef());
 		
 		// Validate rate booking
 		Mono<Boolean> result = rateService.validateRateBooking(rateBooking);

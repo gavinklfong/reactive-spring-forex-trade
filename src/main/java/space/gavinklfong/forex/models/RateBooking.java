@@ -1,5 +1,6 @@
 package space.gavinklfong.forex.models;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import javax.persistence.Column;
@@ -27,6 +28,8 @@ public class RateBooking {
 	
 	private Double rate;
 	
+	private BigDecimal baseCurrencyAmount;
+	
 	@Column(unique = true)
 	private String bookingRef;
 	
@@ -53,18 +56,20 @@ public class RateBooking {
 		this.customer = customer;
 	}
 	
-	public RateBooking(String baseCurrency, String counterCurrency, Double rate, String bookingRef) {
+	public RateBooking(String baseCurrency, String counterCurrency, Double rate, BigDecimal baseCurrencyAmount, String bookingRef) {
 		super();
 		this.baseCurrency = baseCurrency;
 		this.counterCurrency = counterCurrency;
 		this.rate = rate;
+		this.baseCurrencyAmount = baseCurrencyAmount;
 		this.bookingRef = bookingRef;
 	}
 		
-	public RateBooking(String baseCurrency, String counterCurrency, Long customerId) {
+	public RateBooking(String baseCurrency, String counterCurrency, BigDecimal baseCurrencyAmount, Long customerId) {
 		super();
 		this.baseCurrency = baseCurrency;
 		this.counterCurrency = counterCurrency;
+		this.baseCurrencyAmount = baseCurrencyAmount;
 		this.customer = new Customer(customerId);
 	}
 	
@@ -130,6 +135,14 @@ public class RateBooking {
 
 	public void setCustomer(Customer customer) {
 		this.customer = customer;
+	}
+
+	public BigDecimal getBaseCurrencyAmount() {
+		return baseCurrencyAmount;
+	}
+
+	public void setBaseCurrencyAmount(BigDecimal baseCurrencyAmount) {
+		this.baseCurrencyAmount = baseCurrencyAmount;
 	}
 
 	

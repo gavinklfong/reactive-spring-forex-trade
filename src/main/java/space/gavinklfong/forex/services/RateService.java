@@ -106,7 +106,7 @@ public class RateService {
 		
 		// build rate booking record
 		logger.debug("build rate booking record - rate = " + rate);
-		RateBooking bookingRecord = new RateBooking(request.getBaseCurrency(), request.getCounterCurrency(), request.getCustomerId());
+		RateBooking bookingRecord = new RateBooking(request.getBaseCurrency(), request.getCounterCurrency(), request.getBaseCurrencyAmount(), request.getCustomerId());
 
 		UUID bookingRef = UUID.randomUUID();
 		bookingRecord.setBookingRef(bookingRef.toString());
@@ -116,7 +116,7 @@ public class RateService {
 
 		LocalDateTime expiryTime = timestamp.plusSeconds(bookingDuration);
 		bookingRecord.setExpiryTime(expiryTime);
-
+		
 		bookingRecord.setRate(rate);
 
 		// save rate booking to repo
@@ -147,6 +147,12 @@ public class RateService {
 		if (record.getExpiryTime().isBefore(LocalDateTime.now())) {
 			return Mono.just(false);
 		}
+		
+		// Check if amount matches
+		if (record.getBaseCurrencyAmount().compareTo(rateBooking.getBaseCurrencyAmount()) != 0) {
+			return Mono.just(false);
+		}
+		
 		
 		return Mono.just(true);
 		

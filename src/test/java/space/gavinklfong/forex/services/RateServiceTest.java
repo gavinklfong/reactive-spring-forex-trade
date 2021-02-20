@@ -66,11 +66,11 @@ public class RateServiceTest {
 	@Test
 	public void validateRateBookingTest_validBooking() {
 		
-		RateBooking mockRecord = new RateBooking("GBP", "USD", 0.25, "ABC");
+		RateBooking mockRecord = new RateBooking("GBP", "USD", 0.25, BigDecimal.valueOf(1000), "ABC");
 		mockRecord.setExpiryTime(LocalDateTime.now().plusMinutes(15));
 		when(rateBookingRepo.findByBookingRef(anyString())).thenReturn(Arrays.asList(mockRecord));
 		
-		RateBooking rateBooking = new RateBooking("GBP", "USD", 0.25, "ABC");
+		RateBooking rateBooking = new RateBooking("GBP", "USD", 0.25, BigDecimal.valueOf(1000), "ABC");
 		
 		Mono<Boolean> result = rateService.validateRateBooking(rateBooking);
 		StepVerifier.create(result)
@@ -83,7 +83,7 @@ public class RateServiceTest {
 		
 		when(rateBookingRepo.findByBookingRef(anyString())).thenReturn(null);
 		
-		RateBooking rateBooking = new RateBooking("GBP", "USD", 0.25, "ABC");
+		RateBooking rateBooking = new RateBooking("GBP", "USD", 0.25, BigDecimal.valueOf(1000), "ABC");
 		
 		Mono<Boolean> result = rateService.validateRateBooking(rateBooking);
 		StepVerifier.create(result)
@@ -94,11 +94,11 @@ public class RateServiceTest {
 	@Test
 	public void validateRateBookingTest_invalidBooking_expired() {
 		
-		RateBooking mockRecord = new RateBooking("GBP", "USD", 0.25, "ABC");
+		RateBooking mockRecord = new RateBooking("GBP", "USD", 0.25, BigDecimal.valueOf(1000), "ABC");
 		mockRecord.setExpiryTime(LocalDateTime.now().minusMinutes(15));
 		when(rateBookingRepo.findByBookingRef(anyString())).thenReturn(Arrays.asList(mockRecord));
 		
-		RateBooking rateBooking = new RateBooking("GBP", "USD", 0.25, "ABC");
+		RateBooking rateBooking = new RateBooking("GBP", "USD", 0.25, BigDecimal.valueOf(1000), "ABC");
 		
 		Mono<Boolean> result = rateService.validateRateBooking(rateBooking);
 		StepVerifier.create(result)
