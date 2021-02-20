@@ -41,6 +41,19 @@ public class TradeDeal {
 		super();
 	}
 
+	public TradeDeal(Long id, String dealRef, LocalDateTime timestamp, String baseCurrency, String counterCurrency,
+			Double rate, BigDecimal baseCurrencyAmount, Customer customer) {
+		super();
+		this.id = id;
+		this.dealRef = dealRef;
+		this.timestamp = timestamp;
+		this.baseCurrency = baseCurrency;
+		this.counterCurrency = counterCurrency;
+		this.rate = rate;
+		this.baseCurrencyAmount = baseCurrencyAmount;
+		this.customer = customer;
+	}	
+	
 	public TradeDeal(String dealRef, LocalDateTime timestamp, String baseCurrency, String counterCurrency, Double rate,
 			BigDecimal baseCurrencyAmount, Customer customer) {
 		super();

@@ -18,7 +18,7 @@ public class RestExceptionHandler {
 	
 		List<ObjectError> errors = ex.getErrors();
 		List<ErrorMessage> errorMessages = errors.stream()
-		.map(error -> new ErrorMessage(error.getObjectName(), error.getDefaultMessage()))
+		.map(error -> new ErrorMessage(error.getCode(), error.getDefaultMessage()))
 		.collect(Collectors.toList());
 		
 		return new ResponseEntity<>(new ErrorBody(errorMessages), HttpStatus.BAD_REQUEST);

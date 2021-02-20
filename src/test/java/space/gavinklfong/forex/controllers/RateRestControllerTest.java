@@ -147,4 +147,23 @@ public class RateRestControllerTest {
 		
 	}
 	
+	@Test
+	public void bookRate_unknownCustomer() throws UnknownCustomerException {
+		
+		when(rateService.obtainBooking((any(RateBookingReq.class))))
+		.thenThrow(new UnknownCustomerException());
+		
+		webTestClient.get()
+		.uri(uriBuilder -> uriBuilder
+				.path("/rates/book")
+				.queryParam("counterCurrency", "USD")
+				.queryParam("baseCurrencyAmount", 1000)
+				.queryParam("customerId", 1)
+				.build()
+				)
+		.exchange()
+		.expectStatus().is4xxClientError()
+		.expectBody(ErrorBody.class);
+	}
+	
 }

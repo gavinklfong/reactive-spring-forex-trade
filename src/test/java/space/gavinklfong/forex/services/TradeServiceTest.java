@@ -69,6 +69,7 @@ public class TradeServiceTest {
 				 1l,  "ABC");
 		
 		TradeDeal deal = tradeService.postTradeDeal(req).block();
+		
 		assertNotNull(deal);
 		assertEquals(99l, deal.getId());
 	}
