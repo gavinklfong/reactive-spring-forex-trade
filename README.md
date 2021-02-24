@@ -59,7 +59,7 @@ The use case diagram below shows the simplified version of forex trade service w
 - Retrieve list of forex transaction of a customer
 
 
-![alt Use Case Diagram](https://github.com/gavinklfong/reactive-spring-forex-trade/master/blob/Use_Case.jpg?raw=true)
+![Use Case Diagram](https://raw.githubusercontent.com/gavinklfong/reactive-spring-forex-trade/master/blob/Use_Case.jpg)
 
 
 ## Technical Design
@@ -80,7 +80,7 @@ Application specific configuration resides in spring boot default configuration 
 
 There are 3 entities Customer, Rate Booking and Trade Deal with one-to-many relationship.
 
-![alt Data Model](https://github.com/gavinklfong/reactive-spring-forex-trade/master/blob/Data_Model.jpg?raw=true)
+![Data Model](https://raw.githubusercontent.com/gavinklfong/reactive-spring-forex-trade/master/blob/Data_Model.jpg?raw=true)
 
 
 ### Components
@@ -92,14 +92,14 @@ The whole system consists of controllers, services and repositories. Each type c
 - **Repository**: The interface for access to persistent store
 
 
-![alt Component Diagram](https://github.com/gavinklfong/reactive-spring-forex-trade/master/blob/Component.jpg?raw=true)
+![Component Diagram](https://raw.githubusercontent.com/gavinklfong/reactive-spring-forex-trade/master/blob/Component.jpg?raw=true)
 
 
 ### Data Flow
 
 Illustration of the interaction between components is shown in the data flow diagram below
 
-![alt Component Diagram](https://github.com/gavinklfong/reactive-spring-forex-trade/master/blob/Activity-Forex_Deal.jpg?raw=true)
+![Component Diagram](https://raw.githubusercontent.com/gavinklfong/reactive-spring-forex-trade/master/blob/Activity-Forex_Deal.jpg?raw=true)
 
 
 ## Testing
@@ -113,21 +113,21 @@ Unit test code is built for each components. To isolate the target component, al
 - Service component is mocked for testing on controller
 - Use of @WebFluxTest annotation to loaded sliced spring context with the target controller class
 
-![alt Unit Test for Controller](https://github.com/gavinklfong/reactive-spring-forex-trade/master/blob/Testing-Unit_Test-Controller.jpg?raw=true)
+![Unit Test for Controller](https://raw.githubusercontent.com/gavinklfong/reactive-spring-forex-trade/master/blob/Testing-Unit_Test-Controller.jpg?raw=true)
 
 **Service**
 
 - Repository component is mocked for testing on service.
 - Use of @SpringJUnitConfig and @ContextConfiguration annotation to loaded sliced spring context with the target service class
 
-![alt Unit Test for Service](https://github.com/gavinklfong/reactive-spring-forex-trade/master/blob/Testing-Unit_Test-Service.jpg?raw=true)
+![Unit Test for Service](https://raw.githubusercontent.com/gavinklfong/reactive-spring-forex-trade/master/blob/Testing-Unit_Test-Service.jpg?raw=true)
 
 **Repository**
 
 - In-memory database will be used for testing on repository. 
 - Use of @DataJpaTest annotation to load sliced spring context
 
-![alt Unit Test for Repository](https://github.com/gavinklfong/reactive-spring-forex-trade/master/blob/Testing-Unit_Test-Repository.jpg?raw=true)
+![Unit Test for Repository](https://raw.githubusercontent.com/gavinklfong/reactive-spring-forex-trade/master/blob/Testing-Unit_Test-Repository.jpg?raw=true)
 
 
 ### Integration Test
