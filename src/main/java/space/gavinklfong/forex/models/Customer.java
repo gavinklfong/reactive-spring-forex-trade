@@ -2,27 +2,22 @@ package space.gavinklfong.forex.models;
 
 import java.util.Collection;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
-@Entity
-@Table(name = "customer")
+import lombok.Data;
+
+@Data
+@Table("customer")
 public class Customer {
 	
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 	
 	private String name;
 	
 	private Integer tier;
 	
-	@OneToMany (cascade = CascadeType.ALL, mappedBy = "customer", orphanRemoval = true)
 	private Collection<TradeDeal> deals;
 	
 	public Customer() {
@@ -43,7 +38,7 @@ public class Customer {
 		this.name = name;
 		this.tier = tier;
 	}
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -75,5 +70,11 @@ public class Customer {
 	public void setDeals(Collection<TradeDeal> deals) {
 		this.deals = deals;
 	}
+
+	@Override
+	public String toString() {
+		return String.format("Customer[id=%d, name='%s', tier=%d]", id, name, tier);
+	}
+	
 
 }
