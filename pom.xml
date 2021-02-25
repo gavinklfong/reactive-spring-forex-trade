@@ -56,6 +56,26 @@
       		<artifactId>reactor-test</artifactId>
       		<scope>test</scope>
     	</dependency>
+    	
+	    <dependency>
+	        <groupId>io.cucumber</groupId>
+	        <artifactId>cucumber-java</artifactId>
+	        <version>6.10.0</version>
+	        <scope>test</scope>
+	    </dependency>
+	    <dependency>
+	        <groupId>io.cucumber</groupId>
+	        <artifactId>cucumber-junit</artifactId>
+	        <version>6.10.0</version>
+	        <scope>test</scope>
+	    </dependency>	    
+ 		<dependency>
+		    <groupId>org.junit.vintage</groupId>
+		    <artifactId>junit-vintage-engine</artifactId>
+		    <scope>test</scope>
+		</dependency>
+		    
+	    
 	</dependencies>
 
 	<build>
@@ -67,7 +87,59 @@
 			<plugin>
 			    <artifactId>maven-surefire-plugin</artifactId>
 			</plugin>
+			<plugin>
+			    <groupId>org.jacoco</groupId>
+			    <artifactId>jacoco-maven-plugin</artifactId>
+			    <version>0.8.6</version>
+			    <executions>
+		            <execution>
+		                <goals>
+		                    <goal>prepare-agent</goal>
+		                </goals>
+		            </execution>
+		            <!-- attached to Maven test phase -->
+		            <execution>
+		                <id>report</id>
+		                <phase>test</phase>
+		                <goals>
+		                    <goal>report</goal>
+		                </goals>
+		            </execution>
+		            <execution>
+		                <id>jacoco-check</id>
+		                <goals>
+		                    <goal>check</goal>
+		                </goals>
+		                <configuration>
+		                    <rules>
+		                        <rule>
+		                            <element>PACKAGE</element>
+		                            <limits>
+		                                <limit>
+		                                    <counter>LINE</counter>
+		                                    <value>COVEREDRATIO</value>
+		                                    <minimum>0.6</minimum>
+		                                </limit>
+		                            </limits>
+		                        </rule>
+		                    </rules>
+		                </configuration>
+		            </execution>		            
+      		  </executions>
+			</plugin>
 		</plugins>
 	</build>
-
+	
+	<reporting>
+	    <plugins>
+	        <plugin>
+	            <groupId>org.apache.maven.plugins</groupId>
+	            <artifactId>maven-checkstyle-plugin</artifactId>
+	            <version>3.1.2</version>
+	            <configuration>
+	                <configLocation>checkstyle.xml</configLocation>
+	            </configuration>
+	        </plugin>
+	    </plugins>
+	</reporting>
 </project>
