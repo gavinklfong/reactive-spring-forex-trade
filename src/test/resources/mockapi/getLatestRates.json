@@ -1,0 +1,100 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Swagger Forex Rates"
+  },
+  "host": "api.exchangeratesapi.io",
+  "schemes": [
+    "https",
+    "http"
+  ],
+  "paths": {
+    "/latest": {
+      "get": {
+        "summary": "Get the latest forex rates for the base currency",
+        "description": "Returns a list of latest rates",
+        "operationId": "getLatestRates",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "baseCurrency",
+            "in": "query",
+            "description": "Base currency",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "symbols",
+            "in": "query",
+            "description": "List of counter currency",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/RateResponse"
+            }
+          },
+          "400": {
+            "description": "Invalid ID supplied"
+          },
+          "404": {
+            "description": "Base Currency not found"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "RateResponse": {
+      "type": "object",
+      "properties": {
+        "rates": {
+          "$ref": "#/definitions/Rates"
+        },
+        "base": {
+          "type": "string",
+          "example": "GBP"
+        },
+        "date": {
+          "type": "string",
+          "format": "date"
+        }
+      },
+      "example": {
+        "rates": {
+          "CAD": 1.7611110473,
+          "HKD": 10.7991683227,
+          "ISK": 175.6401272788,
+          "PHP": 67.8781891491,
+          "DKK": 8.5420376093,
+          "HUF": 415.1838535145,
+          "CZK": 30.0908641862,
+          "GBP": 1,
+          "RON": 5.6000367592,
+          "SEK": 11.6466979886,
+          "IDR": 19934.419261829,
+          "INR": 102.8989236442,
+          "BRL": 7.6555661494,
+          "RUB": 104.1545954763,
+          "HRK": 8.7107853836,
+          "JPY": 147.9903047569
+        },
+        "base": "GBP",
+        "date": "2020-01-20"
+      }
+    },
+    "Rates": {
+      "type": "string",
+      "additionalProperties": {
+        "type": "number"
+      }
+    }
+  }
+}

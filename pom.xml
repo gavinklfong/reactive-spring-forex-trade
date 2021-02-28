@@ -74,6 +74,12 @@
 		    <artifactId>junit-vintage-engine</artifactId>
 		    <scope>test</scope>
 		</dependency>
+		
+		<dependency>
+		    <groupId>org.mock-server</groupId>
+		    <artifactId>mockserver-spring-test-listener</artifactId>
+		    <version>5.11.2</version>
+		</dependency>
 		    
 	    
 	</dependencies>
