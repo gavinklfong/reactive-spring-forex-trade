@@ -76,7 +76,6 @@ public class TradeDealRepoTest {
 				assertEquals("GBP", record.getBaseCurrency());
 				assertEquals("USD", record.getCounterCurrency());
 				assertEquals(1.3690754045, record.getRate());
-				assertEquals(1, record.getCustomer().getId());
 				assertEquals(1000d, record.getBaseCurrencyAmount().doubleValue());	
 			break;
 			case "DEAL-REF-02":
@@ -84,7 +83,6 @@ public class TradeDealRepoTest {
 				assertEquals("EUR", record.getBaseCurrency());
 				assertEquals("CAD", record.getCounterCurrency());
 				assertEquals(1.5331, record.getRate());
-				assertEquals(1, record.getCustomer().getId());
 				assertEquals(2000d, record.getBaseCurrencyAmount().doubleValue());					
 			break;
 			case "DEAL-REF-03":
@@ -92,7 +90,6 @@ public class TradeDealRepoTest {
 				assertEquals("USD", record.getBaseCurrency());
 				assertEquals("EUR", record.getCounterCurrency());
 				assertEquals(0.8250144378, record.getRate());
-				assertEquals(1, record.getCustomer().getId());
 				assertEquals(3000d, record.getBaseCurrencyAmount().doubleValue());	
 			break;
 			

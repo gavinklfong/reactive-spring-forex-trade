@@ -138,11 +138,7 @@ public class RateServiceTest {
 		LocalDateTime timestamp = rateBooking.getTimestamp();
 		LocalDateTime expiryTime = rateBooking.getExpiryTime();
 		assertTrue(timestamp.isBefore(expiryTime));
-		assertEquals(1.025, rateBooking.getRate());
-		
-		
-		ObjectMapper mapper = new ObjectMapper();
-		logger.info(mapper.writeValueAsString(rateBooking));
+		assertEquals(1 + RateTier.TIER1.rate, rateBooking.getRate());	
 		
 	}
 	
@@ -154,12 +150,7 @@ public class RateServiceTest {
 		LocalDateTime timestamp = rateBooking.getTimestamp();
 		LocalDateTime expiryTime = rateBooking.getExpiryTime();
 		assertTrue(timestamp.isBefore(expiryTime));
-		assertEquals(1.05, rateBooking.getRate());
-		
-		
-		ObjectMapper mapper = new ObjectMapper();
-		logger.info(mapper.writeValueAsString(rateBooking));
-		
+		assertEquals(1 + RateTier.TIER2.rate, rateBooking.getRate());	
 	}
 	
 	@Test
@@ -170,11 +161,7 @@ public class RateServiceTest {
 		LocalDateTime timestamp = rateBooking.getTimestamp();
 		LocalDateTime expiryTime = rateBooking.getExpiryTime();
 		assertTrue(timestamp.isBefore(expiryTime));
-		assertEquals(1.1, rateBooking.getRate());
-		
-		
-		ObjectMapper mapper = new ObjectMapper();
-		logger.info(mapper.writeValueAsString(rateBooking));
+		assertEquals(1 + RateTier.TIER3.rate, rateBooking.getRate());	
 		
 	}
 	
@@ -191,7 +178,7 @@ public class RateServiceTest {
 		LocalDateTime expiryTime = rateBooking.getExpiryTime();
 		assertTrue(timestamp.isBefore(expiryTime));
 		
-		assertEquals(RateTier.TIER4.rate, rateBooking.getRate());	
+		assertEquals(1 + RateTier.TIER4.rate, rateBooking.getRate());	
 	}
 	
 	@Test
