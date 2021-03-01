@@ -9,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockserver.client.MockServerClient;
+import org.mockserver.springtest.MockServerTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,7 +27,9 @@ import space.gavinklfong.forex.exceptions.ErrorBody;
 import space.gavinklfong.forex.models.RateBooking;
 import space.gavinklfong.forex.models.TradeDeal;
 import space.gavinklfong.forex.services.ForexRateApiClient;
+import space.gavinklfong.forex.services.RateService;
 
+@MockServerTest("server.url=http://localhost:${mockServerPort}")
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("integrationtest")
 @Tag("IntegrationTest")
