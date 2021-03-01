@@ -27,8 +27,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -181,7 +179,7 @@ public class RateServiceTest {
 		assertEquals(1 + RateTier.TIER4.rate, rateBooking.getRate());	
 	}
 	
-	@Test
+	
 	private RateBooking obtainBookingTest(Integer tier) throws JsonProcessingException, UnknownCustomerException {
 		
 		// Forex API client returns 1 when fetchLatestRates() is invoked

@@ -1,0 +1,31 @@
+app:
+  rate-booking-duration: 120
+  default-base-currency: GBP
+  forex-rate-api-url: https://api.exchangeratesapi.io
+
+debug: false
+
+logging:
+  level:
+    root: INFO
+    org:
+      springframework: INFO
+    space:
+      gavinklfong: DEBUG
+
+spring:
+  jpa:
+    show-sql: true
+  datasource:
+    url: jdbc:mysql://locahost:3306/testdb
+    username: root
+    password: root
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        trace: true
+        web-allow-others: true
+        
+       

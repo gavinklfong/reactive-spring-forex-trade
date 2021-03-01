@@ -24,6 +24,10 @@ import space.gavinklfong.forex.exceptions.UnknownCustomerException;
 import space.gavinklfong.forex.models.Customer;
 import space.gavinklfong.forex.models.RateBooking;
 
+/**
+ * Unit test for Rate Rest Controller
+ *
+ */
 @WebFluxTest(controllers = {RateRestController.class})
 @Tag("UnitTest")
 public class RateRestControllerTest {
@@ -37,6 +41,7 @@ public class RateRestControllerTest {
 	@Test
 	public void getLatestRates() throws Exception {
 
+		// Mock return data of rate service
 		when(rateService.fetchLatestRates(anyString()))		
 		.thenAnswer(invocation -> {
 			String baseCurrency = (String) invocation.getArgument(0);
@@ -49,8 +54,7 @@ public class RateRestControllerTest {
 					);
 		});
 		
-		
-		
+		// trigger API request to rate controller
 		webTestClient.get()
 		.uri("/rates/latest/GBP")
 		.accept(MediaType.APPLICATION_JSON)

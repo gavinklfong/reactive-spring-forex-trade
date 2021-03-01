@@ -1,12 +1,21 @@
 package space.gavinklfong.forex.controllers;
 
+import static org.mockserver.mock.OpenAPIExpectation.openAPIExpectation;
+
 import java.math.BigDecimal;
+import java.util.Collections;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.mockserver.client.MockServerClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
@@ -16,11 +25,24 @@ import space.gavinklfong.forex.dto.TradeDealReq;
 import space.gavinklfong.forex.exceptions.ErrorBody;
 import space.gavinklfong.forex.models.RateBooking;
 import space.gavinklfong.forex.models.TradeDeal;
+import space.gavinklfong.forex.services.ForexRateApiClient;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("integrationtest")
 @Tag("IntegrationTest")
 public class TradeDealRestControllerIntegrationTest {
+	
+	// Configure forex rate api client to point to mock api server
+    @TestConfiguration
+    static class TestContextConfiguration {
+    	@Bean
+    	@Primary
+    	public ForexRateApiClient initializeForexRateApiClient(@Value("${server.url}") String url) {	
+    		return new ForexRateApiClient(url);
+    	}
+    }
+        
+	private MockServerClient mockServerClient;
 	
 	@Autowired
 	WebTestClient webTestClient;
@@ -28,7 +50,15 @@ public class TradeDealRestControllerIntegrationTest {
 	@DisplayName("submitDeal - Success case")
 	@Test
 	public void submitDeal() throws Exception {
-
+		
+		// Setup request matcher and response using OpenAPI definition
+		mockServerClient
+	    .upsert(
+	        openAPIExpectation("mockapi/getLatestUSDRate.json")
+	        .withOperationsAndResponses(Collections.singletonMap("getLatestRates", "200"))  
+	    );
+		
+		// Fire request to obtain rate booking
 		EntityExchangeResult<RateBooking> result = webTestClient.get()
 		.uri(uriBuilder -> uriBuilder
 				.path("/rates/book")
@@ -45,6 +75,7 @@ public class TradeDealRestControllerIntegrationTest {
 		
 		RateBooking rateBooking = result.getResponseBody();
 		
+		// construct and trigger trade deal request
 		TradeDealReq req = new TradeDealReq("GBP", "USD", rateBooking.getRate(), BigDecimal.valueOf(1000),
 				 1l,  rateBooking.getBookingRef());
 		
@@ -62,7 +93,7 @@ public class TradeDealRestControllerIntegrationTest {
 	@Test
 	public void submitDeal_invalidReq() throws Exception {
 
-			
+		// send an empty request
 		TradeDealReq req = new TradeDealReq();
 		
 		webTestClient.post()
