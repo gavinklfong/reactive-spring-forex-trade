@@ -113,5 +113,21 @@ public class TradeDeal {
 	public void setBaseCurrencyAmount(BigDecimal sourceCurrencyAmount) {
 		this.baseCurrencyAmount = sourceCurrencyAmount;
 	}
+
+	public String getDealRef() {
+		return dealRef;
+	}
+
+	public void setDealRef(String dealRef) {
+		this.dealRef = dealRef;
+	}
+
+	public Customer getCustomer() {
+		return customer;
+	}
+
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
+	}
 	
 }

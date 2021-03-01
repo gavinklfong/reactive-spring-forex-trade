@@ -1,10 +1,13 @@
 package space.gavinklfong.forex.repos;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
+import java.util.List;
 import java.util.UUID;
 
 import org.junit.jupiter.api.DisplayName;
@@ -14,12 +17,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 
 import space.gavinklfong.forex.models.Customer;
 import space.gavinklfong.forex.models.RateBooking;
 
 
 @DataJpaTest
+@Sql({"/data-unittest.sql"})
 @Tag("UnitTest")
 public class RateBookingRepoTest {
 
@@ -28,7 +34,7 @@ public class RateBookingRepoTest {
 	@Autowired
 	private RateBookingRepo rateBookingRepo;
 	
-	@DisplayName("Save rate booking")
+	@DisplayName("save rate booking")
 	@Test
 	void testSave() {
 		
@@ -86,35 +92,32 @@ public class RateBookingRepoTest {
 		assertTrue(count > 0);
 	}	
 	
-//	@DisplayName("find by customer id")
-//	@Test
-//	void testFindByCustomerId() {
-//
-//		UUID uuid = UUID.randomUUID();		
-//		
-//		RateBooking rate = new RateBooking();
-//		rate.setBaseCurrency("GBP");
-//		rate.setCounterCurrency("USD");
-//		rate.setTimestamp(LocalDateTime.now());
-//		rate.setRate(Double.valueOf(2.25));
-//		rate.setExpiryTime(LocalDateTime.now().plusMinutes(10));
-//		rate.setBookingRef(uuid.toString());
-//		
-//		Customer cust = new Customer();
-//		cust.setId(2l);
-//		cust.setName("tester 2");
-//		cust.setTier(1);
-//		
-//		rate.setCustomer(cust);
-//		
-//		rateBookingRepo.save(rate);
-//		
-//		List<RateBooking> bookings = rateBookingRepo.fin(1l);
-//		
-//		bookings.forEach(booking -> {
-//			System.out.println(booking.getId() + ", name = " + booking.getCustomer().getName());
-//			System.out.println(booking.getBookingRef());
-//		});
-//	}
+	@DisplayName("find by booking ref")
+	@Test
+	void findByBookingRef_withRecord() {
+
+		List<RateBooking> bookings = rateBookingRepo.findByBookingRef("BOOKING-REF-01");
+		
+		assertNotNull(bookings);
+		assertEquals(1, bookings.size());
+		
+		RateBooking booking = bookings.get(0);
+		assertEquals("2021-02-01T11:50:00", booking.getTimestamp().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+		assertEquals("2021-02-01T12:10:00", booking.getExpiryTime().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+		assertEquals("GBP", booking.getBaseCurrency());
+		assertEquals("USD", booking.getCounterCurrency());
+		assertEquals(1000d, booking.getBaseCurrencyAmount().doubleValue());	
+	}
+	
+	@DisplayName("find by booking ref - no record")
+	@Test
+	void findByBookingRef_noRecord() {
+
+		List<RateBooking> bookings = rateBookingRepo.findByBookingRef("BOOKING-REF-02");
+		
+		assertNotNull(bookings);
+		assertEquals(0, bookings.size());
+
+	}
 	
 }

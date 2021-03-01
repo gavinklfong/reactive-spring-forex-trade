@@ -34,6 +34,11 @@
 	      <artifactId>spring-boot-starter-validation</artifactId>
 	    </dependency>
 
+		<dependency>
+		    <groupId>org.json</groupId>
+		    <artifactId>json</artifactId>
+		    <version>20201115</version>
+		</dependency>
 
 	    <dependency>
 	      <groupId>com.h2database</groupId>
@@ -74,11 +79,18 @@
 		    <artifactId>junit-vintage-engine</artifactId>
 		    <scope>test</scope>
 		</dependency>
+		<dependency>
+	        <groupId>io.cucumber</groupId>
+	        <artifactId>cucumber-spring</artifactId>
+	        <version>6.10.0</version>
+	        <scope>test</scope>
+	    </dependency>
 		
 		<dependency>
 		    <groupId>org.mock-server</groupId>
 		    <artifactId>mockserver-spring-test-listener</artifactId>
 		    <version>5.11.2</version>
+		    <scope>test</scope>
 		</dependency>
 		    
 	    
@@ -87,12 +99,67 @@
 	<build>
 		<plugins>
 			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>reserve-tomcat-port</id>
+						<goals>
+							<goal>reserve-network-port</goal>
+						</goals>
+						<phase>process-resources</phase>
+						<configuration>
+							<portNames>
+								<portName>spring-boot.http.port</portName>
+							</portNames>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>pre-integration-test</id>
+						<goals>
+							<goal>start</goal>
+						</goals>
+						<configuration>
+							<arguments>
+								<argument>--server.port=${spring-boot.http.port}</argument>
+							</arguments>
+						</configuration>
+					</execution>
+					<execution>
+						<id>post-integration-test</id>
+						<goals>
+							<goal>stop</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 			    <artifactId>maven-surefire-plugin</artifactId>
+			    <configuration>
+			    	<groups>${test.groups}</groups>
+			    	<skip>${maven.surefire.skip}</skip>
+			    </configuration>
 			</plugin>
+            <plugin>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <configuration>
+                    <skipITs>${maven.failsafe.skip}</skipITs>
+                    <!-- Maven FailSafe does not recognize JUnit 5 tag -->
+<!--                     <groups>${test.groups}</groups> -->
+					<includes>
+						<include>**/bdd/*.java</include>
+					</includes>
+					<systemPropertyVariables>
+						<test.server.port>${spring-boot.http.port}</test.server.port>
+					</systemPropertyVariables>
+                </configuration>
+            </plugin>
 			<plugin>
 			    <groupId>org.jacoco</groupId>
 			    <artifactId>jacoco-maven-plugin</artifactId>
@@ -124,7 +191,7 @@
 		                                <limit>
 		                                    <counter>LINE</counter>
 		                                    <value>COVEREDRATIO</value>
-		                                    <minimum>0.6</minimum>
+		                                    <minimum>0.3</minimum>
 		                                </limit>
 		                            </limits>
 		                        </rule>
@@ -148,4 +215,36 @@
 	        </plugin>
 	    </plugins>
 	</reporting>
+	<profiles>
+		<profile>
+			<id>compile</id>
+			<properties>
+				<maven.surefire.skip>true</maven.surefire.skip>
+				<maven.failsafe.skip>true</maven.failsafe.skip>
+			</properties>
+		</profile>
+		<profile>
+			<id>unit-test</id>
+			<properties>
+				<maven.surefire.skip>false</maven.surefire.skip>
+				<maven.failsafe.skip>true</maven.failsafe.skip>
+				<test.groups>UnitTest</test.groups>				
+			</properties>
+		</profile>
+		<profile>
+			<id>integration-test</id>
+			<properties>
+				<maven.surefire.skip>false</maven.surefire.skip>
+				<maven.failsafe.skip>true</maven.failsafe.skip>
+				<test.groups>IntegrationTest</test.groups>				
+			</properties>
+		</profile>
+		<profile>
+			<id>e2e-test</id>
+			<properties>
+				<maven.surefire.skip>true</maven.surefire.skip>
+				<maven.failsafe.skip>false</maven.failsafe.skip>
+			</properties>
+		</profile>		
+	</profiles>
 </project>

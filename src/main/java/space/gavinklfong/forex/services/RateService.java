@@ -91,16 +91,16 @@ public class RateService {
 		// determine rate
 		switch (customer.getTier()) {
 		case 1:
-			rate += 0.025;
+			rate += RateTier.TIER1.rate;
 			break;
 		case 2:
-			rate += 0.05;
+			rate += RateTier.TIER2.rate;
 			break;
 		case 3:
-			rate += 0.1;
+			rate += RateTier.TIER3.rate;
 			break;
 		default:
-			rate += 0.5;
+			rate += RateTier.TIER4.rate;
 		}
 		
 		

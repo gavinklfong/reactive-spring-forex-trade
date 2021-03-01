@@ -181,33 +181,35 @@ public class RateServiceTest {
 	@Test
 	public void obtainBookingTest_CustomerTier4() throws JsonProcessingException, UnknownCustomerException {
 		
+		// Test rate booking for customer with tier 4 account
 		RateBooking rateBooking = obtainBookingTest(4);
+		
+		// Assert result
 		assertNotNull(rateBooking);
+		
 		LocalDateTime timestamp = rateBooking.getTimestamp();
 		LocalDateTime expiryTime = rateBooking.getExpiryTime();
 		assertTrue(timestamp.isBefore(expiryTime));
-		assertEquals(1.5, rateBooking.getRate());
 		
-		
-		ObjectMapper mapper = new ObjectMapper();
-		logger.info(mapper.writeValueAsString(rateBooking));
-		
+		assertEquals(RateTier.TIER4.rate, rateBooking.getRate());	
 	}
 	
+	@Test
 	private RateBooking obtainBookingTest(Integer tier) throws JsonProcessingException, UnknownCustomerException {
 		
-		
+		// Forex API client returns 1 when fetchLatestRates() is invoked
 		when(forexRateApiClient.fetchLatestRates(anyString(), anyString()))
 		.thenAnswer(invocation -> {
 			Map<String, Double> rates = new HashMap<>();
 			rates.put((String)invocation.getArgument(1), 1d);
 			return Mono.just(new ForexRateApiResp((String)invocation.getArgument(0), LocalDate.now(), rates));
-			
 		});
 		
+		// Customer Repo return a mock customer record when findById() is invoked
 		when(customerRepo.findById(anyLong()))
 		.thenReturn(Optional.of(new Customer(1l, "Tester 1", tier)));
 		
+		// Rate Booking Repo return a mock return when save() is invoked
 		when(rateBookingRepo.save(any(RateBooking.class)))
 		.thenAnswer(invocation -> {
 			RateBooking record = (RateBooking)invocation.getArgument(0);
@@ -215,11 +217,10 @@ public class RateServiceTest {
 			return record;
 		});
 
-				
+		// Create a request to test obtainBooking()
 		RateBookingReq request = new RateBookingReq("GBP", "USD", BigDecimal.valueOf(1000), 1l);
 		Mono<RateBooking> rateBookingMono = rateService.obtainBooking(request);
-		return rateBookingMono.block();
 
-		
+		return rateBookingMono.block();
 	}
 }
