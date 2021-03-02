@@ -1,6 +1,7 @@
 package space.gavinklfong.forex.bdd;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
@@ -155,5 +156,33 @@ public class StepDef  {
 		assertTrue(json.getString("dealRef").trim().length() > 0);
 		assertTrue(json.getLong("id") > 0);		
 	}
+	
+	@When("I request for forex trade deal by {long}")
+	public void i_request_for_forex_trade_deal_by(Long customerId) throws URISyntaxException, IOException, InterruptedException {
+		// Send request to get the latest rates
+		HttpClient client = HttpClient.newHttpClient();
+		HttpRequest request = HttpRequest
+				.newBuilder(new URI(apiServiceUrl + "/deals?customerId=" + customerId))
+				.header("accept", "application/json").build();	
+		this.response = client.send(request, HttpResponse.BodyHandlers.ofString());			
+	}
+	
+	@Then("I should get a list of forex trade deal for {long}")
+	public void i_should_get_a_list_of_forex_trade_deal_for(Long customer) {
+		
+		JSONArray jsonArray = new JSONArray(response.body());
+		
+		assertTrue(jsonArray.length() > 0);
+		jsonArray.forEach(item -> {
+			JSONObject json = (JSONObject) item;
+			assertNotNull(json.getLong("id"));
+			assertTrue(json.getString("dealRef").trim().length() > 0);
+			assertNotNull(json.getString("baseCurrency"));
+			assertNotNull(json.getString("counterCurrency"));
+			assertNotNull(json.getDouble("rate"));
+		});
+		
+	}
+
 	
 }

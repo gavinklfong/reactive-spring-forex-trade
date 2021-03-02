@@ -6,7 +6,10 @@ import io.cucumber.junit.Cucumber;
 import io.cucumber.junit.CucumberOptions;
 
 @RunWith(Cucumber.class)
-@CucumberOptions(plugin = {"pretty"}, features = {"classpath:bdd/trade-api.feature"}, glue = {"space.gavinklfong.forex.bdd"})
+@CucumberOptions(
+		plugin = {"pretty", "json:target/cucumber-reports/cucumber.json"}, 
+		features = {"classpath:bdd"}, 
+		glue = {"space.gavinklfong.forex.bdd"})
 @Tag("E2ETest")
 public class RunCucumberTest {
 
