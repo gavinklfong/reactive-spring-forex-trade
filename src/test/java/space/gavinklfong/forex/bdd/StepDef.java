@@ -175,11 +175,9 @@ public class StepDef  {
 		assertTrue(jsonArray.length() > 0);
 		jsonArray.forEach(item -> {
 			JSONObject json = (JSONObject) item;
-			assertNotNull(json.getLong("id"));
 			assertTrue(json.getString("dealRef").trim().length() > 0);
 			assertNotNull(json.getString("baseCurrency"));
 			assertNotNull(json.getString("counterCurrency"));
-			assertNotNull(json.getDouble("rate"));
 		});
 		
 	}
