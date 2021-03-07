@@ -12,18 +12,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.jdbc.Sql;
 
-import space.gavinklfong.forex.models.TradeDeal;
+import space.gavinklfong.forex.models.ForexTradeDeal;
 
 
 @DataJpaTest
 @Sql({"/data-unittest.sql"})
 @Tag("UnitTest")
-public class TradeDealRepoTest {
+public class ForexTradeDealRepoTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(TradeDealRepoTest.class);	
+    private static final Logger logger = LoggerFactory.getLogger(ForexTradeDealRepoTest.class);	
 	
 	@Autowired
-	private TradeDealRepo tradeDealRepo;
+	private ForexTradeDealRepo tradeDealRepo;
 	
 	/**
 	 * Verify the behaviour for customer without trade deal record
@@ -32,7 +32,7 @@ public class TradeDealRepoTest {
 	@Test
 	void findByCustomerId_withNoRecords() {
 
-		List<TradeDeal> results = tradeDealRepo.findByCustomerId(2l);
+		List<ForexTradeDeal> results = tradeDealRepo.findByCustomerId(2l);
 		
 		assertNotNull(results);
 		assertEquals(0, results.size());		
@@ -46,7 +46,7 @@ public class TradeDealRepoTest {
 	@Test
 	void findByCustomerId_withRecords() {
 
-		List<TradeDeal> results = tradeDealRepo.findByCustomerId(1l);
+		List<ForexTradeDeal> results = tradeDealRepo.findByCustomerId(1l);
 		
 		assertNotNull(results);
 		assertEquals(3, results.size());
@@ -57,7 +57,7 @@ public class TradeDealRepoTest {
 		
 	}
 	
-	void assertTradeDeal(TradeDeal record) {
+	void assertTradeDeal(ForexTradeDeal record) {
 		
 		switch (record.getDealRef()) {
 			case "DEAL-REF-01":

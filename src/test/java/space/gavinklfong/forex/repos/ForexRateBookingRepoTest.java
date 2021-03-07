@@ -20,18 +20,18 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.jdbc.Sql;
 
 import space.gavinklfong.forex.models.Customer;
-import space.gavinklfong.forex.models.RateBooking;
+import space.gavinklfong.forex.models.ForexRateBooking;
 
 
 @DataJpaTest
 @Sql({"/data-unittest.sql"})
 @Tag("UnitTest")
-public class RateBookingRepoTest {
+public class ForexRateBookingRepoTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(RateBookingRepoTest.class);	
+    private static final Logger logger = LoggerFactory.getLogger(ForexRateBookingRepoTest.class);	
 	
 	@Autowired
-	private RateBookingRepo rateBookingRepo;
+	private ForexRateBookingRepo rateBookingRepo;
 	
 	@DisplayName("save rate booking")
 	@Test
@@ -39,7 +39,7 @@ public class RateBookingRepoTest {
 		
 		UUID uuid = UUID.randomUUID();
 		
-		RateBooking rate = new RateBooking();
+		ForexRateBooking rate = new ForexRateBooking();
 		rate.setBaseCurrency("GBP");
 		rate.setCounterCurrency("USD");
 		rate.setTimestamp(LocalDateTime.now());
@@ -68,7 +68,7 @@ public class RateBookingRepoTest {
 		UUID uuid = UUID.randomUUID();
 		
 		
-		RateBooking bookingOriginal = new RateBooking();
+		ForexRateBooking bookingOriginal = new ForexRateBooking();
 		bookingOriginal.setBaseCurrency("GBP");
 		bookingOriginal.setCounterCurrency("USD");
 		bookingOriginal.setTimestamp(LocalDateTime.now());
@@ -78,11 +78,11 @@ public class RateBookingRepoTest {
 		
 		bookingOriginal = rateBookingRepo.save(bookingOriginal);
 		
-		Iterable<RateBooking> bookings = rateBookingRepo.findAll();
+		Iterable<ForexRateBooking> bookings = rateBookingRepo.findAll();
 		
 		int count = 0;
 
-		Iterator<RateBooking> it = bookings.iterator();
+		Iterator<ForexRateBooking> it = bookings.iterator();
 		while (it.hasNext()) {
 			count++;
 			it.next();
@@ -95,12 +95,12 @@ public class RateBookingRepoTest {
 	@Test
 	void findByBookingRef_withRecord() {
 
-		List<RateBooking> bookings = rateBookingRepo.findByBookingRef("BOOKING-REF-01");
+		List<ForexRateBooking> bookings = rateBookingRepo.findByBookingRef("BOOKING-REF-01");
 		
 		assertNotNull(bookings);
 		assertEquals(1, bookings.size());
 		
-		RateBooking booking = bookings.get(0);
+		ForexRateBooking booking = bookings.get(0);
 		assertEquals("2021-02-01T11:50:00", booking.getTimestamp().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
 		assertEquals("2021-02-01T12:10:00", booking.getExpiryTime().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
 		assertEquals("GBP", booking.getBaseCurrency());
@@ -112,7 +112,7 @@ public class RateBookingRepoTest {
 	@Test
 	void findByBookingRef_noRecord() {
 
-		List<RateBooking> bookings = rateBookingRepo.findByBookingRef("BOOKING-REF-02");
+		List<ForexRateBooking> bookings = rateBookingRepo.findByBookingRef("BOOKING-REF-02");
 		
 		assertNotNull(bookings);
 		assertEquals(0, bookings.size());

@@ -22,12 +22,11 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
-import space.gavinklfong.forex.dto.TradeDealReq;
+import space.gavinklfong.forex.dto.ForexTradeDealReq;
 import space.gavinklfong.forex.exceptions.ErrorBody;
-import space.gavinklfong.forex.models.RateBooking;
-import space.gavinklfong.forex.models.TradeDeal;
+import space.gavinklfong.forex.models.ForexRateBooking;
+import space.gavinklfong.forex.models.ForexTradeDeal;
 import space.gavinklfong.forex.services.ForexRateApiClient;
-import space.gavinklfong.forex.services.RateService;
 
 @MockServerTest("server.url=http://localhost:${mockServerPort}")
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -62,7 +61,7 @@ public class TradeDealRestControllerIntegrationTest {
 	    );
 		
 		// Fire request to obtain rate booking
-		EntityExchangeResult<RateBooking> result = webTestClient.get()
+		EntityExchangeResult<ForexRateBooking> result = webTestClient.get()
 		.uri(uriBuilder -> uriBuilder
 				.path("/rates/book")
 				.queryParam("baseCurrency", "GBP")
@@ -73,23 +72,23 @@ public class TradeDealRestControllerIntegrationTest {
 				)
 		.exchange()
 		.expectStatus().isOk()
-		.expectBody(RateBooking.class)
+		.expectBody(ForexRateBooking.class)
 		.returnResult();
 		
-		RateBooking rateBooking = result.getResponseBody();
+		ForexRateBooking rateBooking = result.getResponseBody();
 		
 		// construct and trigger trade deal request
-		TradeDealReq req = new TradeDealReq("GBP", "USD", rateBooking.getRate(), BigDecimal.valueOf(1000),
+		ForexTradeDealReq req = new ForexTradeDealReq("GBP", "USD", rateBooking.getRate(), BigDecimal.valueOf(1000),
 				 1l,  rateBooking.getBookingRef());
 		
 		webTestClient.post()
 		.uri("/deals")
 		.contentType(MediaType.APPLICATION_JSON)
-		.body(Mono.just(req), TradeDealReq.class)
+		.body(Mono.just(req), ForexTradeDealReq.class)
 		.accept(MediaType.APPLICATION_JSON)
 		.exchange()
 		.expectStatus().isOk()
-		.expectBody(TradeDeal.class);
+		.expectBody(ForexTradeDeal.class);
 	}
 	
 	@DisplayName("submitDeal - Invalid Req")
@@ -97,12 +96,12 @@ public class TradeDealRestControllerIntegrationTest {
 	public void submitDeal_invalidReq() throws Exception {
 
 		// send an empty request
-		TradeDealReq req = new TradeDealReq();
+		ForexTradeDealReq req = new ForexTradeDealReq();
 		
 		webTestClient.post()
 		.uri("/deals")
 		.contentType(MediaType.APPLICATION_JSON)
-		.body(Mono.just(req), TradeDealReq.class)
+		.body(Mono.just(req), ForexTradeDealReq.class)
 		.accept(MediaType.APPLICATION_JSON)
 		.exchange()
 		.expectStatus().is4xxClientError()

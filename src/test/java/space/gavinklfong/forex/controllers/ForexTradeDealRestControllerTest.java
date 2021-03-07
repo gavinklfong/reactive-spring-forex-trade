@@ -18,18 +18,18 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import space.gavinklfong.forex.dto.TradeDealReq;
-import space.gavinklfong.forex.services.TradeService;
+import space.gavinklfong.forex.dto.ForexTradeDealReq;
+import space.gavinklfong.forex.services.ForexTradeService;
 import space.gavinklfong.forex.exceptions.ErrorBody;
 import space.gavinklfong.forex.models.Customer;
-import space.gavinklfong.forex.models.TradeDeal;
+import space.gavinklfong.forex.models.ForexTradeDeal;
 
-@WebFluxTest(controllers = {TradeDealRestController.class})
+@WebFluxTest(controllers = {ForexTradeDealRestController.class})
 @Tag("UnitTest")
-public class TradeDealRestControllerTest {
+public class ForexTradeDealRestControllerTest {
 
 	@MockBean
-	private TradeService tradeService;
+	private ForexTradeService tradeService;
 	
 	@Autowired
 	WebTestClient webTestClient;
@@ -38,45 +38,45 @@ public class TradeDealRestControllerTest {
 	@Test
 	public void submitDeal() throws Exception {
 
-		when(tradeService.postTradeDeal(any(TradeDealReq.class)))
+		when(tradeService.postTradeDeal(any(ForexTradeDealReq.class)))
 		.thenAnswer(invocation -> {
-			TradeDealReq req = (TradeDealReq)invocation.getArgument(0);
+			ForexTradeDealReq req = (ForexTradeDealReq)invocation.getArgument(0);
 			LocalDateTime timestamp = LocalDateTime.now();
-			return Mono.just(new TradeDeal(1l, UUID.randomUUID().toString(),  timestamp, req.getBaseCurrency(), req.getCounterCurrency(),
+			return Mono.just(new ForexTradeDeal(1l, UUID.randomUUID().toString(),  timestamp, req.getBaseCurrency(), req.getCounterCurrency(),
 					 req.getRate(), req.getBaseCurrencyAmount(), new Customer(1l, "Tester 1", 1)));
 		});
 			
-		TradeDealReq req = new TradeDealReq("GBP", "USD", 0.25, BigDecimal.valueOf(10000),
+		ForexTradeDealReq req = new ForexTradeDealReq("GBP", "USD", 0.25, BigDecimal.valueOf(10000),
 				 1l,  "ABC");
 		
 		webTestClient.post()
 		.uri("/deals")
 		.contentType(MediaType.APPLICATION_JSON)
-		.body(Mono.just(req), TradeDealReq.class)
+		.body(Mono.just(req), ForexTradeDealReq.class)
 		.accept(MediaType.APPLICATION_JSON)
 		.exchange()
 		.expectStatus().isOk()
-		.expectBody(TradeDeal.class);
+		.expectBody(ForexTradeDeal.class);
 	}
 	
 	@DisplayName("submitDeal - Invalid Req")
 	@Test
 	public void submitDeal_invalidReq() throws Exception {
 
-		when(tradeService.postTradeDeal(any(TradeDealReq.class)))
+		when(tradeService.postTradeDeal(any(ForexTradeDealReq.class)))
 		.thenAnswer(invocation -> {
-			TradeDealReq req = (TradeDealReq)invocation.getArgument(0);
+			ForexTradeDealReq req = (ForexTradeDealReq)invocation.getArgument(0);
 			LocalDateTime timestamp = LocalDateTime.now();
-			return Mono.just(new TradeDeal(1l, UUID.randomUUID().toString(),  timestamp, req.getBaseCurrency(), req.getCounterCurrency(),
+			return Mono.just(new ForexTradeDeal(1l, UUID.randomUUID().toString(),  timestamp, req.getBaseCurrency(), req.getCounterCurrency(),
 					 req.getRate(), req.getBaseCurrencyAmount(), new Customer(1l, "Tester 1", 1)));
 		});
 			
-		TradeDealReq req = new TradeDealReq();
+		ForexTradeDealReq req = new ForexTradeDealReq();
 		
 		webTestClient.post()
 		.uri("/deals")
 		.contentType(MediaType.APPLICATION_JSON)
-		.body(Mono.just(req), TradeDealReq.class)
+		.body(Mono.just(req), ForexTradeDealReq.class)
 		.accept(MediaType.APPLICATION_JSON)
 		.exchange()
 		.expectStatus().is4xxClientError()
@@ -87,11 +87,11 @@ public class TradeDealRestControllerTest {
 	@Test
 	public void getDeals() throws Exception {
 
-		TradeDeal deal1 = new TradeDeal(UUID.randomUUID().toString(), LocalDateTime.now(), "GBP", "USD",  Math.random(),
+		ForexTradeDeal deal1 = new ForexTradeDeal(UUID.randomUUID().toString(), LocalDateTime.now(), "GBP", "USD",  Math.random(),
 				BigDecimal.valueOf(1000), new Customer(1l, "Tester 1", 1));
-		TradeDeal deal2 = new TradeDeal(UUID.randomUUID().toString(), LocalDateTime.now(), "GBP", "USD",  Math.random(),
+		ForexTradeDeal deal2 = new ForexTradeDeal(UUID.randomUUID().toString(), LocalDateTime.now(), "GBP", "USD",  Math.random(),
 				BigDecimal.valueOf(1000), new Customer(1l, "Tester 1", 1));
-		TradeDeal deal3 = new TradeDeal(UUID.randomUUID().toString(), LocalDateTime.now(), "GBP", "USD",  Math.random(),
+		ForexTradeDeal deal3 = new ForexTradeDeal(UUID.randomUUID().toString(), LocalDateTime.now(), "GBP", "USD",  Math.random(),
 				BigDecimal.valueOf(1000), new Customer(1l, "Tester 1", 1));
 				
 		when(tradeService.retrieveTradeDealByCustomer((anyLong())))

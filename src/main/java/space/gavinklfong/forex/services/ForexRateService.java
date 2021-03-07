@@ -13,18 +13,18 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import space.gavinklfong.forex.dto.Rate;
-import space.gavinklfong.forex.dto.RateBookingReq;
+import space.gavinklfong.forex.dto.ForexRate;
+import space.gavinklfong.forex.dto.ForexRateBookingReq;
 import space.gavinklfong.forex.exceptions.UnknownCustomerException;
 import space.gavinklfong.forex.models.Customer;
-import space.gavinklfong.forex.models.RateBooking;
+import space.gavinklfong.forex.models.ForexRateBooking;
 import space.gavinklfong.forex.repos.CustomerRepo;
-import space.gavinklfong.forex.repos.RateBookingRepo;
+import space.gavinklfong.forex.repos.ForexRateBookingRepo;
 
 @Component
-public class RateService {
+public class ForexRateService {
 
-	private static Logger logger = LoggerFactory.getLogger(RateService.class);
+	private static Logger logger = LoggerFactory.getLogger(ForexRateService.class);
 	
 	@Value("${app.rate-booking-duration}")
 	private long bookingDuration = 120l;
@@ -33,10 +33,13 @@ public class RateService {
 	private ForexRateApiClient forexRateApiClient;
 	
 	@Autowired
-	private RateBookingRepo rateBookingRepo;
+	private ForexRateBookingRepo rateBookingRepo;
 	
 	@Autowired
 	private CustomerRepo customerRepo;
+	
+	@Autowired
+	private ForexPriceService forexPriceService;
 	
 	/**
 	 * Retrieve the latest rates for list of counter currencies
@@ -44,17 +47,18 @@ public class RateService {
 	 * @param baseCurrency
 	 * @return Flux - Rate
 	 */
-	public Flux<Rate> fetchLatestRates(String baseCurrency) {
+	public Flux<ForexRate> fetchLatestRates(String baseCurrency) {
 		
 		LocalDateTime timestamp = LocalDateTime.now();
 		
 		return forexRateApiClient.fetchLatestRates(baseCurrency)
 		.flatMapMany(resp -> { 
 			
-			List<Rate> rates = new ArrayList<>();
+			List<ForexRate> rates = new ArrayList<>();
 			
 			resp.getRates().forEach((counterCurrency, rate) -> {
-				rates.add(new Rate(timestamp, baseCurrency, counterCurrency, rate));
+				rates.add(new ForexRate(timestamp, baseCurrency, counterCurrency, 
+						forexPriceService.obtainForexPrice(baseCurrency, counterCurrency, rate)));
 			});
 			
 			return Flux.fromStream(rates.stream());
@@ -68,7 +72,7 @@ public class RateService {
 	 * @param request
 	 * @return Mono - RateBooking
 	 */
-	public Mono<RateBooking> obtainBooking(RateBookingReq request) throws UnknownCustomerException {
+	public Mono<ForexRateBooking> obtainBooking(ForexRateBookingReq request) throws UnknownCustomerException {
 
 		// retrieve customer tier
 		logger.debug("Retrieve customer record - id = " + request.getCustomerId());
@@ -78,35 +82,36 @@ public class RateService {
 		// fetch rate from external API
 		logger.debug("fetch rate from external API");
 		return forexRateApiClient.fetchLatestRates(request.getBaseCurrency(), request.getCounterCurrency())
-				.map(record -> 
-						 generateRateBooking(request, customer.get(), record.getRates().get(request.getCounterCurrency()))
-				);
+				.map(record -> {
+					double rate = forexPriceService.obtainForexPrice(request.getBaseCurrency(), request.getCounterCurrency(), record.getRates().get(request.getCounterCurrency()));
+					return constructRateBooking(request, customer.get(), rate);
+				});
 				
 	}
 	
-	private RateBooking generateRateBooking(RateBookingReq request, Customer customer, Double rate) {
+	private ForexRateBooking constructRateBooking(ForexRateBookingReq request, Customer customer, Double rate) {
 		
 		logger.debug("customer: " + customer.getId() + ", " + customer.getName() + ", " + customer.getTier());
 		
 		// determine rate
 		switch (customer.getTier()) {
 		case 1:
-			rate += RateTier.TIER1.rate;
+			rate += CustomerRateTier.TIER1.rate;
 			break;
 		case 2:
-			rate += RateTier.TIER2.rate;
+			rate += CustomerRateTier.TIER2.rate;
 			break;
 		case 3:
-			rate += RateTier.TIER3.rate;
+			rate += CustomerRateTier.TIER3.rate;
 			break;
 		default:
-			rate += RateTier.TIER4.rate;
+			rate += CustomerRateTier.TIER4.rate;
 		}
 		
 		
 		// build rate booking record
 		logger.debug("build rate booking record - rate = " + rate);
-		RateBooking bookingRecord = new RateBooking(request.getBaseCurrency(), request.getCounterCurrency(), request.getBaseCurrencyAmount(), request.getCustomerId());
+		ForexRateBooking bookingRecord = new ForexRateBooking(request.getBaseCurrency(), request.getCounterCurrency(), request.getBaseCurrencyAmount(), request.getCustomerId());
 
 		UUID bookingRef = UUID.randomUUID();
 		bookingRecord.setBookingRef(bookingRef.toString());
@@ -133,17 +138,17 @@ public class RateService {
 	 * @param rateBooking
 	 * @return
 	 */
-	public Mono<Boolean> validateRateBooking(RateBooking rateBooking) {
+	public Mono<Boolean> validateRateBooking(ForexRateBooking rateBooking) {
 		
 		// Check existence of booking reference
-		List<RateBooking> repoRecords = rateBookingRepo.findByBookingRef(rateBooking.getBookingRef());
+		List<ForexRateBooking> repoRecords = rateBookingRepo.findByBookingRef(rateBooking.getBookingRef());
 		
 		if (repoRecords == null || repoRecords.size() <= 0) {
 			return Mono.just(false);
 		}
 		
 		// Check if booking reference is expired
-		RateBooking record = repoRecords.get(0);
+		ForexRateBooking record = repoRecords.get(0);
 		if (record.getExpiryTime().isBefore(LocalDateTime.now())) {
 			return Mono.just(false);
 		}

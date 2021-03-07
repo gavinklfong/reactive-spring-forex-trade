@@ -1,6 +1,6 @@
 package space.gavinklfong.forex.services;
 
-public enum RateTier {
+public enum CustomerRateTier {
 
 	TIER1(0.025),
 	TIER2(0.05),
@@ -10,7 +10,7 @@ public enum RateTier {
 	
 	public final double rate;
 	
-	private RateTier(double rate) {
+	private CustomerRateTier(double rate) {
 		this.rate = rate;
 	}
 	
