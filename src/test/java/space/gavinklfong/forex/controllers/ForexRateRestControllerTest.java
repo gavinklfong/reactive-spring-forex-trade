@@ -16,30 +16,30 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import space.gavinklfong.forex.dto.Rate;
-import space.gavinklfong.forex.services.RateService;
-import space.gavinklfong.forex.dto.RateBookingReq;
+import space.gavinklfong.forex.dto.ForexRate;
+import space.gavinklfong.forex.services.ForexRateService;
+import space.gavinklfong.forex.dto.ForexRateBookingReq;
 import space.gavinklfong.forex.exceptions.ErrorBody;
 import space.gavinklfong.forex.exceptions.UnknownCustomerException;
 import space.gavinklfong.forex.models.Customer;
-import space.gavinklfong.forex.models.RateBooking;
+import space.gavinklfong.forex.models.ForexRateBooking;
 
 /**
  * Unit test for Rate Rest Controller
  *
  */
-@WebFluxTest(controllers = {RateRestController.class})
+@WebFluxTest(controllers = {ForexRateRestController.class})
 @Tag("UnitTest")
-public class RateRestControllerTest {
+class ForexRateRestControllerTest {
 
 	@MockBean
-	private RateService rateService;
+	private ForexRateService rateService;
 	
 	@Autowired
 	WebTestClient webTestClient;
 	
 	@Test
-	public void getLatestRates() throws Exception {
+	void getLatestRates() throws Exception {
 
 		// Mock return data of rate service
 		when(rateService.fetchLatestRates(anyString()))		
@@ -47,10 +47,10 @@ public class RateRestControllerTest {
 			String baseCurrency = (String) invocation.getArgument(0);
 			LocalDateTime timestamp = LocalDateTime.now();
 			return Flux.just(
-					new Rate(timestamp, baseCurrency, "USD", Math.random()),
-					new Rate(timestamp, baseCurrency, "EUR", Math.random()),
-					new Rate(timestamp, baseCurrency, "CAD", Math.random()),
-					new Rate(timestamp, baseCurrency, "JPY", Math.random())
+					new ForexRate(timestamp, baseCurrency, "USD", Math.random()),
+					new ForexRate(timestamp, baseCurrency, "EUR", Math.random()),
+					new ForexRate(timestamp, baseCurrency, "CAD", Math.random()),
+					new ForexRate(timestamp, baseCurrency, "JPY", Math.random())
 					);
 		});
 		
@@ -78,16 +78,16 @@ public class RateRestControllerTest {
 	
 	
 	@Test
-	public void bookRate() throws UnknownCustomerException {
+	void bookRate() throws UnknownCustomerException {
 		
-		when(rateService.obtainBooking((any(RateBookingReq.class))))
+		when(rateService.obtainBooking((any(ForexRateBookingReq.class))))
 		.thenAnswer(invocation -> {
-			RateBookingReq req = (RateBookingReq) invocation.getArgument(0);
+			ForexRateBookingReq req = (ForexRateBookingReq) invocation.getArgument(0);
 			LocalDateTime timestamp = LocalDateTime.now();
 			LocalDateTime expiryTime = timestamp.plusMinutes(10);
 			Customer customer = new Customer(req.getCustomerId(), "Tester 1", 1);
 			return Mono.just(
-					new RateBooking(1l, timestamp, req.getBaseCurrency(), req.getCounterCurrency(), 
+					new ForexRateBooking(1l, timestamp, req.getBaseCurrency(), req.getCounterCurrency(), 
 							Math.random(), UUID.randomUUID().toString(), expiryTime, customer)
 					);
 		});
@@ -103,7 +103,7 @@ public class RateRestControllerTest {
 				)
 		.exchange()
 		.expectStatus().isOk()
-		.expectBody(RateBooking.class);
+		.expectBody(ForexRateBooking.class);
 		
 	}
 	
@@ -111,14 +111,14 @@ public class RateRestControllerTest {
 	@Test
 	public void bookRate_missingParam() throws UnknownCustomerException {
 		
-		when(rateService.obtainBooking((any(RateBookingReq.class))))
+		when(rateService.obtainBooking((any(ForexRateBookingReq.class))))
 		.thenAnswer(invocation -> {
-			RateBookingReq req = (RateBookingReq) invocation.getArgument(0);
+			ForexRateBookingReq req = (ForexRateBookingReq) invocation.getArgument(0);
 			LocalDateTime timestamp = LocalDateTime.now();
 			LocalDateTime expiryTime = timestamp.plusMinutes(10);
 			Customer customer = new Customer(req.getCustomerId(), "Tester 1", 1);
 			return Mono.just(
-					new RateBooking(1l, timestamp, req.getBaseCurrency(), req.getCounterCurrency(), 
+					new ForexRateBooking(1l, timestamp, req.getBaseCurrency(), req.getCounterCurrency(), 
 							Math.random(), UUID.randomUUID().toString(), expiryTime, customer)
 					);
 		});
@@ -140,7 +140,7 @@ public class RateRestControllerTest {
 	@Test
 	public void bookRate_unknownCustomer() throws UnknownCustomerException {
 		
-		when(rateService.obtainBooking((any(RateBookingReq.class))))
+		when(rateService.obtainBooking((any(ForexRateBookingReq.class))))
 		.thenThrow(new UnknownCustomerException());
 		
 		webTestClient.get()

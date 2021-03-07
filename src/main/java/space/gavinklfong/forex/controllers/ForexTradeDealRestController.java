@@ -15,19 +15,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import space.gavinklfong.forex.dto.TradeDealReq;
+import space.gavinklfong.forex.dto.ForexTradeDealReq;
 import space.gavinklfong.forex.exceptions.InvalidRequestException;
-import space.gavinklfong.forex.models.TradeDeal;
-import space.gavinklfong.forex.services.TradeService;
+import space.gavinklfong.forex.models.ForexTradeDeal;
+import space.gavinklfong.forex.services.ForexTradeService;
 
 @RestController
 @RequestMapping("/deals")
-public class TradeDealRestController {
+public class ForexTradeDealRestController {
 	
-	private static Logger logger = LoggerFactory.getLogger(TradeDealRestController.class);
+	private static Logger logger = LoggerFactory.getLogger(ForexTradeDealRestController.class);
 
 	@Autowired
-	private TradeService tradeService;
+	private ForexTradeService tradeService;
 	
 	/**
 	 * Expose API for customers to retrieve their forex trade deals
@@ -40,7 +40,7 @@ public class TradeDealRestController {
 	 * @return List of forex trade deal records. The framework formats it into JSON format when sending HTTP response
 	 */
 	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-	public Flux<TradeDeal> getDeals(@RequestParam Long customerId) {
+	public Flux<ForexTradeDeal> getDeals(@RequestParam Long customerId) {
 		
 		if (customerId == null) {
 			return Flux.error(new InvalidRequestException("customerId", "customer Id cannot be blank"));
@@ -63,7 +63,7 @@ public class TradeDealRestController {
 	 * @return Trade deal object. The framework formats it into JSON format when sending HTTP response
 	 */
 	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public Mono<TradeDeal> submitDeal(@Valid @RequestBody Mono<TradeDealReq> req) {
+	public Mono<ForexTradeDeal> submitDeal(@Valid @RequestBody Mono<ForexTradeDealReq> req) {
 		
 		// submit trade deal
 		return req.flatMap(dealReq -> tradeService.postTradeDeal(dealReq));	

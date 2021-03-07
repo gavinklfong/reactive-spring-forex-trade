@@ -4,9 +4,9 @@ import java.util.List;
 
 import org.springframework.data.repository.CrudRepository;
 
-import space.gavinklfong.forex.models.TradeDeal;
+import space.gavinklfong.forex.models.ForexTradeDeal;
 
-public interface TradeDealRepo extends CrudRepository<TradeDeal, Long> {
+public interface ForexTradeDealRepo extends CrudRepository<ForexTradeDeal, Long> {
 
 	/**
 	 * Retrieve list of trade deal record by customer id
@@ -14,5 +14,5 @@ public interface TradeDealRepo extends CrudRepository<TradeDeal, Long> {
 	 * @param customerId
 	 * @return
 	 */
-	List<TradeDeal> findByCustomerId(Long customerId);
+	List<ForexTradeDeal> findByCustomerId(Long customerId);
 }

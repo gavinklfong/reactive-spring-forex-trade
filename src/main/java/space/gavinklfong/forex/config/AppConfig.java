@@ -1,17 +1,23 @@
 package space.gavinklfong.forex.config;
 
+import java.io.IOException;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+
+import com.opencsv.exceptions.CsvValidationException;
+
+import space.gavinklfong.forex.services.ForexPriceService;
 
 @Configuration
 public class AppConfig {
 
-//	@Bean
-//	public RouterFunction<ServerResponse> route(ForexRestController controller) {
-//
-//		return RouterFunctions.route(RequestPredicates.GET("/rates").and(RequestPredicates.accept(MediaType.APPLICATION_JSON)), controller::getLatestRates);
-//		
-//	}
-	
+	@Bean
+	public ForexPriceService initializeForexRateSpreadRepo() throws CsvValidationException, IOException {
+		Resource resource = new ClassPathResource("/rate-price.csv");
+		return new ForexPriceService(resource.getInputStream());
+	}
 
 
 }

@@ -6,7 +6,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 
-public class TradeDealReq {
+public class ForexTradeDealReq {
 	
 	@NotEmpty
 	private String baseCurrency;
@@ -28,11 +28,11 @@ public class TradeDealReq {
 	@NotEmpty
 	private String rateBookingRef;
 
-	public TradeDealReq() {
+	public ForexTradeDealReq() {
 		super();
 	}
 	
-	public TradeDealReq(String baseCurrency, String counterCurrency, Double rate, BigDecimal baseCurrencyAmount,
+	public ForexTradeDealReq(String baseCurrency, String counterCurrency, Double rate, BigDecimal baseCurrencyAmount,
 			Long customerId, String rateBookingRef) {
 		super();
 		this.baseCurrency = baseCurrency;

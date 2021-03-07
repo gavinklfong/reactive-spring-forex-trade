@@ -3,7 +3,7 @@ package space.gavinklfong.forex.dto;
 import java.time.LocalDateTime;
 
 
-public class Rate {
+public class ForexRate {
 		
 	private LocalDateTime timestamp;
 	
@@ -13,11 +13,11 @@ public class Rate {
 	
 	private Double rate;
 	
-	public Rate() {
+	public ForexRate() {
 		super();
 	}
 	
-	public Rate(LocalDateTime timestamp, String baseCurrency, String counterCurrecy, Double rate) {
+	public ForexRate(LocalDateTime timestamp, String baseCurrency, String counterCurrecy, Double rate) {
 		this.timestamp = timestamp;
 		this.baseCurrency = baseCurrency;
 		this.counterCurrency = counterCurrecy;

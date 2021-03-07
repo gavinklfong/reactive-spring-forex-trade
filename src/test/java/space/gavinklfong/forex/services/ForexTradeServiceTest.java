@@ -21,37 +21,37 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
-import space.gavinklfong.forex.models.TradeDeal;
-import space.gavinklfong.forex.dto.TradeDealReq;
+import space.gavinklfong.forex.models.ForexTradeDeal;
+import space.gavinklfong.forex.dto.ForexTradeDealReq;
 import space.gavinklfong.forex.exceptions.InvalidRateBookingException;
 import space.gavinklfong.forex.exceptions.UnknownCustomerException;
 import space.gavinklfong.forex.models.Customer;
-import space.gavinklfong.forex.models.RateBooking;
+import space.gavinklfong.forex.models.ForexRateBooking;
 import space.gavinklfong.forex.repos.CustomerRepo;
-import space.gavinklfong.forex.repos.TradeDealRepo;
+import space.gavinklfong.forex.repos.ForexTradeDealRepo;
 
 @SpringJUnitConfig
-@ContextConfiguration(classes = {TradeService.class})
+@ContextConfiguration(classes = {ForexTradeService.class})
 @Tag("UnitTest")
-public class TradeServiceTest {
+public class ForexTradeServiceTest {
 
 	@MockBean
 	private CustomerRepo customerRepo;
 	
 	@MockBean
-	private TradeDealRepo tradeDealRepo;
+	private ForexTradeDealRepo tradeDealRepo;
 	
 	@MockBean
-	private RateService rateService;
+	private ForexRateService rateService;
 	
 	@Autowired
-	private TradeService tradeService;
+	private ForexTradeService tradeService;
 	
 	@Test
 	public void postTradeDealTest_success() {
 		
-		when(tradeDealRepo.save(any(TradeDeal.class))).thenAnswer(invocation -> {
-			TradeDeal deal = (TradeDeal) invocation.getArgument(0);
+		when(tradeDealRepo.save(any(ForexTradeDeal.class))).thenAnswer(invocation -> {
+			ForexTradeDeal deal = (ForexTradeDeal) invocation.getArgument(0);
 			deal.setId(99l);
 			return deal;
 		});
@@ -59,12 +59,12 @@ public class TradeServiceTest {
 		when(customerRepo.findById(anyLong()))
 		.thenReturn(Optional.of(new Customer(1l, "Tester 1", 1)));
 		
-		when(rateService.validateRateBooking(any(RateBooking.class))).thenReturn(Mono.just(true));
+		when(rateService.validateRateBooking(any(ForexRateBooking.class))).thenReturn(Mono.just(true));
 				
-		TradeDealReq req = new TradeDealReq("GBP", "USD", 0.25, BigDecimal.valueOf(10000),
+		ForexTradeDealReq req = new ForexTradeDealReq("GBP", "USD", 0.25, BigDecimal.valueOf(10000),
 				 1l,  "ABC");
 		
-		Mono<TradeDeal> deal = tradeService.postTradeDeal(req);
+		Mono<ForexTradeDeal> deal = tradeService.postTradeDeal(req);
 		StepVerifier.create(deal)
 		.expectNextMatches(record -> record.getId() == 99l)
 		.verifyComplete();		
@@ -73,8 +73,8 @@ public class TradeServiceTest {
 	@Test
 	public void postTradeDealTest_invalidRateBooking() {
 		
-		when(tradeDealRepo.save(any(TradeDeal.class))).thenAnswer(invocation -> {
-			TradeDeal deal = (TradeDeal) invocation.getArgument(0);
+		when(tradeDealRepo.save(any(ForexTradeDeal.class))).thenAnswer(invocation -> {
+			ForexTradeDeal deal = (ForexTradeDeal) invocation.getArgument(0);
 			deal.setId(99l);
 			return deal;
 		});
@@ -82,12 +82,12 @@ public class TradeServiceTest {
 		when(customerRepo.findById(anyLong()))
 		.thenReturn(Optional.of(new Customer(1l, "Tester 1", 1)));
 		
-		when(rateService.validateRateBooking(any(RateBooking.class))).thenReturn(Mono.just(false));
+		when(rateService.validateRateBooking(any(ForexRateBooking.class))).thenReturn(Mono.just(false));
 				
-		TradeDealReq req = new TradeDealReq("GBP", "USD", 0.25, BigDecimal.valueOf(10000),
+		ForexTradeDealReq req = new ForexTradeDealReq("GBP", "USD", 0.25, BigDecimal.valueOf(10000),
 				 1l,  "ABC");
 		
-		Mono<TradeDeal> deal = tradeService.postTradeDeal(req);
+		Mono<ForexTradeDeal> deal = tradeService.postTradeDeal(req);
 		StepVerifier.create(deal)
 		.expectError(InvalidRateBookingException.class)
 		.verify();
@@ -96,8 +96,8 @@ public class TradeServiceTest {
 	@Test
 	public void postTradeDealTest_unknownCustomer() {
 		
-		when(tradeDealRepo.save(any(TradeDeal.class))).thenAnswer(invocation -> {
-			TradeDeal deal = (TradeDeal) invocation.getArgument(0);
+		when(tradeDealRepo.save(any(ForexTradeDeal.class))).thenAnswer(invocation -> {
+			ForexTradeDeal deal = (ForexTradeDeal) invocation.getArgument(0);
 			deal.setId(99l);
 			return deal;
 		});
@@ -105,13 +105,13 @@ public class TradeServiceTest {
 		when(customerRepo.findById(anyLong()))
 		.thenReturn(Optional.empty());
 		
-		when(rateService.validateRateBooking(any(RateBooking.class))).thenReturn(Mono.just(true));
+		when(rateService.validateRateBooking(any(ForexRateBooking.class))).thenReturn(Mono.just(true));
 				
-		TradeDealReq req = new TradeDealReq("GBP", "USD", 0.25, BigDecimal.valueOf(10000),
+		ForexTradeDealReq req = new ForexTradeDealReq("GBP", "USD", 0.25, BigDecimal.valueOf(10000),
 				 1l,  "ABC");
 		
 		
-		Mono<TradeDeal> deal = tradeService.postTradeDeal(req);
+		Mono<ForexTradeDeal> deal = tradeService.postTradeDeal(req);
 		StepVerifier.create(deal)
 		.expectError(UnknownCustomerException.class)
 		.verify();
@@ -120,21 +120,21 @@ public class TradeServiceTest {
 	@Test
 	public void retrieveTradeDealByCustomerTest() {
 		
-		TradeDeal deal1 = new TradeDeal(UUID.randomUUID().toString(), LocalDateTime.now(), "GBP", "USD",  Math.random(),
+		ForexTradeDeal deal1 = new ForexTradeDeal(UUID.randomUUID().toString(), LocalDateTime.now(), "GBP", "USD",  Math.random(),
 				BigDecimal.valueOf(1000), new Customer(1l, "Tester 1", 1));
-		TradeDeal deal2 = new TradeDeal(UUID.randomUUID().toString(), LocalDateTime.now(), "GBP", "USD",  Math.random(),
+		ForexTradeDeal deal2 = new ForexTradeDeal(UUID.randomUUID().toString(), LocalDateTime.now(), "GBP", "USD",  Math.random(),
 				BigDecimal.valueOf(1000), new Customer(1l, "Tester 1", 1));
-		TradeDeal deal3 = new TradeDeal(UUID.randomUUID().toString(), LocalDateTime.now(), "GBP", "USD",  Math.random(),
+		ForexTradeDeal deal3 = new ForexTradeDeal(UUID.randomUUID().toString(), LocalDateTime.now(), "GBP", "USD",  Math.random(),
 				BigDecimal.valueOf(1000), new Customer(1l, "Tester 1", 1));
 				
-		List<TradeDeal> deals = new ArrayList<>();
+		List<ForexTradeDeal> deals = new ArrayList<>();
 		deals.add(deal1);
 		deals.add(deal2);
 		deals.add(deal3);
 		
 		when(tradeDealRepo.findByCustomerId(anyLong())).thenReturn(deals);
 		
-		Flux<TradeDeal> result = tradeService.retrieveTradeDealByCustomer(1l);
+		Flux<ForexTradeDeal> result = tradeService.retrieveTradeDealByCustomer(1l);
 		
 		StepVerifier
 		.create(result)
@@ -150,7 +150,7 @@ public class TradeServiceTest {
 		
 		when(tradeDealRepo.findByCustomerId(anyLong())).thenReturn(null);
 		
-		Flux<TradeDeal> result = tradeService.retrieveTradeDealByCustomer(1l);
+		Flux<ForexTradeDeal> result = tradeService.retrieveTradeDealByCustomer(1l);
 		
 		StepVerifier
 		.create(result)

@@ -10,27 +10,27 @@ import org.springframework.stereotype.Component;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import space.gavinklfong.forex.dto.TradeDealReq;
+import space.gavinklfong.forex.dto.ForexTradeDealReq;
 import space.gavinklfong.forex.exceptions.InvalidRateBookingException;
 import space.gavinklfong.forex.exceptions.UnknownCustomerException;
 import space.gavinklfong.forex.models.Customer;
-import space.gavinklfong.forex.models.RateBooking;
-import space.gavinklfong.forex.models.TradeDeal;
+import space.gavinklfong.forex.models.ForexRateBooking;
+import space.gavinklfong.forex.models.ForexTradeDeal;
 import space.gavinklfong.forex.repos.CustomerRepo;
-import space.gavinklfong.forex.repos.TradeDealRepo;
+import space.gavinklfong.forex.repos.ForexTradeDealRepo;
 
 
 @Component
-public class TradeService {
+public class ForexTradeService {
 
 	@Autowired
-	private TradeDealRepo tradeDealRepo;
+	private ForexTradeDealRepo tradeDealRepo;
 	
 	@Autowired
 	private CustomerRepo customerRepo;
 	
 	@Autowired
-	private RateService rateService;
+	private ForexRateService rateService;
 	
 	/**
 	 * This method process forex trade deal submission. It carries out the following validation:
@@ -42,13 +42,13 @@ public class TradeService {
 	 * @param req - Java bean containing trade deal request
 	 * @return Trade Deal Record with unique deal reference wrapped in Mono type
 	 */
-	public Mono<TradeDeal> postTradeDeal(TradeDealReq req) {
+	public Mono<ForexTradeDeal> postTradeDeal(ForexTradeDealReq req) {
 		
 		// Validate customer id
 		Optional<Customer> customer = customerRepo.findById(req.getCustomerId());
 		if (customer.isEmpty()) return Mono.error(new UnknownCustomerException());
 		
-		RateBooking rateBooking = new RateBooking(req.getBaseCurrency(), req.getCounterCurrency(), req.getRate(), req.getBaseCurrencyAmount(), req.getRateBookingRef());
+		ForexRateBooking rateBooking = new ForexRateBooking(req.getBaseCurrency(), req.getCounterCurrency(), req.getRate(), req.getBaseCurrencyAmount(), req.getRateBookingRef());
 		
 		// Validate rate booking
 		Mono<Boolean> result = rateService.validateRateBooking(rateBooking);
@@ -58,7 +58,7 @@ public class TradeService {
 				// build and save trade deal record
 				String dealRef = UUID.randomUUID().toString();
 				LocalDateTime timestamp = LocalDateTime.now();
-				TradeDeal deal = new TradeDeal(dealRef, timestamp, req.getBaseCurrency(), req.getCounterCurrency(), 
+				ForexTradeDeal deal = new ForexTradeDeal(dealRef, timestamp, req.getBaseCurrency(), req.getCounterCurrency(), 
 						req.getRate(), req.getBaseCurrencyAmount(), new Customer(req.getCustomerId()));
 				
 				return Mono.just(tradeDealRepo.save(deal));
@@ -77,9 +77,9 @@ public class TradeService {
 	 * @param customerId 
 	 * @return List of trade deal wrapped in Flux data type
 	 */
-	public Flux<TradeDeal> retrieveTradeDealByCustomer(Long customerId) {
+	public Flux<ForexTradeDeal> retrieveTradeDealByCustomer(Long customerId) {
 		
-		List<TradeDeal> deals = tradeDealRepo.findByCustomerId(customerId);
+		List<ForexTradeDeal> deals = tradeDealRepo.findByCustomerId(customerId);
 		
 		if (deals == null || deals.isEmpty()) 
 			return Flux.empty();

@@ -23,7 +23,7 @@ public class Customer {
 	private Integer tier;
 	
 	@OneToMany (cascade = CascadeType.ALL, mappedBy = "customer", orphanRemoval = true)
-	private Collection<TradeDeal> deals;
+	private Collection<ForexTradeDeal> deals;
 	
 	public Customer() {
 		super();
@@ -68,11 +68,11 @@ public class Customer {
 		this.tier = tier;
 	}
 
-	public Collection<TradeDeal> getDeals() {
+	public Collection<ForexTradeDeal> getDeals() {
 		return deals;
 	}
 
-	public void setDeals(Collection<TradeDeal> deals) {
+	public void setDeals(Collection<ForexTradeDeal> deals) {
 		this.deals = deals;
 	}
 

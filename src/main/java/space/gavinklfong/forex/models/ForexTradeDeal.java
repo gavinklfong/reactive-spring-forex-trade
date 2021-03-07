@@ -14,7 +14,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="forex_trade_deal")
-public class TradeDeal {
+public class ForexTradeDeal {
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -37,11 +37,11 @@ public class TradeDeal {
 	@JoinColumn(name="customer_id", referencedColumnName="id")
 	private Customer customer;
 	
-	public TradeDeal() {
+	public ForexTradeDeal() {
 		super();
 	}
 
-	public TradeDeal(Long id, String dealRef, LocalDateTime timestamp, String baseCurrency, String counterCurrency,
+	public ForexTradeDeal(Long id, String dealRef, LocalDateTime timestamp, String baseCurrency, String counterCurrency,
 			Double rate, BigDecimal baseCurrencyAmount, Customer customer) {
 		super();
 		this.id = id;
@@ -54,7 +54,7 @@ public class TradeDeal {
 		this.customer = customer;
 	}	
 	
-	public TradeDeal(String dealRef, LocalDateTime timestamp, String baseCurrency, String counterCurrency, Double rate,
+	public ForexTradeDeal(String dealRef, LocalDateTime timestamp, String baseCurrency, String counterCurrency, Double rate,
 			BigDecimal baseCurrencyAmount, Customer customer) {
 		super();
 		this.dealRef = dealRef;
