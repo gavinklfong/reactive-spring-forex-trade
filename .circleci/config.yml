@@ -33,6 +33,6 @@ workflows:
           context: SonarCloud
           requires:
             - build
-      - test
+      - test:
           requires:
             - sonarcloud/check_quality_gate
