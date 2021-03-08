@@ -169,6 +169,24 @@
 				</executions>
 			</plugin>
 			<plugin>
+				<groupId>org.springdoc</groupId>
+					<artifactId>springdoc-openapi-maven-plugin</artifactId>
+				 	<version>1.2</version>
+					 <executions>
+						  <execution>
+							   <id>integration-test</id>
+							   <goals>
+							    	<goal>generate</goal>
+							   </goals>
+						  </execution>
+				 	</executions>
+				 <configuration>
+					  <apiDocsUrl>http://localhost:${spring-boot.http.port}/v3/api-docs.yaml</apiDocsUrl>
+					  <outputFileName>openapi.yaml</outputFileName>
+					  <outputDir>${project.build.directory}</outputDir>
+				 </configuration>
+			</plugin>
+			<plugin>
 			    <artifactId>maven-surefire-plugin</artifactId>
 			    <configuration>
 			    	<excludes>
