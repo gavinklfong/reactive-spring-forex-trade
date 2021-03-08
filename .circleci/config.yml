@@ -12,7 +12,8 @@ jobs:
       - run:
           name: Compile & run Unit Test
           command: mvn test -P unit-test
-      - sonarcloud/scan_with_maven
+      - sonarcloud/scan_with_maven:
+          scanner_version: 3.8.0.2131
   test:
     docker:
       - image: 'circleci/openjdk:11-jdk'
