@@ -15,6 +15,12 @@
 	<description>Forex Trade</description>
 	<properties>
 		<java.version>11</java.version>
+		
+		<!--  properties of sonarcloud -->
+		<sonar.projectKey>gavinklfong_reactive-spring-forex-trade</sonar.projectKey>
+		<sonar.organization>gavinklfong</sonar.organization>
+		<sonar.host.url>https://sonarcloud.io</sonar.host.url>	
+			
 	</properties>
 	<dependencies>
 		<dependency>
