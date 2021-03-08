@@ -16,7 +16,7 @@ jobs:
           name: Run Integratin Test
           command: mvn test -P integration-test
       - run:
-          name: Run End-to-end Test
+          name: Run End-to-End Test
           command: mvn verify -P e2e-test
       
 workflows:
