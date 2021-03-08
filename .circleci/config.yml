@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  sonarcloud: extendaretail/sonarcloud@0.0.2
+
 jobs:
   build:
     docker:
@@ -9,9 +12,12 @@ jobs:
       - run:
           name: Compile & Run Unit Test
           command: mvn test -P unit-test
-      - run:
+      - sonarcloud/scan_with_maven
           name: Analyze on SonarCloud
-          command: mvn verify sonar:sonar -P no-test
+  test:
+    docker:
+      - image: 'circleci/openjdk:11-jdk'
+    steps:
       - run:
           name: Run Integratin Test
           command: mvn test -P integration-test
@@ -24,3 +30,10 @@ workflows:
     jobs:
       - build:
           context: SonarCloud
+      - sonarcloud/check_quality_gate:
+          context: SonarCloud
+          requires:
+            - build
+      - test
+          requires:
+            - sonarcloud/check_quality_gate
