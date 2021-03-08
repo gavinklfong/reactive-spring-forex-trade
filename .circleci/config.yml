@@ -11,7 +11,7 @@ jobs:
           command: mvn test -P unit-test
       - run:
           name: Analyze on SonarCloud
-          command: mvn verify sonar:sonar
+          command: mvn verify sonar:sonar -P no-test
       - run:
           name: Run Integratin Test
           command: mvn test -P integration-test
