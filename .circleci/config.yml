@@ -10,7 +10,7 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Compile & Run Unit Test
+          name: Compile & run Unit Test
           command: mvn test -P unit-test
       - sonarcloud/scan_with_maven
   test:
