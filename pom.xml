@@ -320,6 +320,13 @@
 			</properties>
 		</profile>
 		<profile>
+			<id>no-test</id>
+			<properties>
+				<maven.surefire.skip>true</maven.surefire.skip>
+				<maven.failsafe.skip>true</maven.failsafe.skip>
+			</properties>
+		</profile>			
+		<profile>
 			<id>unit-test</id>
 			<properties>
 				<maven.surefire.skip>false</maven.surefire.skip>
