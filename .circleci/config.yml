@@ -7,12 +7,18 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Compile & Run Unit Test
+          command: mvn test -P unit-test
+      - run:
           name: Analyze on SonarCloud
-          command: mvn verify sonar:sonar`
-
-orbs:
-  maven: circleci/maven@1.1
-
+          command: mvn verify sonar:sonar
+      - run:
+          name: Run Integratin Test
+          command: mvn test -P integration-test
+      - run:
+          name: Run End-to-end Test
+          command: mvn verify -P e2e-test
+      
 workflows:
   main:
     jobs:
