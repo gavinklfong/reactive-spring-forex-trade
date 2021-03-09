@@ -20,6 +20,9 @@
 		<sonar.projectKey>gavinklfong_reactive-spring-forex-trade</sonar.projectKey>
 		<sonar.organization>gavinklfong</sonar.organization>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>	
+		
+		<!-- containerization -->
+		<jib.image.path>whalebig27/reactive-spring-forex-trade</jib.image.path>
 			
 	</properties>
 	<dependencies>
@@ -216,6 +219,21 @@
 					</systemPropertyVariables>
                 </configuration>
             </plugin>
+            
+            <plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+                <version>2.8.0</version>
+                <configuration>
+                    <to>
+                        <image>${jib.image.path}</image>
+                    </to>
+                    <container>
+                    	<port>8080</port>
+                    </container>
+                </configuration>
+            </plugin>            
+            
 			<plugin>
 			    <groupId>org.jacoco</groupId>
 			    <artifactId>jacoco-maven-plugin</artifactId>
