@@ -2,6 +2,7 @@ version: 2.1
 
 orbs:
   sonarcloud: extendaretail/sonarcloud@0.0.2
+  sonarsource: sonarsource/sonarcloud@1.0.0
 
 jobs:
   build:
@@ -20,18 +21,21 @@ jobs:
             - reactive-spring-forex-trade-{{ checksum "pom.xml" }}
             - reactive-spring-forex-trade-          
       - run: mvn dependency:go-offline
+      
+      # Compile & Run Unti Test
+      - run:
+          name: Compile
+          command: mvn compile -P no-test
+
       - save_cache:
           paths:
             - ~/.m2
           key: reactive-spring-forex-trade-{{ checksum "pom.xml" }}      
-      
-      # Compile & Run Unti Test
-      - run:
-          name: Compile & Run Unit Test
-          command: mvn test -P unit-test
 
-      - sonarcloud/scan_with_maven:
-          scanner_version: 3.8.0.2131
+      - sonarsource/scan
+
+#       - sonarcloud/scan_with_maven:
+#           scanner_version: 3.8.0.213
   test:
     docker:
       - image: 'circleci/openjdk:11-jdk'
