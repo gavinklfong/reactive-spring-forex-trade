@@ -22,8 +22,7 @@ jobs:
       - run: mvn dependency:go-offline
 
       - save_cache:
-          keys:
-            - reactive-spring-forex-trade-{{ checksum "pom.xml" }}      
+          key: reactive-spring-forex-trade-{{ checksum "pom.xml" }}      
           paths:
             - ~/.m2
 
