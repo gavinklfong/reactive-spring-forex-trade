@@ -79,7 +79,7 @@ jobs:
       - run:
           name: Analyze
           command: > 
-            mvn verify sonar:sonar -P no-test
+            mvn verify sonar:sonar -P no-test -DskipITs
             
             mkdir .scannerwork
             
@@ -88,25 +88,59 @@ jobs:
       # Wait for analysis result. Fail of quality gate fail
       - sonarcloud/check_quality_gate      
 
-#   test:
-#     docker:
-#       - image: 'circleci/openjdk:11-jdk'
-#     steps:
-#       # Download and cache dependencies
-#       - restore_cache:
-#           keys:
-#             - reactive-spring-forex-trade-{{ checksum "pom.xml" }}    
-    
-#       - run:
-#           name: Run Integratin Test
-#           command: mvn test -P integration-test
-          
-#       - run:
-#           name: Run End-to-End Test
-#           command: mvn verify -P e2e-test
+  integration-test:
+    docker:
+      - image: 'circleci/openjdk:11-jdk'    
+    working_directory: /tmp/workspace
+    steps:
+      # Attach workspace carry forward from previous job
+      - attach_workspace:
+          at: /tmp/workspace    
+      
+      # Restore dependency cache
+      - restore_cache:
+          keys:
+            - reactive-spring-forex-trade-{{ checksum "pom.xml" }}
+            - reactive-spring-forex-trade-          
+
+      # Run integration test
+      - run:
+          name: Run Integartion Tests
+          command: mvn test -P integartion-test
+
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ./*
+
+  e2e-test:
+    docker:
+      - image: 'circleci/openjdk:11-jdk'    
+    working_directory: /tmp/workspace
+    steps:
+      # Attach workspace carry forward from previous job
+      - attach_workspace:
+          at: /tmp/workspace    
+      
+      # Restore dependency cache
+      - restore_cache:
+          keys:
+            - reactive-spring-forex-trade-{{ checksum "pom.xml" }}
+            - reactive-spring-forex-trade-          
+
+      # Run integration test
+      - run:
+          name: Run End-to-end Tests
+          command: mvn verify -P e2e-test
+
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ./*
       
 workflows:
   main:
+    parallelism: 2
     jobs:
       - build:
           context: SonarCloud
@@ -119,12 +153,13 @@ workflows:
           context: SonarCloud
           requires:
             - unit-test
-          
-#       - sonarcloud/check_quality_gate:
-#           context: SonarCloud
-#           requires:
-#             - build
             
-#       - test:
-#           requires:
-#             - sonarcloud/check_quality_gate
+      - integration-test:
+          requires:
+            - analyze
+      
+      - e2e-test:
+          requires:
+            - analyze
+          
+
