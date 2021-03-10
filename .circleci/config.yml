@@ -140,7 +140,6 @@ jobs:
       
 workflows:
   main:
-    parallelism: 2
     jobs:
       - build:
           context: SonarCloud
