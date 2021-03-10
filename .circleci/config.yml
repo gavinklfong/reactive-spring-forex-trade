@@ -8,7 +8,7 @@ jobs:
   build:
     docker:
       - image: 'circleci/openjdk:11-jdk'    
-    working_directory: ~/workspace
+    working_directory: /tmp/workspace
     steps:
       # get source from git
       - checkout
@@ -26,7 +26,7 @@ jobs:
           paths:
             - ~/.m2
 
-      # Compile Unti Test
+      # Compile
       - run:
           name: Compile
           command: mvn compile -P no-test
@@ -43,10 +43,10 @@ jobs:
   analyze:
     docker:
       - image: 'circleci/openjdk:11-jdk'   
-    working_directory: ~/workspace      
+    working_directory: /tmp/workspace      
     steps:
       - attach_workspace
-          at: ~/workspace
+          at: /tmp/workspace
           
       - run:
           name: Analyze
