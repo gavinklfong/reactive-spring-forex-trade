@@ -49,9 +49,8 @@ jobs:
 #             - .scannerwork/report-task.txt
 #           root: .
           
-      - sonarcloud/scan_with_maven:
-          scanner_version: 3.8.0.2131
-   
+      - sonarcloud/scan_with_maven
+      
 #   test:
 #     docker:
 #       - image: 'circleci/openjdk:11-jdk'
