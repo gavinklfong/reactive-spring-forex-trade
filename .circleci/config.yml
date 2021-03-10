@@ -2,7 +2,6 @@ version: 2.1
 
 orbs:
   sonarcloud: extendaretail/sonarcloud@0.0.2
-  sonarsource: sonarsource/sonarcloud@1.0.0
 
 jobs:
   build:
@@ -31,9 +30,30 @@ jobs:
           name: Compile
           command: mvn compile -P no-test
 
-#       - run:
-#           name: Run Unit Tests
-#           command: mvn test -P unit-test
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ./*
+
+  unit-test:
+    docker:
+      - image: 'circleci/openjdk:11-jdk'    
+    working_directory: /tmp/workspace
+    steps:
+      # Attach workspace carry forward from previous job
+      - attach_workspace:
+          at: /tmp/workspace    
+      
+      # Restore dependency cache
+      - restore_cache:
+          keys:
+            - reactive-spring-forex-trade-{{ checksum "pom.xml" }}
+            - reactive-spring-forex-trade-          
+
+      # Run unit test
+      - run:
+          name: Run Unit Tests
+          command: mvn test -P unit-test
 
       - persist_to_workspace:
           root: .
@@ -45,9 +65,17 @@ jobs:
       - image: 'circleci/openjdk:11-jdk'   
     working_directory: /tmp/workspace      
     steps:
+      # Attach workspace carry forward from previous job
       - attach_workspace:
           at: /tmp/workspace
           
+      # Restore cache dependencies
+      - restore_cache:
+          keys:
+            - reactive-spring-forex-trade-{{ checksum "pom.xml" }}
+            - reactive-spring-forex-trade-             
+      
+      # Submit to Sonar for analysis
       - run:
           name: Analyze
           command: > 
@@ -56,14 +84,9 @@ jobs:
             mkdir .scannerwork
             
             cp target/sonar/report-task.txt .scannerwork/report-task.txt
-            
-#       - persist_to_workspace:
-#           paths:
-#             - .scannerwork/report-task.txt
-#           root: .
       
+      # Wait for analysis result. Fail of quality gate fail
       - sonarcloud/check_quality_gate      
-
 
 #   test:
 #     docker:
@@ -87,11 +110,15 @@ workflows:
     jobs:
       - build:
           context: SonarCloud
+      
+      - unit-test:
+          requires:
+            - build
           
       - analyze:
           context: SonarCloud
           requires:
-            - build
+            - unit-test
           
 #       - sonarcloud/check_quality_gate:
 #           context: SonarCloud
