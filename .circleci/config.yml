@@ -36,16 +36,16 @@ jobs:
 #           command: mvn test -P unit-test
 
       - persist_to_workspace:
-          root: ./
+          root: .
           paths:
-            - ./*
+            - *
 
   analyze:
     docker:
       - image: 'circleci/openjdk:11-jdk'    
     steps:
       - attach_workspace
-          at: ./
+          at: .
           
       - run:
           name: Analyze
