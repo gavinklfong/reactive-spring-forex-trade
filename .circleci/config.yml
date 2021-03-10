@@ -35,7 +35,7 @@ jobs:
       - run:
           name: Analyze
           command: > 
-            mvn verify sonar:sonar -P non-test
+            mvn verify sonar:sonar -P no-test
             mv target/sonar/report-task.txt .scannerwork
             
       - persist_to_workspace:
