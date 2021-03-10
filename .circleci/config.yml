@@ -45,7 +45,7 @@ jobs:
       - image: 'circleci/openjdk:11-jdk'   
     working_directory: /tmp/workspace      
     steps:
-      - attach_workspace
+      - attach_workspace:
           at: /tmp/workspace
           
       - run:
