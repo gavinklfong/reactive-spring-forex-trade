@@ -35,22 +35,35 @@ jobs:
 #           name: Run Unit Tests
 #           command: mvn test -P unit-test
 
-#       - run:
-#           name: Analyze
-#           command: > 
-#             mvn verify sonar:sonar -P no-test
+      - persist_to_workspace:
+          root: ./
+          paths:
+            - ./*
+
+  analyze:
+    docker:
+      - image: 'circleci/openjdk:11-jdk'    
+    steps:
+      - attach_workspace
+          at: ./
+          
+      - run:
+          name: Analyze
+          command: > 
+            mvn verify sonar:sonar -P no-test
             
-#             mkdir .scannerwork
+            mkdir .scannerwork
             
-#             cp target/sonar/report-task.txt .scannerwork/report-task.txt
+            cp target/sonar/report-task.txt .scannerwork/report-task.txt
             
 #       - persist_to_workspace:
 #           paths:
 #             - .scannerwork/report-task.txt
 #           root: .
-          
-      - sonarcloud/scan_with_maven
       
+      - sonarcloud/check_quality_gate      
+
+
 #   test:
 #     docker:
 #       - image: 'circleci/openjdk:11-jdk'
@@ -73,10 +86,17 @@ workflows:
     jobs:
       - build:
           context: SonarCloud
-      - sonarcloud/check_quality_gate:
+          
+      - analyze:
           context: SonarCloud
           requires:
             - build
+          
+#       - sonarcloud/check_quality_gate:
+#           context: SonarCloud
+#           requires:
+#             - build
+            
 #       - test:
 #           requires:
 #             - sonarcloud/check_quality_gate
