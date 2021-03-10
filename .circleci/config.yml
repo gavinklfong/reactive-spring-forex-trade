@@ -37,7 +37,9 @@ jobs:
           command: > 
             mvn verify sonar:sonar -P no-test
             
-            mv target/sonar/report-task.txt .scannerwork
+            mv target/sonar/report-task.txt .scannerwork/report-task.txt
+            
+            cat .scannerwork/report-task.txt
             
       - persist_to_workspace:
           paths:
