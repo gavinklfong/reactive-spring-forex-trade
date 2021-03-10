@@ -45,7 +45,7 @@ jobs:
       - image: 'circleci/openjdk:11-jdk'    
     steps:
       - attach_workspace
-          at: .
+          at: ./
           
       - run:
           name: Analyze
