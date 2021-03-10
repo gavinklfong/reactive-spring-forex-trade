@@ -37,14 +37,14 @@ jobs:
           command: > 
             mvn verify sonar:sonar -P no-test
             
-            mv target/sonar/report-task.txt .scannerwork/report-task.txt
+            mv ./target/sonar/report-task.txt ./.scannerwork/report-task.txt
             
-            cat .scannerwork/report-task.txt
+            cat ./.scannerwork/report-task.txt
             
       - persist_to_workspace:
           paths:
-            - .scannerwork/report-task.txt
-          root: .
+            - ./.scannerwork/report-task.txt
+          root: ./
           
 #       - sonarcloud/scan_with_maven:
 #           scanner_version: 3.8.0.213
