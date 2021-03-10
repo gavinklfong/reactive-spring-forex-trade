@@ -34,8 +34,15 @@ jobs:
 
       - run:
           name: Analyze
-          command: mvn verify sonar:sonar -P non-test
-
+          command: > 
+            mvn verify sonar:sonar -P non-test
+            mv target/sonar/report-task.txt .scannerwork
+            
+      - persist_to_workspace:
+          paths:
+            - .scannerwork/report-task.txt
+          root: .
+          
 #       - sonarcloud/scan_with_maven:
 #           scanner_version: 3.8.0.213
   test:
