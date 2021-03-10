@@ -38,6 +38,7 @@ jobs:
             mvn verify sonar:sonar -P no-test
             
             mkdir .scannerwork
+            
             cp target/sonar/report-task.txt .scannerwork/report-task.txt
             
       - persist_to_workspace:
