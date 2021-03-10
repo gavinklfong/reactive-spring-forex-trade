@@ -32,7 +32,9 @@ jobs:
             - ~/.m2
           key: reactive-spring-forex-trade-{{ checksum "pom.xml" }}      
 
-      - sonarsource/scan
+      - run:
+          name: Analyze
+          command: mvn verify sonar:sonar -P non-test
 
 #       - sonarcloud/scan_with_maven:
 #           scanner_version: 3.8.0.213
