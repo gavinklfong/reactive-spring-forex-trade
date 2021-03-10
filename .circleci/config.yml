@@ -50,7 +50,7 @@ jobs:
 #           root: .
           
       - sonarcloud/scan_with_maven:
-          scanner_version: 3.8.0.213
+          scanner_version: 3.8.0.2131
    
 #   test:
 #     docker:
