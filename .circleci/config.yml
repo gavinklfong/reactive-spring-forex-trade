@@ -4,7 +4,7 @@ orbs:
   sonarcloud: extendaretail/sonarcloud@0.0.2
 
 jobs:
-  build:
+  Build-Source:
     docker:
       - image: 'circleci/openjdk:11-jdk'    
     working_directory: /tmp/workspace
@@ -35,10 +35,11 @@ jobs:
           paths:
             - ./*
 
-  unit-test:
+  Unit-Test:
     docker:
       - image: 'circleci/openjdk:11-jdk'    
     working_directory: /tmp/workspace
+    parallelism: 2 # parallel containers to split the tests among    
     steps:
       # Attach workspace carry forward from previous job
       - attach_workspace:
@@ -51,16 +52,31 @@ jobs:
             - reactive-spring-forex-trade-          
 
       # Run unit test
-      - run:
-          name: Run Unit Tests
-          command: mvn test -P unit-test
+#       - run:
+#           name: Run Unit Tests
+#           command: mvn test -P unit-test
+
+      - run: |
+          ./mvnw \
+          -Dtest=$(for file in $(circleci tests glob "src/test/**/**.java" \
+          | circleci tests split --split-by=timings); \
+          do basename $file \
+          | sed -e "s/.java/,/"; \
+          done | tr -d '\r\n') \
+          -e test -P unit-test
+      
+      - store_test_results: # We use this timing data to optimize the future runs
+          path: target/surefire-reports    
+
+      - store_artifacts:
+          path: target/site/jacoco/index.html
 
       - persist_to_workspace:
           root: .
           paths:
             - ./*
 
-  analyze:
+  Analyze-Code:
     docker:
       - image: 'circleci/openjdk:11-jdk'   
     working_directory: /tmp/workspace      
@@ -88,7 +104,7 @@ jobs:
       # Wait for analysis result. Fail of quality gate fail
       - sonarcloud/check_quality_gate      
 
-  integration-test:
+  Integration-Test:
     docker:
       - image: 'circleci/openjdk:11-jdk'    
     working_directory: /tmp/workspace
@@ -108,12 +124,15 @@ jobs:
           name: Run Integartion Tests
           command: mvn test -P integartion-test
 
+      - store_test_results: # We use this timing data to optimize the future runs
+          path: target/surefire-reports
+
       - persist_to_workspace:
           root: .
           paths:
             - ./*
 
-  e2e-test:
+  End-to-End-Test:
     docker:
       - image: 'circleci/openjdk:11-jdk'    
     working_directory: /tmp/workspace
@@ -133,6 +152,9 @@ jobs:
           name: Run End-to-end Tests
           command: mvn verify -P e2e-test
 
+      - store_test_results: # We use this timing data to optimize the future runs
+          path: target/failsafe-reports 
+
       - persist_to_workspace:
           root: .
           paths:
@@ -141,24 +163,24 @@ jobs:
 workflows:
   main:
     jobs:
-      - build:
+      - Build-Source:
           context: SonarCloud
       
-      - unit-test:
+      - Unit-Test:
           requires:
-            - build
+            - Build-Source
           
-      - analyze:
+      - Analyze-Code:
           context: SonarCloud
           requires:
-            - unit-test
+            - Unit-Test
             
-      - integration-test:
+      - Integration-Test:
           requires:
-            - analyze
+            - Analyze-Code
       
-      - e2e-test:
+      - End-to-End-Test:
           requires:
-            - analyze
+            - Analyze-Code
           
 
