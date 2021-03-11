@@ -159,6 +159,32 @@ jobs:
           root: .
           paths:
             - ./*
+            
+  Deployment:
+    docker:
+      - image: 'circleci/openjdk:11-jdk'    
+    working_directory: /tmp/workspace
+    steps:
+      # Attach workspace carry forward from previous job
+      - attach_workspace:
+          at: /tmp/workspace    
+      
+      # Restore dependency cache
+      - restore_cache:
+          keys:
+            - reactive-spring-forex-trade-{{ checksum "pom.xml" }}
+            - reactive-spring-forex-trade-          
+
+      # Run integration test
+      - run:
+          name: Deployment
+          command: echo "It is a place holder task for deployment"
+
+
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ./*      
       
 workflows:
   main:
@@ -182,5 +208,14 @@ workflows:
       - End-to-End-Test:
           requires:
             - Analyze-Code
-          
+
+      - Deployment-Approval:
+          type: approval
+          requires:
+            - Integration-Test
+            - End-to-End-Test
+            
+      - Deployment:
+          requires:
+            - Deployment-Approval          
 
