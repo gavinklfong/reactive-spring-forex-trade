@@ -3,8 +3,13 @@ package space.gavinklfong.forex.dto;
 import java.time.LocalDate;
 import java.util.Map;
 
+import lombok.Data;
+
+@Data
 public class ForexRateApiResp {
 
+	private String id;
+	
 	private Map<String, Double> rates;
 	
 	private String base;
@@ -22,29 +27,5 @@ public class ForexRateApiResp {
 		this.rates = rates;
 	}
 
-	
-	public Map<String, Double> getRates() {
-		return rates;
-	}
-
-	public void setRates(Map<String, Double> rates) {
-		this.rates = rates;
-	}
-
-	public String getBase() {
-		return base;
-	}
-
-	public void setBase(String base) {
-		this.base = base;
-	}
-
-	public LocalDate getDate() {
-		return date;
-	}
-
-	public void setDate(LocalDate date) {
-		this.date = date;
-	}
 	
 }

@@ -33,11 +33,10 @@ public class ForexRateApiClient {
 		
 		log.debug("fetchLatestRates() - baseUrl = " + forexApiUrl);
 		
-		return webClient.get().uri("/rates?base={base}&symbols=ALL", baseCurrency)
+		return webClient.get().uri("/rates/{base}", baseCurrency)
 		.accept(MediaType.APPLICATION_JSON)
 		.retrieve()
-		.bodyToFlux(ForexRateApiResp.class)
-		.next();
+		.bodyToMono(ForexRateApiResp.class);
 	}
 	
 	public Mono<ForexRateApiResp> fetchLatestRates(String baseCurrency, String counterCurrency) {
@@ -45,11 +44,10 @@ public class ForexRateApiClient {
 		log.debug("fetchLatestRates() - baseUrl = " + forexApiUrl);
 
 		
-		return webClient.get().uri("/rates?base={base}&symbols={counter}", baseCurrency, counterCurrency)
+		return webClient.get().uri("/rates/{base}-{counter}", baseCurrency, counterCurrency)
 		.accept(MediaType.APPLICATION_JSON)
 		.retrieve()		
-		.bodyToFlux(ForexRateApiResp.class)
-		.next();
+		.bodyToMono(ForexRateApiResp.class);
 	}
 	
 }
