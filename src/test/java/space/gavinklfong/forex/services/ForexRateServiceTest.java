@@ -74,7 +74,7 @@ public class ForexRateServiceTest {
 		
 		ForexRateBooking mockRecord = new ForexRateBooking("GBP", "USD", 0.25, BigDecimal.valueOf(1000), "ABC");
 		mockRecord.setExpiryTime(LocalDateTime.now().plusMinutes(15));
-		when(rateBookingRepo.findByBookingRef(anyString())).thenReturn(Arrays.asList(mockRecord));
+		when(rateBookingRepo.findByBookingRef(anyString())).thenReturn(Flux.just(mockRecord));
 		
 		ForexRateBooking rateBooking = new ForexRateBooking("GBP", "USD", 0.25, BigDecimal.valueOf(1000), "ABC");
 		
@@ -102,7 +102,7 @@ public class ForexRateServiceTest {
 		
 		ForexRateBooking mockRecord = new ForexRateBooking("GBP", "USD", 0.25, BigDecimal.valueOf(1000), "ABC");
 		mockRecord.setExpiryTime(LocalDateTime.now().minusMinutes(15));
-		when(rateBookingRepo.findByBookingRef(anyString())).thenReturn(Arrays.asList(mockRecord));
+		when(rateBookingRepo.findByBookingRef(anyString())).thenReturn(Flux.just(mockRecord));
 		
 		ForexRateBooking rateBooking = new ForexRateBooking("GBP", "USD", 0.25, BigDecimal.valueOf(1000), "ABC");
 		
@@ -210,7 +210,7 @@ public class ForexRateServiceTest {
 		
 		// Customer Repo return a mock customer record when findById() is invoked
 		when(customerRepo.findById(anyLong()))
-		.thenReturn(Optional.of(new Customer(1l, "Tester 1", tier)));
+		.thenReturn(Mono.just(new Customer(1l, "Tester 1", tier)));
 		
 		// Rate Booking Repo return a mock return when save() is invoked
 		when(rateBookingRepo.save(any(ForexRateBooking.class)))

@@ -4,9 +4,6 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import org.slf4j.Logger;
-
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -16,6 +13,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import space.gavinklfong.forex.services.ForexRateService;
@@ -24,12 +23,11 @@ import space.gavinklfong.forex.dto.ForexRateBookingReq;
 import space.gavinklfong.forex.models.ForexRateBooking;
 import space.gavinklfong.forex.exceptions.InvalidRequestException;
 
+@Slf4j
 @RestController
 @RequestMapping("/rates")
 public class ForexRateRestController {
 
-	private static Logger logger = LoggerFactory.getLogger(ForexRateRestController.class);
-	
 	@Value("${app.default-base-currency")
 	private String defaultBaseCurrency;
 		

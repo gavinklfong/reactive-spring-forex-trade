@@ -3,21 +3,16 @@ package space.gavinklfong.forex.models;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
-@Entity
-@Table(name = "forex_rate_booking")
+import lombok.Data;
+
+@Data
+@Table(value = "forex_rate_booking")
 public class ForexRateBooking {
 
 	@Id
-	@GeneratedValue (strategy = GenerationType.IDENTITY)
 	private Long id;
 	
 	private LocalDateTime timestamp;
@@ -30,13 +25,11 @@ public class ForexRateBooking {
 	
 	private BigDecimal baseCurrencyAmount;
 	
-	@Column(unique = true)
+
 	private String bookingRef;
 	
 	private LocalDateTime expiryTime;
 
-	@ManyToOne
-	@JoinColumn(name = "customer_id", referencedColumnName = "id")
 	private Customer customer;
 
 	public ForexRateBooking() {

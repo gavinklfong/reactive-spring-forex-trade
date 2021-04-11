@@ -57,7 +57,7 @@ public class ForexTradeServiceTest {
 		});
 		
 		when(customerRepo.findById(anyLong()))
-		.thenReturn(Optional.of(new Customer(1l, "Tester 1", 1)));
+		.thenReturn(Mono.just(new Customer(1l, "Tester 1", 1)));
 		
 		when(rateService.validateRateBooking(any(ForexRateBooking.class))).thenReturn(Mono.just(true));
 				
@@ -80,7 +80,7 @@ public class ForexTradeServiceTest {
 		});
 		
 		when(customerRepo.findById(anyLong()))
-		.thenReturn(Optional.of(new Customer(1l, "Tester 1", 1)));
+		.thenReturn(Mono.just(new Customer(1l, "Tester 1", 1)));
 		
 		when(rateService.validateRateBooking(any(ForexRateBooking.class))).thenReturn(Mono.just(false));
 				
@@ -103,7 +103,7 @@ public class ForexTradeServiceTest {
 		});
 		
 		when(customerRepo.findById(anyLong()))
-		.thenReturn(Optional.empty());
+		.thenReturn(Mono.empty());
 		
 		when(rateService.validateRateBooking(any(ForexRateBooking.class))).thenReturn(Mono.just(true));
 				
@@ -132,7 +132,7 @@ public class ForexTradeServiceTest {
 		deals.add(deal2);
 		deals.add(deal3);
 		
-		when(tradeDealRepo.findByCustomerId(anyLong())).thenReturn(deals);
+		when(tradeDealRepo.findByCustomerId(anyLong())).thenReturn(Flux.fromIterable(deals) );
 		
 		Flux<ForexTradeDeal> result = tradeService.retrieveTradeDealByCustomer(1l);
 		

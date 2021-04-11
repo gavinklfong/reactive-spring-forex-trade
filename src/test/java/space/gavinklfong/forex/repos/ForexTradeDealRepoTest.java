@@ -12,11 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.jdbc.Sql;
 
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 import space.gavinklfong.forex.models.ForexTradeDeal;
 
 
-@DataJpaTest
-@Sql({"/data-unittest.sql"})
 @Tag("UnitTest")
 public class ForexTradeDealRepoTest {
 
@@ -32,10 +32,10 @@ public class ForexTradeDealRepoTest {
 	@Test
 	void findByCustomerId_withNoRecords() {
 
-		List<ForexTradeDeal> results = tradeDealRepo.findByCustomerId(2l);
+		tradeDealRepo.findByCustomerId(2l)
+		.as(StepVerifier::create)
+		.verifyComplete();
 		
-		assertNotNull(results);
-		assertEquals(0, results.size());		
 	}	
 	
 	
@@ -46,18 +46,22 @@ public class ForexTradeDealRepoTest {
 	@Test
 	void findByCustomerId_withRecords() {
 
-		List<ForexTradeDeal> results = tradeDealRepo.findByCustomerId(1l);
+		tradeDealRepo.findByCustomerId(1l)
+		.as(StepVerifier::create)
+		.expectNextMatches(item -> assertTradeDeal(item))
+		.expectComplete()
+		.verify();		
 		
-		assertNotNull(results);
-		assertEquals(3, results.size());
-		
-		results.forEach(record ->  {
-			assertTradeDeal(record);
-		});
+//		assertNotNull(results);
+//		assertEquals(3, results.size());
+//		
+//		results.forEach(record ->  {
+//			assertTradeDeal(record);
+//		});
 		
 	}
 	
-	void assertTradeDeal(ForexTradeDeal record) {
+	boolean assertTradeDeal(ForexTradeDeal record) {
 		
 		switch (record.getDealRef()) {
 			case "DEAL-REF-01":
@@ -84,6 +88,7 @@ public class ForexTradeDealRepoTest {
 			
 		}
 		
+		return true;
 	}
 	
 }

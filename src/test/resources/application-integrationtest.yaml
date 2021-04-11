@@ -1,7 +1,7 @@
 app:
   rate-booking-duration: 120
   default-base-currency: GBP
-  forex-rate-api-url: https://api.exchangeratesapi.io
+  forex-rate-api-url: http://localhost:3000
 
 debug: false
 

@@ -2,15 +2,15 @@ package space.gavinklfong.forex.repos;
 
 import java.util.List;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
 
+import reactor.core.publisher.Flux;
 import space.gavinklfong.forex.models.ForexRateBooking;
 
-@Repository
-public interface ForexRateBookingRepo extends CrudRepository <ForexRateBooking, Long>{
+public interface ForexRateBookingRepo extends ReactiveCrudRepository <ForexRateBooking, Long>{
 
-	List<ForexRateBooking> findByBookingRef(String bookingRef);
+	Flux<ForexRateBooking> findByBookingRef(String bookingRef);
 	
 	
 }

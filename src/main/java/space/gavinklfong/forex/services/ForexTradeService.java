@@ -8,6 +8,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import space.gavinklfong.forex.dto.ForexTradeDealReq;
@@ -19,7 +20,7 @@ import space.gavinklfong.forex.models.ForexTradeDeal;
 import space.gavinklfong.forex.repos.CustomerRepo;
 import space.gavinklfong.forex.repos.ForexTradeDealRepo;
 
-
+@Slf4j
 @Component
 public class ForexTradeService {
 
@@ -45,9 +46,9 @@ public class ForexTradeService {
 	public Mono<ForexTradeDeal> postTradeDeal(ForexTradeDealReq req) {
 		
 		// Validate customer id
-		Optional<Customer> customer = customerRepo.findById(req.getCustomerId());
-		if (customer.isEmpty()) return Mono.error(new UnknownCustomerException());
-		
+		Mono<Customer> customer = customerRepo.findById(req.getCustomerId());
+		if (customer.blockOptional().isEmpty()) return Mono.error(new UnknownCustomerException());
+			
 		ForexRateBooking rateBooking = new ForexRateBooking(req.getBaseCurrency(), req.getCounterCurrency(), req.getRate(), req.getBaseCurrencyAmount(), req.getRateBookingRef());
 		
 		// Validate rate booking
@@ -61,7 +62,7 @@ public class ForexTradeService {
 				ForexTradeDeal deal = new ForexTradeDeal(dealRef, timestamp, req.getBaseCurrency(), req.getCounterCurrency(), 
 						req.getRate(), req.getBaseCurrencyAmount(), new Customer(req.getCustomerId()));
 				
-				return Mono.just(tradeDealRepo.save(deal));
+				return tradeDealRepo.save(deal);
 				
 			} else {
 				// throw exception if rate booking is invalid
@@ -79,12 +80,8 @@ public class ForexTradeService {
 	 */
 	public Flux<ForexTradeDeal> retrieveTradeDealByCustomer(Long customerId) {
 		
-		List<ForexTradeDeal> deals = tradeDealRepo.findByCustomerId(customerId);
-		
-		if (deals == null || deals.isEmpty()) 
-			return Flux.empty();
-		else
-			return Flux.fromStream(deals.stream());
+		return tradeDealRepo.findByCustomerId(customerId);
+
 	}
 	
 }
