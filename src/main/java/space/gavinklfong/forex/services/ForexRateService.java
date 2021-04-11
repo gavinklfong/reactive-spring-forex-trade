@@ -76,7 +76,7 @@ public class ForexRateService {
 		// retrieve customer tier
 		log.debug("Retrieve customer record - id = " + request.getCustomerId());
 		Mono<Customer> customer = customerRepo.findById(request.getCustomerId());
-		if (customer.blockOptional().isEmpty()) throw new UnknownCustomerException();
+//		if (customer.blockOptional().isEmpty()) throw new UnknownCustomerException();
 				
 		// fetch rate from external API
 		log.debug("fetch rate from external API");
@@ -192,18 +192,16 @@ public class ForexRateService {
 		
 		// Check if booking reference is expired
 		
-		ForexRateBooking record = repoRecords.blockFirst();
-		if (record.getExpiryTime().isBefore(LocalDateTime.now())) {
-			return Mono.just(false);
-		}
-		
-		// Check if amount matches
-		if (record.getBaseCurrencyAmount().compareTo(rateBooking.getBaseCurrencyAmount()) != 0) {
-			return Mono.just(false);
-		}
-		
-		
-		return Mono.just(true);
+		return repoRecords
+		.map(record -> {
+			if (record.getExpiryTime().isBefore(LocalDateTime.now()) ||
+					record.getBaseCurrencyAmount().compareTo(rateBooking.getBaseCurrencyAmount()) != 0) {
+				return false;
+			} else {
+				return true;
+			}
+		})
+		.single();
 		
 	}
 }

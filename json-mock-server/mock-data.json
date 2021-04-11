@@ -40,6 +40,49 @@
 			"id": "GBP-USD",
 	        "base": "GBP",
 	        "date": "2020-01-20"
-		}				
+		},
+		{	
+			"rates": {
+	          "GBP": 0.7
+	        },
+			"id": "USD-GBP",
+	        "base": "USD",
+	        "date": "2020-01-20"
+		},
+		{	
+			"rates": {
+	          "USD": 0.8
+	        },
+			"id": "CAD-USD",
+	        "base": "CAD",
+	        "date": "2020-01-20"
+		},
+		{	
+			"rates": {
+	          "USD": 2.1
+	        },
+			"id": "PHP-USD",
+	        "base": "PHP",
+	        "date": "2020-01-20"
+		},
+		{	
+			"rates": {
+	          "USD": 0.3
+	        },
+			"id": "HKD-USD",
+	        "base": "HKD",
+	        "date": "2020-01-20"
+		},						
+		{	
+			"rates": {
+	          "HKD": 10.7
+	        },
+			"id": "GBP-HKD",
+	        "base": "GBP",
+	        "date": "2020-01-20"
+		}						
+
+		
+								
 	]
 }

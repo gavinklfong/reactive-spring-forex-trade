@@ -47,7 +47,7 @@ public class ForexTradeService {
 		
 		// Validate customer id
 		Mono<Customer> customer = customerRepo.findById(req.getCustomerId());
-		if (customer.blockOptional().isEmpty()) return Mono.error(new UnknownCustomerException());
+//		if (customer.blockOptional().isEmpty()) return Mono.error(new UnknownCustomerException());
 			
 		ForexRateBooking rateBooking = new ForexRateBooking(req.getBaseCurrency(), req.getCounterCurrency(), req.getRate(), req.getBaseCurrencyAmount(), req.getRateBookingRef());
 		
@@ -60,7 +60,7 @@ public class ForexTradeService {
 				String dealRef = UUID.randomUUID().toString();
 				LocalDateTime timestamp = LocalDateTime.now();
 				ForexTradeDeal deal = new ForexTradeDeal(dealRef, timestamp, req.getBaseCurrency(), req.getCounterCurrency(), 
-						req.getRate(), req.getBaseCurrencyAmount(), new Customer(req.getCustomerId()));
+						req.getRate(), req.getBaseCurrencyAmount(), req.getCustomerId());
 				
 				return tradeDealRepo.save(deal);
 				

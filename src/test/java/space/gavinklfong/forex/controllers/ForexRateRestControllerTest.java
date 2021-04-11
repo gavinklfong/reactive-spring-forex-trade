@@ -85,10 +85,9 @@ class ForexRateRestControllerTest {
 			ForexRateBookingReq req = (ForexRateBookingReq) invocation.getArgument(0);
 			LocalDateTime timestamp = LocalDateTime.now();
 			LocalDateTime expiryTime = timestamp.plusMinutes(10);
-			Customer customer = new Customer(req.getCustomerId(), "Tester 1", 1);
 			return Mono.just(
 					new ForexRateBooking(1l, timestamp, req.getBaseCurrency(), req.getCounterCurrency(), 
-							Math.random(), UUID.randomUUID().toString(), expiryTime, customer)
+							Math.random(), UUID.randomUUID().toString(), expiryTime, 1l)
 					);
 		});
 		
@@ -116,10 +115,9 @@ class ForexRateRestControllerTest {
 			ForexRateBookingReq req = (ForexRateBookingReq) invocation.getArgument(0);
 			LocalDateTime timestamp = LocalDateTime.now();
 			LocalDateTime expiryTime = timestamp.plusMinutes(10);
-			Customer customer = new Customer(req.getCustomerId(), "Tester 1", 1);
 			return Mono.just(
 					new ForexRateBooking(1l, timestamp, req.getBaseCurrency(), req.getCounterCurrency(), 
-							Math.random(), UUID.randomUUID().toString(), expiryTime, customer)
+							Math.random(), UUID.randomUUID().toString(), expiryTime, 1l)
 					);
 		});
 		

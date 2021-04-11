@@ -27,14 +27,14 @@ public class ForexTradeDeal {
 	
 	private BigDecimal baseCurrencyAmount;
 	
-	private Customer customer;
+	private Long customerId;
 	
 	public ForexTradeDeal() {
 		super();
 	}
 
 	public ForexTradeDeal(Long id, String dealRef, LocalDateTime timestamp, String baseCurrency, String counterCurrency,
-			Double rate, BigDecimal baseCurrencyAmount, Customer customer) {
+			Double rate, BigDecimal baseCurrencyAmount, Long customerId) {
 		super();
 		this.id = id;
 		this.dealRef = dealRef;
@@ -43,11 +43,11 @@ public class ForexTradeDeal {
 		this.counterCurrency = counterCurrency;
 		this.rate = rate;
 		this.baseCurrencyAmount = baseCurrencyAmount;
-		this.customer = customer;
+		this.customerId = customerId;
 	}	
 	
 	public ForexTradeDeal(String dealRef, LocalDateTime timestamp, String baseCurrency, String counterCurrency, Double rate,
-			BigDecimal baseCurrencyAmount, Customer customer) {
+			BigDecimal baseCurrencyAmount, Long customerId) {
 		super();
 		this.dealRef = dealRef;
 		this.timestamp = timestamp;
@@ -55,71 +55,7 @@ public class ForexTradeDeal {
 		this.counterCurrency = counterCurrency;
 		this.rate = rate;
 		this.baseCurrencyAmount = baseCurrencyAmount;
-		this.customer = customer;
-	}
-	
-	public Long getId() {
-		return id;
+		this.customerId = customerId;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public LocalDateTime getTimestamp() {
-		return timestamp;
-	}
-
-	public void setTimestamp(LocalDateTime timestamp) {
-		this.timestamp = timestamp;
-	}
-
-	public String getBaseCurrency() {
-		return baseCurrency;
-	}
-
-	public void setBaseCurrency(String sourceCurrency) {
-		this.baseCurrency = sourceCurrency;
-	}
-
-	public String getCounterCurrency() {
-		return counterCurrency;
-	}
-
-	public void setCounterCurrency(String targetCurrency) {
-		this.counterCurrency = targetCurrency;
-	}
-
-	public Double getRate() {
-		return rate;
-	}
-
-	public void setRate(Double rate) {
-		this.rate = rate;
-	}
-
-	public BigDecimal getBaseCurrencyAmount() {
-		return baseCurrencyAmount;
-	}
-
-	public void setBaseCurrencyAmount(BigDecimal sourceCurrencyAmount) {
-		this.baseCurrencyAmount = sourceCurrencyAmount;
-	}
-
-	public String getDealRef() {
-		return dealRef;
-	}
-
-	public void setDealRef(String dealRef) {
-		this.dealRef = dealRef;
-	}
-
-//	public Customer getCustomer() {
-//		return customer;
-//	}
-//
-//	public void setCustomer(Customer customer) {
-//		this.customer = customer;
-//	}
-	
 }

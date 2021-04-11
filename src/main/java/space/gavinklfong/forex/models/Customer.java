@@ -19,7 +19,7 @@ public class Customer {
 	
 	private Integer tier;
 	
-	private Collection<ForexTradeDeal> deals;
+//	private Collection<ForexTradeDeal> deals;
 	
 	public Customer() {
 		super();

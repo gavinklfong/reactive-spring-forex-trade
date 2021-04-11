@@ -121,11 +121,11 @@ public class ForexTradeServiceTest {
 	public void retrieveTradeDealByCustomerTest() {
 		
 		ForexTradeDeal deal1 = new ForexTradeDeal(UUID.randomUUID().toString(), LocalDateTime.now(), "GBP", "USD",  Math.random(),
-				BigDecimal.valueOf(1000), new Customer(1l, "Tester 1", 1));
+				BigDecimal.valueOf(1000), 1l);
 		ForexTradeDeal deal2 = new ForexTradeDeal(UUID.randomUUID().toString(), LocalDateTime.now(), "GBP", "USD",  Math.random(),
-				BigDecimal.valueOf(1000), new Customer(1l, "Tester 1", 1));
+				BigDecimal.valueOf(1000), 1l);
 		ForexTradeDeal deal3 = new ForexTradeDeal(UUID.randomUUID().toString(), LocalDateTime.now(), "GBP", "USD",  Math.random(),
-				BigDecimal.valueOf(1000), new Customer(1l, "Tester 1", 1));
+				BigDecimal.valueOf(1000), 1l);
 				
 		List<ForexTradeDeal> deals = new ArrayList<>();
 		deals.add(deal1);

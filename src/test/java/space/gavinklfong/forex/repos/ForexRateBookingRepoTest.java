@@ -119,7 +119,7 @@ public class ForexRateBookingRepoTest {
 		cust.setName("tester");
 		cust.setTier(1);
 		
-		rate.setCustomer(cust);
+		rate.setCustomerId(1l);
 		
 		
 		Mono<ForexRateBooking> savedRate = rateBookingRepo.save(rate);
