@@ -56,7 +56,7 @@ public class ForexRateApiClientIntegrationTest {
 		final String BASE = "GBP";
 		final String COUNTER = "USD";
 		
-		ForexRateApiResp resp = client.fetchLatestRates(BASE, COUNTER).block();
+		ForexRateApiResp resp = client.fetchLatestRate(BASE, COUNTER).block();
 		
 		assertNotNull(resp);
 		assertNotNull(resp.getDate());

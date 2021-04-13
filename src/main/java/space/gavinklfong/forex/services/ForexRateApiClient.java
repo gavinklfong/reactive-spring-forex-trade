@@ -39,7 +39,7 @@ public class ForexRateApiClient {
 		.bodyToMono(ForexRateApiResp.class);
 	}
 	
-	public Mono<ForexRateApiResp> fetchLatestRates(String baseCurrency, String counterCurrency) {
+	public Mono<ForexRateApiResp> fetchLatestRate(String baseCurrency, String counterCurrency) {
 		
 		log.debug("fetchLatestRates() - baseUrl = " + forexApiUrl);
 

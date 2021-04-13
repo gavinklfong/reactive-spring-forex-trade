@@ -87,7 +87,7 @@ public class ForexRateServiceTest {
 	@Test
 	void validateRateBookingTest_invalidBooking_notFound() {
 		
-		when(rateBookingRepo.findByBookingRef(anyString())).thenReturn(null);
+		when(rateBookingRepo.findByBookingRef(anyString())).thenReturn(Flux.empty());
 		
 		ForexRateBooking rateBooking = new ForexRateBooking("GBP", "USD", 0.25, BigDecimal.valueOf(1000), "ABC");
 		
@@ -154,7 +154,7 @@ public class ForexRateServiceTest {
 		LocalDateTime timestamp = rateBooking.getTimestamp();
 		LocalDateTime expiryTime = rateBooking.getExpiryTime();
 		assertTrue(timestamp.isBefore(expiryTime));
-		assertEquals(1 + CustomerRateTier.TIER1.rate + ADDITIONAL_PIP, rateBooking.getRate());	
+		assertEquals(CustomerRateTier.TIER1.rate, rateBooking.getRate());	
 		
 	}
 	
@@ -166,7 +166,7 @@ public class ForexRateServiceTest {
 		LocalDateTime timestamp = rateBooking.getTimestamp();
 		LocalDateTime expiryTime = rateBooking.getExpiryTime();
 		assertTrue(timestamp.isBefore(expiryTime));
-		assertEquals(1 + CustomerRateTier.TIER2.rate + ADDITIONAL_PIP, rateBooking.getRate());	
+		assertEquals(CustomerRateTier.TIER2.rate, rateBooking.getRate());	
 	}
 	
 	@Test
@@ -177,7 +177,7 @@ public class ForexRateServiceTest {
 		LocalDateTime timestamp = rateBooking.getTimestamp();
 		LocalDateTime expiryTime = rateBooking.getExpiryTime();
 		assertTrue(timestamp.isBefore(expiryTime));
-		assertEquals(1 + CustomerRateTier.TIER3.rate + ADDITIONAL_PIP, rateBooking.getRate());	
+		assertEquals(CustomerRateTier.TIER3.rate, rateBooking.getRate());	
 		
 	}
 	
@@ -194,14 +194,14 @@ public class ForexRateServiceTest {
 		LocalDateTime expiryTime = rateBooking.getExpiryTime();
 		assertTrue(timestamp.isBefore(expiryTime));
 		
-		assertEquals(1 + CustomerRateTier.TIER4.rate + ADDITIONAL_PIP, rateBooking.getRate());	
+		assertEquals( CustomerRateTier.TIER4.rate, rateBooking.getRate());	
 	}
 	
 	
 	private ForexRateBooking obtainBookingTest(Integer tier) throws JsonProcessingException, UnknownCustomerException {
 		
 		// Forex API client returns 1 when fetchLatestRates() is invoked
-		when(forexRateApiClient.fetchLatestRates(anyString(), anyString()))
+		when(forexRateApiClient.fetchLatestRate(anyString(), anyString()))
 		.thenAnswer(invocation -> {
 			Map<String, Double> rates = new HashMap<>();
 			rates.put((String)invocation.getArgument(1), 1d);
@@ -217,7 +217,7 @@ public class ForexRateServiceTest {
 		.thenAnswer(invocation -> {
 			ForexRateBooking record = (ForexRateBooking)invocation.getArgument(0);
 			record.setId((long)Math.random() * 10 + 1);
-			return record;
+			return Mono.just(record);
 		});
 		
 		when(forexPriceService.obtainForexPrice(anyString(), anyString(), anyDouble()))

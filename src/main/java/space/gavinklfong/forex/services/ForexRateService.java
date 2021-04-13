@@ -51,18 +51,31 @@ public class ForexRateService {
 		LocalDateTime timestamp = LocalDateTime.now();
 		
 		return forexRateApiClient.fetchLatestRates(baseCurrency)
-		.flatMapMany(resp -> { 
-			
-			List<ForexRate> rates = new ArrayList<>();
-			
-			resp.getRates().forEach((counterCurrency, rate) -> {
-				rates.add(new ForexRate(timestamp, baseCurrency, counterCurrency, 
-						forexPriceService.obtainForexPrice(baseCurrency, counterCurrency, rate)));
-			});
-			
-			return Flux.fromStream(rates.stream());
-		});
+		.flatMapMany(resp -> Flux.fromIterable(resp.getRates().entrySet()))
+		.map(rate -> new ForexRate(timestamp, baseCurrency, rate.getKey(), 
+						forexPriceService.obtainForexPrice(baseCurrency, rate.getKey(), rate.getValue()))	
+		);
 		
+	}
+	
+	private Mono<ForexRate> fetchLatestRate(String baseCurrency, String counterCurrency) {
+		
+		LocalDateTime timestamp = LocalDateTime.now();
+		
+		return forexRateApiClient.fetchLatestRate(baseCurrency, counterCurrency)
+		.map(resp -> 					
+			new ForexRate(timestamp, baseCurrency, counterCurrency, resp.getRates().get(counterCurrency))	
+		 )
+		.map(r -> {
+			Double value = forexPriceService.obtainForexPrice(
+					baseCurrency, 
+					counterCurrency,
+					r.getRate()
+					);
+			
+			return r.withRate(value);
+		});
+				
 	}
 	
 	/**
@@ -72,127 +85,77 @@ public class ForexRateService {
 	 * @return Mono - RateBooking
 	 */
 	public Mono<ForexRateBooking> obtainBooking(ForexRateBookingReq request) throws UnknownCustomerException {
-
+		
 		// retrieve customer tier
 		log.debug("Retrieve customer record - id = " + request.getCustomerId());
 		Mono<Customer> customer = customerRepo.findById(request.getCustomerId());
-//		if (customer.blockOptional().isEmpty()) throw new UnknownCustomerException();
+
 				
 		// fetch rate from external API
 		log.debug("fetch rate from external API");
-		return forexRateApiClient.fetchLatestRates(request.getBaseCurrency(), request.getCounterCurrency())
-				.flatMap(record -> {
-					double rate = forexPriceService.obtainForexPrice(request.getBaseCurrency(), request.getCounterCurrency(), record.getRates().get(request.getCounterCurrency()));
-					return constructRateBooking(request, customer, rate);
-				});
-				
+		return fetchLatestRate(request.getBaseCurrency(), request.getCounterCurrency())
+				.map(rate -> rate.withRate(forexPriceService.obtainForexPrice(request.getBaseCurrency(), request.getCounterCurrency(), rate.getRate())))
+				.zipWith(customer)
+				.map(tuple -> adjustRateForCustomerTier(tuple.getT1(), tuple.getT2()))	
+				.map(rate -> buildRateBookingRecord(request, rate.getRate()))
+				.flatMap(booking -> rateBookingRepo.save(booking));
+								
 	}
 	
-	private Mono<ForexRateBooking> constructRateBooking(ForexRateBookingReq request, Mono<Customer> customer, Double rate) {
+	
+	private ForexRate adjustRateForCustomerTier(ForexRate rate, Customer customer) {
+		 	
+			double adjustedRate = 0;
+			
+			// determine rate
+			switch (customer.getTier()) {
+			case 1:
+				adjustedRate += CustomerRateTier.TIER1.rate;
+				break;
+			case 2:
+				adjustedRate += CustomerRateTier.TIER2.rate;
+				break;
+			case 3:
+				adjustedRate += CustomerRateTier.TIER3.rate;
+				break;
+			default:
+				adjustedRate += CustomerRateTier.TIER4.rate;
+			}
+			
+			return rate.withRate(adjustedRate);				
 		
-		return customer.log()
-				.map(c -> {
-					
-					double r = rate;
-					
-					// determine rate
-					switch (c.getTier()) {
-					case 1:
-						r += CustomerRateTier.TIER1.rate;
-						break;
-					case 2:
-						r += CustomerRateTier.TIER2.rate;
-						break;
-					case 3:
-						r += CustomerRateTier.TIER3.rate;
-						break;
-					default:
-						r += CustomerRateTier.TIER4.rate;
-					}
-					return rate;
-				})
-				.log()
-				.flatMap(r -> {
-					ForexRateBooking bookingRecord = new ForexRateBooking(request.getBaseCurrency(), request.getCounterCurrency(), request.getBaseCurrencyAmount(), request.getCustomerId());
+	}
+	
+	private ForexRateBooking buildRateBookingRecord(ForexRateBookingReq request, Double rate) {
+		
+		ForexRateBooking bookingRecord = new ForexRateBooking(request.getBaseCurrency(), request.getCounterCurrency(), request.getBaseCurrencyAmount(), request.getCustomerId());
 
-					UUID bookingRef = UUID.randomUUID();
-					bookingRecord.setBookingRef(bookingRef.toString());
+		UUID bookingRef = UUID.randomUUID();
+		bookingRecord.setBookingRef(bookingRef.toString());
 
-					LocalDateTime timestamp = LocalDateTime.now();
-					bookingRecord.setTimestamp(timestamp);
+		LocalDateTime timestamp = LocalDateTime.now();
+		bookingRecord.setTimestamp(timestamp);
 
-					LocalDateTime expiryTime = timestamp.plusSeconds(bookingDuration);
-					bookingRecord.setExpiryTime(expiryTime);
-					
-					bookingRecord.setRate(r);
+		LocalDateTime expiryTime = timestamp.plusSeconds(bookingDuration);
+		bookingRecord.setExpiryTime(expiryTime);
+		
+		bookingRecord.setRate(rate);
 
-					// save rate booking to repo
-					log.debug("save rate booking to repo");
-					
-					return rateBookingRepo.save(bookingRecord);
-				});
+		return bookingRecord;
 				
-		
-//		log.debug("customer: " + customer.getId() + ", " + customer.getName() + ", " + customer.getTier());
-//		
-//		// determine rate
-//		switch (customer.getTier()) {
-//		case 1:
-//			rate += CustomerRateTier.TIER1.rate;
-//			break;
-//		case 2:
-//			rate += CustomerRateTier.TIER2.rate;
-//			break;
-//		case 3:
-//			rate += CustomerRateTier.TIER3.rate;
-//			break;
-//		default:
-//			rate += CustomerRateTier.TIER4.rate;
-//		}
-//		
-//		
-//		// build rate booking record
-//		log.debug("build rate booking record - rate = " + rate);
-//		ForexRateBooking bookingRecord = new ForexRateBooking(request.getBaseCurrency(), request.getCounterCurrency(), request.getBaseCurrencyAmount(), request.getCustomerId());
-//
-//		UUID bookingRef = UUID.randomUUID();
-//		bookingRecord.setBookingRef(bookingRef.toString());
-//
-//		LocalDateTime timestamp = LocalDateTime.now();
-//		bookingRecord.setTimestamp(timestamp);
-//
-//		LocalDateTime expiryTime = timestamp.plusSeconds(bookingDuration);
-//		bookingRecord.setExpiryTime(expiryTime);
-//		
-//		bookingRecord.setRate(rate);
-//
-//		// save rate booking to repo
-//		log.debug("save rate booking to repo");
-//		
-//		return rateBookingRepo.save(bookingRecord);
 	}
 	
 	/**
 	 * Validate whether Rate Booking by
 	 *  1. Check if booking reference exists in repository
-	 *  2. Check if the record is expired
+	 *  2. Check if the record is expired   
 	 * 
 	 * @param rateBooking
 	 * @return
 	 */
 	public Mono<Boolean> validateRateBooking(ForexRateBooking rateBooking) {
-		
-		// Check existence of booking reference
-		Flux<ForexRateBooking> repoRecords = rateBookingRepo.findByBookingRef(rateBooking.getBookingRef());
-		
-		
-//		if (repoRecords == null || repoRecords.size() <= 0) {
-//			return Mono.just(false);
-//		}
-		
-		// Check if booking reference is expired
-		
-		return repoRecords
+					
+		return rateBookingRepo.findByBookingRef(rateBooking.getBookingRef())
 		.map(record -> {
 			if (record.getExpiryTime().isBefore(LocalDateTime.now()) ||
 					record.getBaseCurrencyAmount().compareTo(rateBooking.getBaseCurrencyAmount()) != 0) {
@@ -201,7 +164,8 @@ public class ForexRateService {
 				return true;
 			}
 		})
-		.single();
+		.single()
+		.onErrorResume(e -> Mono.just(false));
 		
 	}
 }

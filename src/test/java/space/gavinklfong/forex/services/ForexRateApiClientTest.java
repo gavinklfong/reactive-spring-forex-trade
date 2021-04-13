@@ -52,7 +52,6 @@ public class ForexRateApiClientTest {
 	        .withOperationsAndResponses(Collections.singletonMap("getLatestRates", "200"))  
 	    );
 		
-
 		// Initialize API client and trigger request
 		ForexRateApiClient forexRateApiClient = new ForexRateApiClient(serverUrl);
 		Mono<ForexRateApiResp> response = forexRateApiClient.fetchLatestRates("GBP");
@@ -84,7 +83,7 @@ public class ForexRateApiClientTest {
 		
 		// Initialize API client and trigger request
 		ForexRateApiClient forexRateApiClient = new ForexRateApiClient(serverUrl);
-		Mono<ForexRateApiResp> response = forexRateApiClient.fetchLatestRates("GBP");
+		Mono<ForexRateApiResp> response = forexRateApiClient.fetchLatestRate("GBP", "USD");
 		
 		// Assert response
 		ForexRateApiResp rawData = response.block();

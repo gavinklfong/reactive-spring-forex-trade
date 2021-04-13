@@ -53,7 +53,7 @@ public class ForexTradeServiceTest {
 		when(tradeDealRepo.save(any(ForexTradeDeal.class))).thenAnswer(invocation -> {
 			ForexTradeDeal deal = (ForexTradeDeal) invocation.getArgument(0);
 			deal.setId(99l);
-			return deal;
+			return Mono.just(deal);
 		});
 		
 		when(customerRepo.findById(anyLong()))
@@ -99,7 +99,7 @@ public class ForexTradeServiceTest {
 		when(tradeDealRepo.save(any(ForexTradeDeal.class))).thenAnswer(invocation -> {
 			ForexTradeDeal deal = (ForexTradeDeal) invocation.getArgument(0);
 			deal.setId(99l);
-			return deal;
+			return Mono.just(deal);
 		});
 		
 		when(customerRepo.findById(anyLong()))
@@ -148,7 +148,7 @@ public class ForexTradeServiceTest {
 	@Test
 	public void retrieveTradeDealByCustomerTest_Empty() {
 		
-		when(tradeDealRepo.findByCustomerId(anyLong())).thenReturn(null);
+		when(tradeDealRepo.findByCustomerId(anyLong())).thenReturn(Flux.empty());
 		
 		Flux<ForexTradeDeal> result = tradeService.retrieveTradeDealByCustomer(1l);
 		
