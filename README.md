@@ -20,13 +20,17 @@ It is an API service which serves the use case of foreign currency trading. Here
 Maven pom.xml was generated on Spring Initializr with the following dependent libraries:
 
 - **Spring WebFlux** - Web Framework supports non-block operations
-- **Spring Data JPA** - Persistent data access
+- **Spring Data R2DBC** - Persistent data access
 - **Spring Validation** - Validation definition using annotations
 - **H2 Database** - In-memory database for testing
 
-### External Service
+### Forex Rate API
 
-To retrieve the latest currency exchange rate, service consume external API [ https://api.exchangeratesapi.io]
+To simulate API provider for Forex Rate, the workspace comes with a json data for **json-server** so that this application can consume the API for forex rate retrieval.
+
+You will need to install json-server on your environment
+`npm install -g json-server`
+
 
 ## Build & Run
 	
@@ -36,6 +40,9 @@ You can follow the commands below:
 
 **Build:**
 `mvn install`
+
+** Start up forex rate API **
+`json-server ./json-mock-server/mock-data.json`
 
 **Run:**
 `mvn spring-boot:run`
