@@ -14,7 +14,6 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import com.opencsv.exceptions.CsvValidationException;
 
 import space.gavinklfong.forex.config.AppConfig;
-import space.gavinklfong.forex.services.ForexPriceService;
 
 @SpringJUnitConfig
 @TestPropertySource(properties = {

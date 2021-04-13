@@ -1,8 +1,6 @@
 package space.gavinklfong.forex.services;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +12,6 @@ import reactor.core.publisher.Mono;
 import space.gavinklfong.forex.dto.ForexTradeDealReq;
 import space.gavinklfong.forex.exceptions.InvalidRateBookingException;
 import space.gavinklfong.forex.exceptions.UnknownCustomerException;
-import space.gavinklfong.forex.models.Customer;
 import space.gavinklfong.forex.models.ForexRateBooking;
 import space.gavinklfong.forex.models.ForexTradeDeal;
 import space.gavinklfong.forex.repos.CustomerRepo;

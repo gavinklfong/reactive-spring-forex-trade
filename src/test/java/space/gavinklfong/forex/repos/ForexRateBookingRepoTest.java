@@ -1,40 +1,24 @@
 package space.gavinklfong.forex.repos;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
-import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.r2dbc.DataR2dbcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
-import org.springframework.r2dbc.core.DatabaseClient;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-
 import static org.springframework.data.relational.core.query.Criteria.where;
 import static org.springframework.data.relational.core.query.Query.query;
 
 import lombok.extern.slf4j.Slf4j;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Hooks;
-import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
-import space.gavinklfong.forex.models.Customer;
 import space.gavinklfong.forex.models.ForexRateBooking;
 
 

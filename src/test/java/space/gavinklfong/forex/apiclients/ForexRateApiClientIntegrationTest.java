@@ -4,8 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.List;
-
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,7 +13,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import lombok.extern.slf4j.Slf4j;
-import space.gavinklfong.forex.apiclients.ForexRateApiClient;
 import space.gavinklfong.forex.dto.ForexRateApiResp;
 
 @Slf4j

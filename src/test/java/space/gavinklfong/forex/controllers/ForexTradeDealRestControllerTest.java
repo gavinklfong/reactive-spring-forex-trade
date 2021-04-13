@@ -21,7 +21,6 @@ import reactor.core.publisher.Mono;
 import space.gavinklfong.forex.dto.ForexTradeDealReq;
 import space.gavinklfong.forex.services.ForexTradeService;
 import space.gavinklfong.forex.exceptions.ErrorBody;
-import space.gavinklfong.forex.models.Customer;
 import space.gavinklfong.forex.models.ForexTradeDeal;
 
 @WebFluxTest(controllers = {ForexTradeDealRestController.class})

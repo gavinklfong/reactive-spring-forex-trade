@@ -1,33 +1,23 @@
 package space.gavinklfong.forex.repos;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.data.relational.core.query.Criteria.where;
 import static org.springframework.data.relational.core.query.Query.query;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.r2dbc.DataR2dbcTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
-import org.springframework.test.context.jdbc.Sql;
-
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Hooks;
-import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
-import space.gavinklfong.forex.models.Customer;
-import space.gavinklfong.forex.models.ForexRateBooking;
 import space.gavinklfong.forex.models.ForexTradeDeal;
 
 @Slf4j

@@ -1,12 +1,9 @@
 package space.gavinklfong.forex.models;
 
-import java.util.Collection;
-
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
 import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
 
 @Data
 @Table(value = "customer")

@@ -21,7 +21,6 @@ import space.gavinklfong.forex.services.ForexRateService;
 import space.gavinklfong.forex.dto.ForexRateBookingReq;
 import space.gavinklfong.forex.exceptions.ErrorBody;
 import space.gavinklfong.forex.exceptions.UnknownCustomerException;
-import space.gavinklfong.forex.models.Customer;
 import space.gavinklfong.forex.models.ForexRateBooking;
 
 /**

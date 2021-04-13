@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import reactor.core.publisher.Mono;
-import space.gavinklfong.forex.apiclients.ForexRateApiClient;
 import space.gavinklfong.forex.dto.ForexRateApiResp;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
