@@ -40,6 +40,12 @@ public class ForexTradeService {
 	 *  
 	 *  If everything is fine, then trade deal record will be assigned a unique deal reference save to repository
 	 * 
+	 * Flow:
+	 * Mono<Customer>			[Validate customer existence by retrieving record from repos]
+	 * 							[Fire exception if data is empty]
+	 * --> Mono<Boolean>		[Validate rate booking and return result as a boolean]
+	 * --> Mono<ForexTradeDeal>	[Build and save a new trade deal record]
+	 * 
 	 * @param req - Java bean containing trade deal request
 	 * @return Trade Deal Record with unique deal reference wrapped in Mono type
 	 */

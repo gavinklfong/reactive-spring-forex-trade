@@ -18,9 +18,7 @@ public class Customer {
 	private String name;
 	
 	private Integer tier;
-	
-//	private Collection<ForexTradeDeal> deals;
-	
+		
 	public Customer() {
 		super();
 	}

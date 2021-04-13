@@ -1,4 +1,4 @@
-package space.gavinklfong.forex.services;
+package space.gavinklfong.forex.apiclients;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import lombok.extern.slf4j.Slf4j;
+import space.gavinklfong.forex.apiclients.ForexRateApiClient;
 import space.gavinklfong.forex.dto.ForexRateApiResp;
 
 @Slf4j

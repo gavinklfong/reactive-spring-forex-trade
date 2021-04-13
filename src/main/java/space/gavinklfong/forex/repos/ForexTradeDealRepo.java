@@ -13,7 +13,7 @@ public interface ForexTradeDealRepo extends ReactiveCrudRepository<ForexTradeDea
 	 * Retrieve list of trade deal record by customer id
 	 * 
 	 * @param customerId
-	 * @return
+	 * @return 
 	 */
 	Flux<ForexTradeDeal> findByCustomerId(Long customerId);
 }

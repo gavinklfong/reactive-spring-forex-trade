@@ -8,7 +8,12 @@ import space.gavinklfong.forex.models.ForexRateBooking;
 
 public interface ForexRateBookingRepo extends ReactiveCrudRepository <ForexRateBooking, Long>{
 
-	Flux<ForexRateBooking> findByBookingRef(String bookingRef);
+	/**
+	 * Retrieve rate booking record by booking ref
+	 * 
+	 * @param customerId
+	 * @return
+	 */
+	Mono<ForexRateBooking> findByBookingRef(String bookingRef);
 	
-	Mono<ForexRateBooking> save(ForexRateBooking booking);
 }

@@ -33,6 +33,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 import space.gavinklfong.forex.dto.ForexRateApiResp;
+import space.gavinklfong.forex.apiclients.ForexRateApiClient;
 import space.gavinklfong.forex.dto.ForexRate;
 import space.gavinklfong.forex.dto.ForexRateBookingReq;
 import space.gavinklfong.forex.exceptions.UnknownCustomerException;
@@ -74,7 +75,7 @@ public class ForexRateServiceTest {
 		
 		ForexRateBooking mockRecord = new ForexRateBooking("GBP", "USD", 0.25, BigDecimal.valueOf(1000), "ABC");
 		mockRecord.setExpiryTime(LocalDateTime.now().plusMinutes(15));
-		when(rateBookingRepo.findByBookingRef(anyString())).thenReturn(Flux.just(mockRecord));
+		when(rateBookingRepo.findByBookingRef(anyString())).thenReturn(Mono.just(mockRecord));
 		
 		ForexRateBooking rateBooking = new ForexRateBooking("GBP", "USD", 0.25, BigDecimal.valueOf(1000), "ABC");
 		
@@ -87,14 +88,14 @@ public class ForexRateServiceTest {
 	@Test
 	void validateRateBookingTest_invalidBooking_notFound() {
 		
-		when(rateBookingRepo.findByBookingRef(anyString())).thenReturn(Flux.empty());
+		when(rateBookingRepo.findByBookingRef(anyString())).thenReturn(Mono.empty());
 		
 		ForexRateBooking rateBooking = new ForexRateBooking("GBP", "USD", 0.25, BigDecimal.valueOf(1000), "ABC");
 		
 		Mono<Boolean> result = rateService.validateRateBooking(rateBooking);
 		StepVerifier.create(result)
 		.expectNext(false)
-		.verifyComplete();		
+		.expectComplete();		
 	}
 	
 	@Test
@@ -102,7 +103,7 @@ public class ForexRateServiceTest {
 		
 		ForexRateBooking mockRecord = new ForexRateBooking("GBP", "USD", 0.25, BigDecimal.valueOf(1000), "ABC");
 		mockRecord.setExpiryTime(LocalDateTime.now().minusMinutes(15));
-		when(rateBookingRepo.findByBookingRef(anyString())).thenReturn(Flux.just(mockRecord));
+		when(rateBookingRepo.findByBookingRef(anyString())).thenReturn(Mono.just(mockRecord));
 		
 		ForexRateBooking rateBooking = new ForexRateBooking("GBP", "USD", 0.25, BigDecimal.valueOf(1000), "ABC");
 		

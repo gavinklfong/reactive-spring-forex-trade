@@ -2,14 +2,18 @@ package space.gavinklfong.forex.repos;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.springframework.data.relational.core.query.Criteria.where;
+import static org.springframework.data.relational.core.query.Query.query;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,7 +81,7 @@ public class ForexTradeDealRepoTest {
 				LocalDateTime.now(), "GBP", "USD", 1.25d, new BigDecimal(1000), 2l); 		
 		ForexTradeDeal deal2 = new ForexTradeDeal(2l, "DEAL-REF-02", 
 				LocalDateTime.now(), "GBP", "CAD", 1.5, new BigDecimal(5000), 2l); 		
-		
+			
 		List<ForexTradeDeal> deals = Arrays.asList(deal1, deal2);
 		deals.forEach(d -> 
 			r2dbcTemplate.insert(d)
@@ -89,19 +93,22 @@ public class ForexTradeDealRepoTest {
 		// assert repos method
 		tradeDealRepo.findByCustomerId(2l)
 		.as(StepVerifier::create)
-		.expectNextMatches(t -> {
-			if (t.getId() == 1l) return t.getDealRef().contentEquals("DEAL-REF-01");
-			if (t.getId() == 2l) return t.getDealRef().contentEquals("DEAL-REF-02");
-			return false;
-		})
-		.expectNextMatches(t -> {
-			if (t.getId() == 1l) return t.getDealRef().contentEquals("DEAL-REF-01");
-			if (t.getId() == 2l) return t.getDealRef().contentEquals("DEAL-REF-02");
-			return false;
-		})		
+		.expectNextMatches(t -> matchAnyOneRecord(deals, t))
+		.expectNextMatches(t -> matchAnyOneRecord(deals, t))
 		.verifyComplete();
 		
 	}	
+	
+	private boolean matchAnyOneRecord(List<ForexTradeDeal> deals, ForexTradeDeal deal) {
+		
+		long matchCount = deals.stream()
+		.filter(d -> d.getId() == deal.getId() 
+				&& d.getDealRef().contentEquals(deal.getDealRef()))
+		.count();
+		
+		return (matchCount == 1)? true : false;
+		
+	}
 	
 	
 	/**
@@ -116,6 +123,41 @@ public class ForexTradeDealRepoTest {
 		.expectComplete()
 		.verify();				
 		
+	}
+	
+	@Test
+	void testSave() {
+				
+		UUID uuid = UUID.randomUUID();		
+		ForexTradeDeal deal = new ForexTradeDeal();
+		deal.setBaseCurrency("GBP");
+		deal.setCounterCurrency("USD");
+		deal.setBaseCurrencyAmount(new BigDecimal(15000));
+		deal.setTimestamp(LocalDateTime.now());
+		deal.setRate(Double.valueOf(2.25));
+		deal.setDealRef(uuid.toString());
+		deal.setCustomerId(1l);
+		
+		// test save method
+		tradeDealRepo.save(deal)
+		.as(StepVerifier::create)
+		.expectNextMatches(i -> i.getId() != null)
+		.verifyComplete();
+				
+		// verify inserted record
+		r2dbcTemplate.select(ForexTradeDeal.class)
+		.matching(query(where("deal_ref").is(uuid.toString())))
+		.all()
+		.as(StepVerifier::create)
+		.expectNextMatches(r -> 
+			r.getBaseCurrency().equals(deal.getBaseCurrency())
+			&& r.getCounterCurrency().equals(deal.getCounterCurrency())
+			&& r.getDealRef().contentEquals(deal.getDealRef())
+			&& r.getCustomerId() == deal.getCustomerId()			
+			&& r.getRate().compareTo(deal.getRate()) == 0
+		)
+		.verifyComplete();				
+				
 	}
 	
 	

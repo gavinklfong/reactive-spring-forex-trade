@@ -1,4 +1,4 @@
-package space.gavinklfong.forex.services;
+package space.gavinklfong.forex.apiclients;
 
 import java.time.format.DateTimeFormatter;
 
