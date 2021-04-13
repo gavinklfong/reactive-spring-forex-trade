@@ -1,4 +1,4 @@
-package space.gavinklfong.forex.services;
+package space.gavinklfong.forex.apiclients;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import reactor.core.publisher.Mono;
+import space.gavinklfong.forex.apiclients.ForexRateApiClient;
 import space.gavinklfong.forex.dto.ForexRateApiResp;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -52,7 +53,6 @@ public class ForexRateApiClientTest {
 	        .withOperationsAndResponses(Collections.singletonMap("getLatestRates", "200"))  
 	    );
 		
-
 		// Initialize API client and trigger request
 		ForexRateApiClient forexRateApiClient = new ForexRateApiClient(serverUrl);
 		Mono<ForexRateApiResp> response = forexRateApiClient.fetchLatestRates("GBP");
@@ -84,7 +84,7 @@ public class ForexRateApiClientTest {
 		
 		// Initialize API client and trigger request
 		ForexRateApiClient forexRateApiClient = new ForexRateApiClient(serverUrl);
-		Mono<ForexRateApiResp> response = forexRateApiClient.fetchLatestRates("GBP");
+		Mono<ForexRateApiResp> response = forexRateApiClient.fetchLatestRate("GBP", "USD");
 		
 		// Assert response
 		ForexRateApiResp rawData = response.block();

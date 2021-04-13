@@ -20,9 +20,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import space.gavinklfong.forex.apiclients.ForexRateApiClient;
 import space.gavinklfong.forex.exceptions.UnknownCustomerException;
 import space.gavinklfong.forex.models.ForexRateBooking;
-import space.gavinklfong.forex.services.ForexRateApiClient;
 
 @MockServerTest("server.url=http://localhost:${mockServerPort}")
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)

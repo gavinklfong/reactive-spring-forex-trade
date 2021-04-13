@@ -33,6 +33,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 import space.gavinklfong.forex.dto.ForexRateApiResp;
+import space.gavinklfong.forex.apiclients.ForexRateApiClient;
 import space.gavinklfong.forex.dto.ForexRate;
 import space.gavinklfong.forex.dto.ForexRateBookingReq;
 import space.gavinklfong.forex.exceptions.UnknownCustomerException;
@@ -74,7 +75,7 @@ public class ForexRateServiceTest {
 		
 		ForexRateBooking mockRecord = new ForexRateBooking("GBP", "USD", 0.25, BigDecimal.valueOf(1000), "ABC");
 		mockRecord.setExpiryTime(LocalDateTime.now().plusMinutes(15));
-		when(rateBookingRepo.findByBookingRef(anyString())).thenReturn(Arrays.asList(mockRecord));
+		when(rateBookingRepo.findByBookingRef(anyString())).thenReturn(Mono.just(mockRecord));
 		
 		ForexRateBooking rateBooking = new ForexRateBooking("GBP", "USD", 0.25, BigDecimal.valueOf(1000), "ABC");
 		
@@ -87,14 +88,14 @@ public class ForexRateServiceTest {
 	@Test
 	void validateRateBookingTest_invalidBooking_notFound() {
 		
-		when(rateBookingRepo.findByBookingRef(anyString())).thenReturn(null);
+		when(rateBookingRepo.findByBookingRef(anyString())).thenReturn(Mono.empty());
 		
 		ForexRateBooking rateBooking = new ForexRateBooking("GBP", "USD", 0.25, BigDecimal.valueOf(1000), "ABC");
 		
 		Mono<Boolean> result = rateService.validateRateBooking(rateBooking);
 		StepVerifier.create(result)
 		.expectNext(false)
-		.verifyComplete();		
+		.expectComplete();		
 	}
 	
 	@Test
@@ -102,7 +103,7 @@ public class ForexRateServiceTest {
 		
 		ForexRateBooking mockRecord = new ForexRateBooking("GBP", "USD", 0.25, BigDecimal.valueOf(1000), "ABC");
 		mockRecord.setExpiryTime(LocalDateTime.now().minusMinutes(15));
-		when(rateBookingRepo.findByBookingRef(anyString())).thenReturn(Arrays.asList(mockRecord));
+		when(rateBookingRepo.findByBookingRef(anyString())).thenReturn(Mono.just(mockRecord));
 		
 		ForexRateBooking rateBooking = new ForexRateBooking("GBP", "USD", 0.25, BigDecimal.valueOf(1000), "ABC");
 		
@@ -154,7 +155,7 @@ public class ForexRateServiceTest {
 		LocalDateTime timestamp = rateBooking.getTimestamp();
 		LocalDateTime expiryTime = rateBooking.getExpiryTime();
 		assertTrue(timestamp.isBefore(expiryTime));
-		assertEquals(1 + CustomerRateTier.TIER1.rate + ADDITIONAL_PIP, rateBooking.getRate());	
+		assertEquals(CustomerRateTier.TIER1.rate, rateBooking.getRate());	
 		
 	}
 	
@@ -166,7 +167,7 @@ public class ForexRateServiceTest {
 		LocalDateTime timestamp = rateBooking.getTimestamp();
 		LocalDateTime expiryTime = rateBooking.getExpiryTime();
 		assertTrue(timestamp.isBefore(expiryTime));
-		assertEquals(1 + CustomerRateTier.TIER2.rate + ADDITIONAL_PIP, rateBooking.getRate());	
+		assertEquals(CustomerRateTier.TIER2.rate, rateBooking.getRate());	
 	}
 	
 	@Test
@@ -177,7 +178,7 @@ public class ForexRateServiceTest {
 		LocalDateTime timestamp = rateBooking.getTimestamp();
 		LocalDateTime expiryTime = rateBooking.getExpiryTime();
 		assertTrue(timestamp.isBefore(expiryTime));
-		assertEquals(1 + CustomerRateTier.TIER3.rate + ADDITIONAL_PIP, rateBooking.getRate());	
+		assertEquals(CustomerRateTier.TIER3.rate, rateBooking.getRate());	
 		
 	}
 	
@@ -194,14 +195,14 @@ public class ForexRateServiceTest {
 		LocalDateTime expiryTime = rateBooking.getExpiryTime();
 		assertTrue(timestamp.isBefore(expiryTime));
 		
-		assertEquals(1 + CustomerRateTier.TIER4.rate + ADDITIONAL_PIP, rateBooking.getRate());	
+		assertEquals( CustomerRateTier.TIER4.rate, rateBooking.getRate());	
 	}
 	
 	
 	private ForexRateBooking obtainBookingTest(Integer tier) throws JsonProcessingException, UnknownCustomerException {
 		
 		// Forex API client returns 1 when fetchLatestRates() is invoked
-		when(forexRateApiClient.fetchLatestRates(anyString(), anyString()))
+		when(forexRateApiClient.fetchLatestRate(anyString(), anyString()))
 		.thenAnswer(invocation -> {
 			Map<String, Double> rates = new HashMap<>();
 			rates.put((String)invocation.getArgument(1), 1d);
@@ -210,14 +211,14 @@ public class ForexRateServiceTest {
 		
 		// Customer Repo return a mock customer record when findById() is invoked
 		when(customerRepo.findById(anyLong()))
-		.thenReturn(Optional.of(new Customer(1l, "Tester 1", tier)));
+		.thenReturn(Mono.just(new Customer(1l, "Tester 1", tier)));
 		
 		// Rate Booking Repo return a mock return when save() is invoked
 		when(rateBookingRepo.save(any(ForexRateBooking.class)))
 		.thenAnswer(invocation -> {
 			ForexRateBooking record = (ForexRateBooking)invocation.getArgument(0);
 			record.setId((long)Math.random() * 10 + 1);
-			return record;
+			return Mono.just(record);
 		});
 		
 		when(forexPriceService.obtainForexPrice(anyString(), anyString(), anyDouble()))

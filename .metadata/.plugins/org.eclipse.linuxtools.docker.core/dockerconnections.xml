@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<connections>
+<connection name="unix:///var/run/docker.sock" uri="unix:///var/run/docker.sock"/>
+</connections>

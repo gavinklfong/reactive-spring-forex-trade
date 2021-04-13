@@ -9,11 +9,6 @@ Feature: Rate Service
 		Examples:
 		| baseCurrency |
 		| GBP |
-		| USD |
-		| HKD |
-		| CAD |
-		| JPY |
-		| DKK |
 	
 	Scenario: Make a rate booking
 		Given API Service is started

@@ -22,11 +22,11 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
+import space.gavinklfong.forex.apiclients.ForexRateApiClient;
 import space.gavinklfong.forex.dto.ForexTradeDealReq;
 import space.gavinklfong.forex.exceptions.ErrorBody;
 import space.gavinklfong.forex.models.ForexRateBooking;
 import space.gavinklfong.forex.models.ForexTradeDeal;
-import space.gavinklfong.forex.services.ForexRateApiClient;
 
 @MockServerTest("server.url=http://localhost:${mockServerPort}")
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)

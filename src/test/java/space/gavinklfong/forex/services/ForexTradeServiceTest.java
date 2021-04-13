@@ -53,11 +53,11 @@ public class ForexTradeServiceTest {
 		when(tradeDealRepo.save(any(ForexTradeDeal.class))).thenAnswer(invocation -> {
 			ForexTradeDeal deal = (ForexTradeDeal) invocation.getArgument(0);
 			deal.setId(99l);
-			return deal;
+			return Mono.just(deal);
 		});
 		
 		when(customerRepo.findById(anyLong()))
-		.thenReturn(Optional.of(new Customer(1l, "Tester 1", 1)));
+		.thenReturn(Mono.just(new Customer(1l, "Tester 1", 1)));
 		
 		when(rateService.validateRateBooking(any(ForexRateBooking.class))).thenReturn(Mono.just(true));
 				
@@ -80,7 +80,7 @@ public class ForexTradeServiceTest {
 		});
 		
 		when(customerRepo.findById(anyLong()))
-		.thenReturn(Optional.of(new Customer(1l, "Tester 1", 1)));
+		.thenReturn(Mono.just(new Customer(1l, "Tester 1", 1)));
 		
 		when(rateService.validateRateBooking(any(ForexRateBooking.class))).thenReturn(Mono.just(false));
 				
@@ -99,11 +99,11 @@ public class ForexTradeServiceTest {
 		when(tradeDealRepo.save(any(ForexTradeDeal.class))).thenAnswer(invocation -> {
 			ForexTradeDeal deal = (ForexTradeDeal) invocation.getArgument(0);
 			deal.setId(99l);
-			return deal;
+			return Mono.just(deal);
 		});
 		
 		when(customerRepo.findById(anyLong()))
-		.thenReturn(Optional.empty());
+		.thenReturn(Mono.empty());
 		
 		when(rateService.validateRateBooking(any(ForexRateBooking.class))).thenReturn(Mono.just(true));
 				
@@ -121,18 +121,18 @@ public class ForexTradeServiceTest {
 	public void retrieveTradeDealByCustomerTest() {
 		
 		ForexTradeDeal deal1 = new ForexTradeDeal(UUID.randomUUID().toString(), LocalDateTime.now(), "GBP", "USD",  Math.random(),
-				BigDecimal.valueOf(1000), new Customer(1l, "Tester 1", 1));
+				BigDecimal.valueOf(1000), 1l);
 		ForexTradeDeal deal2 = new ForexTradeDeal(UUID.randomUUID().toString(), LocalDateTime.now(), "GBP", "USD",  Math.random(),
-				BigDecimal.valueOf(1000), new Customer(1l, "Tester 1", 1));
+				BigDecimal.valueOf(1000), 1l);
 		ForexTradeDeal deal3 = new ForexTradeDeal(UUID.randomUUID().toString(), LocalDateTime.now(), "GBP", "USD",  Math.random(),
-				BigDecimal.valueOf(1000), new Customer(1l, "Tester 1", 1));
+				BigDecimal.valueOf(1000), 1l);
 				
 		List<ForexTradeDeal> deals = new ArrayList<>();
 		deals.add(deal1);
 		deals.add(deal2);
 		deals.add(deal3);
 		
-		when(tradeDealRepo.findByCustomerId(anyLong())).thenReturn(deals);
+		when(tradeDealRepo.findByCustomerId(anyLong())).thenReturn(Flux.fromIterable(deals) );
 		
 		Flux<ForexTradeDeal> result = tradeService.retrieveTradeDealByCustomer(1l);
 		
@@ -148,7 +148,7 @@ public class ForexTradeServiceTest {
 	@Test
 	public void retrieveTradeDealByCustomerTest_Empty() {
 		
-		when(tradeDealRepo.findByCustomerId(anyLong())).thenReturn(null);
+		when(tradeDealRepo.findByCustomerId(anyLong())).thenReturn(Flux.empty());
 		
 		Flux<ForexTradeDeal> result = tradeService.retrieveTradeDealByCustomer(1l);
 		

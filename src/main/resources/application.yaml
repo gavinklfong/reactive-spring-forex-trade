@@ -2,15 +2,15 @@ app:
   rate-booking-duration: 120
   default-base-currency: GBP
   default-additional-pip: 1
-  forex-rate-api-url: https://api.exchangeratesapi.io
+  forex-rate-api-url: http://localhost:3000
 
 
 debug: false
-
-spring:
-  jpa:
-    show-sql: true
-  datasource:
-    url: jdbc:h2:mem:testdb;DB_CLOSE_ON_EXIT=FALSE
+    
+logging:
+  level:
+    org:
+      springframework:
+        r2dbc: DEBUG    
         
        

@@ -8,18 +8,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.collections4.keyvalue.MultiKey;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 
+import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Mono;
+import space.gavinklfong.forex.models.Customer;
+
+@Slf4j
 @Component
 public class ForexPriceService {
 	
-	private static Logger logger = LoggerFactory.getLogger(ForexPriceService.class);
 	
 	private Map<MultiKey<String>, Integer> rateSpreadMap = new HashMap<>();
 	
@@ -32,7 +34,7 @@ public class ForexPriceService {
 	
 	public ForexPriceService(InputStream inStream) throws CsvValidationException, IOException {
 		
-		logger.debug("initialize...");
+		log.debug("initialize...");
 		
 		CSVReader csvReader = null;
 		try {
@@ -40,7 +42,7 @@ public class ForexPriceService {
 			String[] values = null;
 			while ((values = csvReader.readNext()) != null) {
 				
-				logger.debug("add entry to repp: " + Arrays.toString(values));
+				log.debug("add entry to repp: " + Arrays.toString(values));
 				
 				int pip = Integer.parseInt(values[2].trim());
 				insertEntry(values[0].trim(), values[1].trim(), pip);

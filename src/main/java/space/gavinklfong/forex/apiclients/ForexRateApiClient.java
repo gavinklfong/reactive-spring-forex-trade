@@ -1,20 +1,21 @@
-package space.gavinklfong.forex.services;
+package space.gavinklfong.forex.apiclients;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.time.format.DateTimeFormatter;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import space.gavinklfong.forex.dto.ForexRateApiResp;
 
+@Slf4j
 @Component
 public class ForexRateApiClient {
-	
-	private static Logger logger = LoggerFactory.getLogger(ForexRateApiClient.class);
 
 	private WebClient webClient;
 
@@ -30,22 +31,22 @@ public class ForexRateApiClient {
 	
 	public Mono<ForexRateApiResp> fetchLatestRates(String baseCurrency) {
 		
-		logger.debug("fetchLatestRates() - baseUrl = " + forexApiUrl);
+		log.debug("fetchLatestRates() - baseUrl = " + forexApiUrl);
 		
-		return webClient.get().uri("/latest?base={base}", baseCurrency)
+		return webClient.get().uri("/rates/{base}", baseCurrency)
 		.accept(MediaType.APPLICATION_JSON)
 		.retrieve()
 		.bodyToMono(ForexRateApiResp.class);
 	}
 	
-	public Mono<ForexRateApiResp> fetchLatestRates(String baseCurrency, String counterCurrency) {
+	public Mono<ForexRateApiResp> fetchLatestRate(String baseCurrency, String counterCurrency) {
 		
-		logger.debug("fetchLatestRates() - baseUrl = " + forexApiUrl);
+		log.debug("fetchLatestRates() - baseUrl = " + forexApiUrl);
 
 		
-		return webClient.get().uri("/latest?base={base}&symbols={counter}", baseCurrency, counterCurrency)
+		return webClient.get().uri("/rates/{base}-{counter}", baseCurrency, counterCurrency)
 		.accept(MediaType.APPLICATION_JSON)
-		.retrieve()
+		.retrieve()		
 		.bodyToMono(ForexRateApiResp.class);
 	}
 	

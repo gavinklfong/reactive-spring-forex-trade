@@ -43,7 +43,7 @@ public class ForexTradeDealRestControllerTest {
 			ForexTradeDealReq req = (ForexTradeDealReq)invocation.getArgument(0);
 			LocalDateTime timestamp = LocalDateTime.now();
 			return Mono.just(new ForexTradeDeal(1l, UUID.randomUUID().toString(),  timestamp, req.getBaseCurrency(), req.getCounterCurrency(),
-					 req.getRate(), req.getBaseCurrencyAmount(), new Customer(1l, "Tester 1", 1)));
+					 req.getRate(), req.getBaseCurrencyAmount(), 1l));
 		});
 			
 		ForexTradeDealReq req = new ForexTradeDealReq("GBP", "USD", 0.25, BigDecimal.valueOf(10000),
@@ -68,7 +68,7 @@ public class ForexTradeDealRestControllerTest {
 			ForexTradeDealReq req = (ForexTradeDealReq)invocation.getArgument(0);
 			LocalDateTime timestamp = LocalDateTime.now();
 			return Mono.just(new ForexTradeDeal(1l, UUID.randomUUID().toString(),  timestamp, req.getBaseCurrency(), req.getCounterCurrency(),
-					 req.getRate(), req.getBaseCurrencyAmount(), new Customer(1l, "Tester 1", 1)));
+					 req.getRate(), req.getBaseCurrencyAmount(), 1l));
 		});
 			
 		ForexTradeDealReq req = new ForexTradeDealReq();
@@ -88,11 +88,11 @@ public class ForexTradeDealRestControllerTest {
 	public void getDeals() throws Exception {
 
 		ForexTradeDeal deal1 = new ForexTradeDeal(UUID.randomUUID().toString(), LocalDateTime.now(), "GBP", "USD",  Math.random(),
-				BigDecimal.valueOf(1000), new Customer(1l, "Tester 1", 1));
+				BigDecimal.valueOf(1000), 1l);
 		ForexTradeDeal deal2 = new ForexTradeDeal(UUID.randomUUID().toString(), LocalDateTime.now(), "GBP", "USD",  Math.random(),
-				BigDecimal.valueOf(1000), new Customer(1l, "Tester 1", 1));
+				BigDecimal.valueOf(1000), 1l);
 		ForexTradeDeal deal3 = new ForexTradeDeal(UUID.randomUUID().toString(), LocalDateTime.now(), "GBP", "USD",  Math.random(),
-				BigDecimal.valueOf(1000), new Customer(1l, "Tester 1", 1));
+				BigDecimal.valueOf(1000), 1l);
 				
 		when(tradeService.retrieveTradeDealByCustomer((anyLong())))
 		.thenReturn(Flux.just(deal1, deal2, deal3));

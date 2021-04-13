@@ -10,7 +10,7 @@
     "http"
   ],
   "paths": {
-    "/latest": {
+    "/rates/{id}": {
       "get": {
         "summary": "Get the latest forex rates for the base currency",
         "description": "Returns a list of latest rates",
@@ -20,16 +20,9 @@
         ],
         "parameters": [
           {
-            "name": "baseCurrency",
-            "in": "query",
-            "description": "Base currency",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "symbols",
-            "in": "query",
-            "description": "List of counter currency",
+            "name": "id",
+            "in": "path",
+            "description": "Id of Forex Rate",
             "required": false,
             "type": "string"
           }
@@ -58,6 +51,10 @@
         "rates": {
           "$ref": "#/definitions/Rates"
         },
+        "id": {
+			"type": "string",
+			"example": "GBP"
+		},
         "base": {
           "type": "string",
           "example": "GBP"
@@ -86,6 +83,7 @@
           "HRK": 8.7107853836,
           "JPY": 147.9903047569
         },
+        "id": "GBP",
         "base": "GBP",
         "date": "2020-01-20"
       }
