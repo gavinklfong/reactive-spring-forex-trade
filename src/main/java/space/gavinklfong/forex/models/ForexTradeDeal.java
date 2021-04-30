@@ -6,9 +6,16 @@ import java.time.LocalDateTime;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import space.gavinklfong.forex.dto.TradeAction;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Table(value = "forex_trade_deal")
 public class ForexTradeDeal {
 
@@ -25,37 +32,11 @@ public class ForexTradeDeal {
 	
 	private Double rate;
 	
+	private TradeAction tradeAction;
+	
 	private BigDecimal baseCurrencyAmount;
 	
 	private Long customerId;
 	
-	public ForexTradeDeal() {
-		super();
-	}
-
-	public ForexTradeDeal(Long id, String dealRef, LocalDateTime timestamp, String baseCurrency, String counterCurrency,
-			Double rate, BigDecimal baseCurrencyAmount, Long customerId) {
-		super();
-		this.id = id;
-		this.dealRef = dealRef;
-		this.timestamp = timestamp;
-		this.baseCurrency = baseCurrency;
-		this.counterCurrency = counterCurrency;
-		this.rate = rate;
-		this.baseCurrencyAmount = baseCurrencyAmount;
-		this.customerId = customerId;
-	}	
-	
-	public ForexTradeDeal(String dealRef, LocalDateTime timestamp, String baseCurrency, String counterCurrency, Double rate,
-			BigDecimal baseCurrencyAmount, Long customerId) {
-		super();
-		this.dealRef = dealRef;
-		this.timestamp = timestamp;
-		this.baseCurrency = baseCurrency;
-		this.counterCurrency = counterCurrency;
-		this.rate = rate;
-		this.baseCurrencyAmount = baseCurrencyAmount;
-		this.customerId = customerId;
-	}
 
 }

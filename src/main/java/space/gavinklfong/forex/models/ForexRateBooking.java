@@ -6,35 +6,30 @@ import java.time.LocalDateTime;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import space.gavinklfong.forex.dto.TradeAction;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Table(value = "forex_rate_booking")
 public class ForexRateBooking {
 
 	@Id
-	private Long id;
-	
-	private LocalDateTime timestamp;
-	
-	private String baseCurrency;
-	
-	private String counterCurrency;
-	
-	private Double rate;
-	
-	private BigDecimal baseCurrencyAmount;
-	
-
-	private String bookingRef;
-	
+	private Long id;	
+	private LocalDateTime timestamp;	
+	private String baseCurrency;	
+	private String counterCurrency;	
+	private Double rate;	
+	private BigDecimal baseCurrencyAmount;	
+	private TradeAction tradeAction;
+	private String bookingRef;	
 	private LocalDateTime expiryTime;
-
 	private Long customerId;
-
-	public ForexRateBooking() {
-		super();
-	}
 	
 	public ForexRateBooking(Long id, LocalDateTime timestamp, String baseCurrency, String counterCurrency, Double rate,
 			String bookingRef, LocalDateTime expiryTime, Long customerId) {

@@ -18,6 +18,7 @@ create table forex_rate_booking (
 	rate double, 
 	timestamp timestamp, 
 	customer_id bigint, 
+	trade_action varchar(255),
 	primary key (id)
 );
 
@@ -31,6 +32,7 @@ create table forex_trade_deal (
 	rate double, 
 	timestamp timestamp, 
 	customer_id bigint, 
+	trade_action varchar(255),
 	primary key (id)
 );
 

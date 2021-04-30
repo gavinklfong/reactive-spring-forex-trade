@@ -20,6 +20,7 @@ import space.gavinklfong.forex.dto.ForexRate;
 import space.gavinklfong.forex.services.ForexRateService;
 import space.gavinklfong.forex.dto.ForexRateBookingReq;
 import space.gavinklfong.forex.exceptions.ErrorBody;
+import space.gavinklfong.forex.exceptions.InvalidRequestException;
 import space.gavinklfong.forex.exceptions.UnknownCustomerException;
 import space.gavinklfong.forex.models.ForexRateBooking;
 
@@ -46,11 +47,11 @@ class ForexRateRestControllerTest {
 			String baseCurrency = (String) invocation.getArgument(0);
 			LocalDateTime timestamp = LocalDateTime.now();
 			return Flux.just(
-					new ForexRate(timestamp, baseCurrency, "USD", Math.random()),
-					new ForexRate(timestamp, baseCurrency, "EUR", Math.random()),
-					new ForexRate(timestamp, baseCurrency, "CAD", Math.random()),
-					new ForexRate(timestamp, baseCurrency, "JPY", Math.random())
-					);
+					ForexRate.builder().timestamp(timestamp).baseCurrency(baseCurrency).counterCurrency("USD").buyRate(Math.random()).sellRate(Math.random()).build(),
+					ForexRate.builder().timestamp(timestamp).baseCurrency(baseCurrency).counterCurrency("EUR").buyRate(Math.random()).sellRate(Math.random()).build(),
+					ForexRate.builder().timestamp(timestamp).baseCurrency(baseCurrency).counterCurrency("CAD").buyRate(Math.random()).sellRate(Math.random()).build(),
+					ForexRate.builder().timestamp(timestamp).baseCurrency(baseCurrency).counterCurrency("JPY").buyRate(Math.random()).sellRate(Math.random()).build()
+			);
 		});
 		
 		// trigger API request to rate controller
@@ -63,21 +64,25 @@ class ForexRateRestControllerTest {
 		.jsonPath("$").isArray()
 		.jsonPath("$[0].baseCurrency").isEqualTo("GBP")
 		.jsonPath("$[0].counterCurrency").isEqualTo("USD")
-		.jsonPath("$[0].rate").isNumber()
+		.jsonPath("$[0].buyRate").isNumber()
+		.jsonPath("$[0].sellRate").isNumber()
 		.jsonPath("$[1].baseCurrency").isEqualTo("GBP")
 		.jsonPath("$[1].counterCurrency").isEqualTo("EUR")
-		.jsonPath("$[1].rate").isNumber()
+		.jsonPath("$[1].buyRate").isNumber()
+		.jsonPath("$[1].sellRate").isNumber()
 		.jsonPath("$[2].baseCurrency").isEqualTo("GBP")
 		.jsonPath("$[2].counterCurrency").isEqualTo("CAD")
-		.jsonPath("$[2].rate").isNumber()
+		.jsonPath("$[2].buyRate").isNumber()
+		.jsonPath("$[2].sellRate").isNumber()
 		.jsonPath("$[3].baseCurrency").isEqualTo("GBP")
 		.jsonPath("$[3].counterCurrency").isEqualTo("JPY")
-		.jsonPath("$[3].rate").isNumber();		
+		.jsonPath("$[3].buyRate").isNumber()
+		.jsonPath("$[3].sellRate").isNumber();	
 	}
 	
 	
 	@Test
-	void bookRate() throws UnknownCustomerException {
+	void bookRate() throws InvalidRequestException {
 		
 		when(rateService.obtainBooking((any(ForexRateBookingReq.class))))
 		.thenAnswer(invocation -> {
@@ -96,6 +101,7 @@ class ForexRateRestControllerTest {
 				.queryParam("baseCurrency", "GBP")
 				.queryParam("counterCurrency", "USD")
 				.queryParam("baseCurrencyAmount", 1000)
+				.queryParam("tradeAction", "BUY")
 				.queryParam("customerId", 1)
 				.build()
 				)
@@ -107,7 +113,7 @@ class ForexRateRestControllerTest {
 	
 	
 	@Test
-	public void bookRate_missingParam() throws UnknownCustomerException {
+	public void bookRate_missingParam() throws InvalidRequestException {
 		
 		when(rateService.obtainBooking((any(ForexRateBookingReq.class))))
 		.thenAnswer(invocation -> {
@@ -135,7 +141,7 @@ class ForexRateRestControllerTest {
 	}
 	
 	@Test
-	public void bookRate_unknownCustomer() throws UnknownCustomerException {
+	public void bookRate_unknownCustomer() throws InvalidRequestException {
 		
 		when(rateService.obtainBooking((any(ForexRateBookingReq.class))))
 		.thenThrow(new UnknownCustomerException());

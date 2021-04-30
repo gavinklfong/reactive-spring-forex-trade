@@ -6,9 +6,15 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ForexRateBookingReq {
 
 	@NotEmpty
@@ -22,18 +28,10 @@ public class ForexRateBookingReq {
 	private BigDecimal baseCurrencyAmount;
 	
 	@NotNull
+	private TradeAction tradeAction;
+	
+	@NotNull
 	private Long customerId;
-	
-	public ForexRateBookingReq() {
-		super();
-	}
-	
-	public ForexRateBookingReq(String baseCurrency, String counterCurrency, BigDecimal baseCurrencyAmount, Long customerId) {
-		super();
-		this.baseCurrency = baseCurrency;
-		this.counterCurrency = counterCurrency;
-		this.baseCurrencyAmount = baseCurrencyAmount;
-		this.customerId = customerId;
-	}
+		
 	
 }

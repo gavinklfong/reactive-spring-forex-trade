@@ -36,7 +36,7 @@ public class ForexRateRestController {
 		
 	
 	@GetMapping(path = "latest/{baseCurrency}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public Flux<ForexRate> getLatestRates(@PathVariable String baseCurrency) {
+	public Flux<ForexRate> getLatestRates(@PathVariable String baseCurrency) throws InvalidRequestException {
 
 		if (baseCurrency == null || baseCurrency.trim().length() == 0) {
 			baseCurrency = defaultBaseCurrency;

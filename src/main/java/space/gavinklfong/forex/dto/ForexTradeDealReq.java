@@ -6,9 +6,15 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ForexTradeDealReq {
 	
 	@NotEmpty
@@ -22,6 +28,9 @@ public class ForexTradeDealReq {
 	private Double rate;
 	
 	@NotNull
+	private TradeAction tradeAction;
+	
+	@NotNull
 	@Positive
 	private BigDecimal baseCurrencyAmount;
 
@@ -30,19 +39,5 @@ public class ForexTradeDealReq {
 
 	@NotEmpty
 	private String rateBookingRef;
-
-	public ForexTradeDealReq() {
-		super();
-	}
 	
-	public ForexTradeDealReq(String baseCurrency, String counterCurrency, Double rate, BigDecimal baseCurrencyAmount,
-			Long customerId, String rateBookingRef) {
-		super();
-		this.baseCurrency = baseCurrency;
-		this.counterCurrency = counterCurrency;
-		this.rate = rate;
-		this.baseCurrencyAmount = baseCurrencyAmount;
-		this.customerId = customerId;
-		this.rateBookingRef = rateBookingRef;
-	}
 }

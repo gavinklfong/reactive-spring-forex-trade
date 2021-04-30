@@ -61,10 +61,11 @@ public class ForexTradeDealRestController {
 	 * @return Trade deal object. The framework formats it into JSON format when sending HTTP response
 	 */
 	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public Mono<ForexTradeDeal> submitDeal(@Valid @RequestBody Mono<ForexTradeDealReq> req) {
+	public Mono<ForexTradeDeal> submitDeal(@Valid @RequestBody ForexTradeDealReq req) {
 		
 		// submit trade deal
-		return req.flatMap(dealReq -> tradeService.postTradeDeal(dealReq));	
+		return tradeService.postTradeDeal(req);
+
 	}
 	
 

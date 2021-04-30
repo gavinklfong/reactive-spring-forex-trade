@@ -28,7 +28,7 @@ import space.gavinklfong.forex.models.ForexRateBooking;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("integrationtest")
 @Tag("IntegrationTest")
-class RateRestControllerIntegrationTest {
+class ForexRateRestControllerIntegrationTest {
 
 	// Configure forex rate api client to point to mock api server
     @TestConfiguration
@@ -67,14 +67,17 @@ class RateRestControllerIntegrationTest {
 		.expectBody()
 		.jsonPath("$").isArray()
 		.jsonPath("$[0].baseCurrency").isEqualTo("GBP")
-		.jsonPath("$[0].counterCurrency").isNotEmpty()
-		.jsonPath("$[0].rate").isNumber()
+		.jsonPath("$[0].counterCurrency").isEqualTo("USD")
+		.jsonPath("$[0].buyRate").isNumber()
+		.jsonPath("$[0].sellRate").isNumber()
 		.jsonPath("$[1].baseCurrency").isEqualTo("GBP")
-		.jsonPath("$[1].counterCurrency").isNotEmpty()
-		.jsonPath("$[1].rate").isNumber()
+		.jsonPath("$[1].counterCurrency").isEqualTo("CAD")
+		.jsonPath("$[1].buyRate").isNumber()
+		.jsonPath("$[1].sellRate").isNumber()
 		.jsonPath("$[2].baseCurrency").isEqualTo("GBP")
-		.jsonPath("$[2].counterCurrency").isNotEmpty()
-		.jsonPath("$[2].rate").isNumber();
+		.jsonPath("$[2].counterCurrency").isEqualTo("JPY")
+		.jsonPath("$[2].buyRate").isNumber()
+		.jsonPath("$[2].sellRate").isNumber();
 	}
 	
 	@Test
@@ -94,6 +97,7 @@ class RateRestControllerIntegrationTest {
 				.queryParam("baseCurrency", "GBP")
 				.queryParam("counterCurrency", "USD")
 				.queryParam("baseCurrencyAmount", 1000)
+				.queryParam("tradeAction", "BUY")
 				.queryParam("customerId", 1)
 				.build()
 				)

@@ -1,6 +1,7 @@
 package space.gavinklfong.forex.services;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,21 +12,21 @@ import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import space.gavinklfong.forex.apiclients.ForexRateApiClient;
+import space.gavinklfong.forex.dto.ForexPricing;
 import space.gavinklfong.forex.dto.ForexRate;
 import space.gavinklfong.forex.dto.ForexRateBookingReq;
-import space.gavinklfong.forex.exceptions.UnknownCustomerException;
+import space.gavinklfong.forex.dto.TradeAction;
+import space.gavinklfong.forex.exceptions.InvalidRequestException;
 import space.gavinklfong.forex.models.Customer;
 import space.gavinklfong.forex.models.ForexRateBooking;
+import space.gavinklfong.forex.models.ForexRateBooking.ForexRateBookingBuilder;
 import space.gavinklfong.forex.repos.CustomerRepo;
 import space.gavinklfong.forex.repos.ForexRateBookingRepo;
 
 @Slf4j
 @Component
 public class ForexRateService {
-	
-	@Value("${app.rate-booking-duration}")
-	private long bookingDuration = 120l;
-		
+			
 	@Autowired
 	private ForexRateApiClient forexRateApiClient;
 	
@@ -36,10 +37,20 @@ public class ForexRateService {
 	private CustomerRepo customerRepo;
 	
 	@Autowired
-	private ForexPriceService forexPriceService;
+	private ForexPricingService forexPriceService;
+	
+	@Value("${app.rate-booking-duration}")
+	private long bookingDuration = 120l;
+	
 	
 	/**
 	 * Retrieve the latest rates for list of counter currencies
+	 * 
+	 * 1. Fetch a list of counter currency by the base currency	  
+	 * 2. Verify if base currency is available for price retrieval
+	 * 3. Consume Forex rate API to get the latest rate for the base currency
+	 * 4. Filter the records by list of country currency available for price retrieval
+	 * 5. Obtain Forex price for each currency pair 
 	 * 
 	 * Flow: 
 	 * Mono<ApiResponse> 					[Retrieve from Forex Rate API] 
@@ -48,21 +59,31 @@ public class ForexRateService {
 	 * 
 	 * @param baseCurrency
 	 * @return Flux - Rate
+	 * @throws InvalidRequestException 
 	 */
-	public Flux<ForexRate> fetchLatestRates(String baseCurrency) {
+	public Flux<ForexRate> fetchLatestRates(String baseCurrency) throws InvalidRequestException {
+				
+		List<ForexPricing> counterCurrencyPricingList = forexPriceService.findCounterCurrencies(baseCurrency);
 		
-		LocalDateTime timestamp = LocalDateTime.now();
+		if (counterCurrencyPricingList.isEmpty())
+			throw new InvalidRequestException("base currency", "Invalid base currency");
+		
 		
 		return forexRateApiClient.fetchLatestRates(baseCurrency)
 		.flatMapMany(resp -> Flux.fromIterable(resp.getRates().entrySet()))
-		.map(rate -> new ForexRate(timestamp, baseCurrency, rate.getKey(), 
-						forexPriceService.obtainForexPrice(baseCurrency, rate.getKey(), rate.getValue()))	
-		);
+		.filter(rate -> counterCurrencyPricingList.stream().anyMatch(p -> p.getCounterCurrency().equalsIgnoreCase(rate.getKey())))
+		.doOnNext(rate -> log.debug(rate.toString()))
+		.map(rate -> {
+			Double value = rate.getValue();
+			String key = rate.getKey();
+			return forexPriceService.obtainForexPrice(baseCurrency, key, value);	
+		});
 	}
 	
 	
 	/**
 	 * Generate rate booking based on the latest rate and customer tier
+	 * 
 	 * 
 	 * Flow:
 	 * Mono<ApiResponse>					[Retrieve rate from forex API]
@@ -75,18 +96,26 @@ public class ForexRateService {
 	 * 
 	 * @param request
 	 * @return Mono - RateBooking
+	 * @throws InvalidRequestException 
 	 */
-	public Mono<ForexRateBooking> obtainBooking(ForexRateBookingReq request) throws UnknownCustomerException {
-					
-		LocalDateTime timestamp = LocalDateTime.now();
+	public Mono<ForexRateBooking> obtainBooking(ForexRateBookingReq request) throws InvalidRequestException {
 		
-		return forexRateApiClient.fetchLatestRate(request.getBaseCurrency(), request.getCounterCurrency())
-				.map(resp -> new ForexRate(timestamp, request.getBaseCurrency(), request.getCounterCurrency(), resp.getRates().get(request.getCounterCurrency())))
-				.map(rate -> rate.withRate(forexPriceService.obtainForexPrice(request.getBaseCurrency(), request.getCounterCurrency(), rate.getRate())))
+		List<ForexPricing> forexPricingList = forexPriceService.findCounterCurrencies(request.getBaseCurrency());		
+		if (forexPricingList.stream().noneMatch(p -> p.getCounterCurrency().equalsIgnoreCase(request.getCounterCurrency()))) {
+			throw new InvalidRequestException("currency", "unknown currency pair");
+		}
+		
+		return forexRateApiClient
+				.fetchLatestRate(request.getBaseCurrency(), request.getCounterCurrency())
+				.map(resp -> 
+					forexPriceService.obtainForexPrice(
+								request.getBaseCurrency(), 
+								request.getCounterCurrency(), 
+								resp.getRates().get(request.getCounterCurrency())))
 				.zipWith(customerRepo.findById(request.getCustomerId()))
-				.map(tuple -> adjustRateForCustomerTier(tuple.getT1(), tuple.getT2()))	
-				.map(rate -> buildRateBookingRecord(request, rate.getRate()))
-				.flatMap(booking -> rateBookingRepo.save(booking));								
+				.map(tuple -> adjustRateForCustomerTier(tuple.getT1(), tuple.getT2()))
+				.map(rate -> buildRateBookingRecord(request, rate))
+				.flatMap(booking -> rateBookingRepo.save(booking));
 	}
 		
 	/**
@@ -106,57 +135,72 @@ public class ForexRateService {
 	 */
 	public Mono<Boolean> validateRateBooking(ForexRateBooking rateBooking) {
 					
-		return rateBookingRepo.findByBookingRef(rateBooking.getBookingRef())			
+		log.debug("incoming rateBooking - " + rateBooking.toString());
+		
+		return rateBookingRepo.findByBookingRef(rateBooking.getBookingRef())
+				.doOnNext(record -> log.debug(record.toString()))
 				.map(record -> {
-					if (record.getExpiryTime().isBefore(LocalDateTime.now()) ||
-							record.getBaseCurrencyAmount().compareTo(rateBooking.getBaseCurrencyAmount()) != 0) {
+					if (record.getExpiryTime().isBefore(LocalDateTime.now())) {
+						log.debug("booking request already exired");
 						return false;
-					} else {
-						return true;
 					}
+					
+					if (record.getBaseCurrencyAmount().compareTo(rateBooking.getBaseCurrencyAmount()) != 0) {
+						log.debug("amount is not the same");
+						return false;
+					}
+					
+					return true;
+					
 				})
 				.onErrorReturn(Boolean.valueOf(false));
-
-		
 	}
 	
 	private ForexRate adjustRateForCustomerTier(ForexRate rate, Customer customer) {
 	 	
-		double adjustedRate = 0;
+		double adjustment = 0;
 		
 		// determine rate
 		switch (customer.getTier()) {
 		case 1:
-			adjustedRate += CustomerRateTier.TIER1.rate;
+			adjustment += CustomerRateTier.TIER1.rate;
 			break;
 		case 2:
-			adjustedRate += CustomerRateTier.TIER2.rate;
+			adjustment += CustomerRateTier.TIER2.rate;
 			break;
 		case 3:
-			adjustedRate += CustomerRateTier.TIER3.rate;
+			adjustment += CustomerRateTier.TIER3.rate;
 			break;
 		default:
-			adjustedRate += CustomerRateTier.TIER4.rate;
+			adjustment += CustomerRateTier.TIER4.rate;
 		}
 		
-		return rate.withRate(adjustedRate);					
+		return rate.withBuyRate(rate.getBuyRate() + adjustment).withSellRate(rate.getSellRate() + adjustment);					
 	}
 	
-	private ForexRateBooking buildRateBookingRecord(ForexRateBookingReq request, Double rate) {
+	private ForexRateBooking buildRateBookingRecord(ForexRateBookingReq request, ForexRate rate) {
 		
-		ForexRateBooking bookingRecord = new ForexRateBooking(request.getBaseCurrency(), request.getCounterCurrency(), request.getBaseCurrencyAmount(), request.getCustomerId());
-	
-		UUID bookingRef = UUID.randomUUID();
-		bookingRecord.setBookingRef(bookingRef.toString());
-	
 		LocalDateTime timestamp = LocalDateTime.now();
-		bookingRecord.setTimestamp(timestamp);
-	
 		LocalDateTime expiryTime = timestamp.plusSeconds(bookingDuration);
-		bookingRecord.setExpiryTime(expiryTime);
 		
-		bookingRecord.setRate(rate);
+		ForexRateBookingBuilder builder = ForexRateBooking.builder()
+				.baseCurrency(request.getBaseCurrency())
+				.counterCurrency(request.getCounterCurrency())
+				.baseCurrencyAmount(request.getBaseCurrencyAmount())
+				.customerId(request.getCustomerId())
+				.tradeAction(request.getTradeAction())
+				.bookingRef(UUID.randomUUID().toString())
+				.timestamp(LocalDateTime.now())
+				.expiryTime(timestamp.plusSeconds(bookingDuration));	
+		
+		if (request.getTradeAction() == TradeAction.SELL)
+			builder.rate(rate.getSellRate());
+		else if (request.getTradeAction() == TradeAction.BUY)
+			builder.rate(rate.getBuyRate());
+		else
+			throw new RuntimeException("Unknown trade action");
 	
-		return bookingRecord;	
+		return builder.build();	
 	}	
+		
 }

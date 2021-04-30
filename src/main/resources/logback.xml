@@ -1,6 +1,6 @@
 <configuration>
     # Console appender
-    <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+    <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender" additivity="false">
         <layout class="ch.qos.logback.classic.PatternLayout">
             # Pattern of log message for console appender
             <Pattern>%d{yyyy-MM-dd HH:mm:ss} %p %class{36}.%M - %m%n</Pattern>

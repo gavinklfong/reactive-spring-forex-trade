@@ -1,5 +1,6 @@
 package space.gavinklfong.forex.services;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -10,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import space.gavinklfong.forex.dto.ForexTradeDealReq;
+import space.gavinklfong.forex.dto.TradeAction;
 import space.gavinklfong.forex.exceptions.InvalidRateBookingException;
 import space.gavinklfong.forex.exceptions.UnknownCustomerException;
 import space.gavinklfong.forex.models.ForexRateBooking;
@@ -56,19 +58,25 @@ public class ForexTradeService {
 				})
 				.flatMap(isValid -> {
 					if (isValid) {
-						// build and save trade deal record
-						String dealRef = UUID.randomUUID().toString();
-						LocalDateTime timestamp = LocalDateTime.now();
-						ForexTradeDeal deal = new ForexTradeDeal(dealRef, timestamp, req.getBaseCurrency(), req.getCounterCurrency(), 
-								req.getRate(), req.getBaseCurrencyAmount(), req.getCustomerId());
-						
-						return tradeDealRepo.save(deal);
+						// build and save trade deal record											
+						return tradeDealRepo.save(
+								ForexTradeDeal.builder()
+								.dealRef(UUID.randomUUID().toString())
+								.timestamp(LocalDateTime.now())
+								.baseCurrency(req.getBaseCurrency())
+								.counterCurrency(req.getCounterCurrency())
+								.rate(req.getRate())
+								.baseCurrencyAmount(req.getBaseCurrencyAmount())
+								.customerId(req.getCustomerId())
+								.tradeAction(req.getTradeAction())
+								.build()
+							);
 						
 					} else {
 						// throw exception if rate booking is invalid
 						return Mono.error(new InvalidRateBookingException());
 					}
-				});				
+				});	
 	}
 	
 	/**

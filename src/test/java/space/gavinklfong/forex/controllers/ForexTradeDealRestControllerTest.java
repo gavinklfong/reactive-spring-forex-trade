@@ -19,6 +19,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import space.gavinklfong.forex.dto.ForexTradeDealReq;
+import space.gavinklfong.forex.dto.TradeAction;
 import space.gavinklfong.forex.services.ForexTradeService;
 import space.gavinklfong.forex.exceptions.ErrorBody;
 import space.gavinklfong.forex.models.ForexTradeDeal;
@@ -35,18 +36,31 @@ public class ForexTradeDealRestControllerTest {
 	
 	@DisplayName("submitDeal - Success case")
 	@Test
-	public void submitDeal() throws Exception {
+	void submitDeal() throws Exception {
 
 		when(tradeService.postTradeDeal(any(ForexTradeDealReq.class)))
 		.thenAnswer(invocation -> {
 			ForexTradeDealReq req = (ForexTradeDealReq)invocation.getArgument(0);
-			LocalDateTime timestamp = LocalDateTime.now();
-			return Mono.just(new ForexTradeDeal(1l, UUID.randomUUID().toString(),  timestamp, req.getBaseCurrency(), req.getCounterCurrency(),
-					 req.getRate(), req.getBaseCurrencyAmount(), 1l));
+			return Mono.just(
+					ForexTradeDeal.builder()
+					.id(1l).dealRef(UUID.randomUUID().toString())
+					.timestamp(LocalDateTime.now())
+					.baseCurrency(req.getBaseCurrency()).counterCurrency(req.getCounterCurrency())
+					.rate(req.getRate()).baseCurrencyAmount(req.getBaseCurrencyAmount()).customerId(req.getCustomerId())
+					.tradeAction(req.getTradeAction())
+					.build()
+				);
 		});
 			
-		ForexTradeDealReq req = new ForexTradeDealReq("GBP", "USD", 0.25, BigDecimal.valueOf(10000),
-				 1l,  "ABC");
+		ForexTradeDealReq req = ForexTradeDealReq.builder()
+				.tradeAction(TradeAction.BUY)
+				.baseCurrency("GBP")
+				.counterCurrency("USD")
+				.rate(0.25)
+				.baseCurrencyAmount(BigDecimal.valueOf(10000))
+				.customerId(1l)
+				.rateBookingRef("ABC")
+				.build();				
 		
 		webTestClient.post()
 		.uri("/deals")
@@ -60,14 +74,20 @@ public class ForexTradeDealRestControllerTest {
 	
 	@DisplayName("submitDeal - Invalid Req")
 	@Test
-	public void submitDeal_invalidReq() throws Exception {
+	void submitDeal_invalidReq() throws Exception {
 
 		when(tradeService.postTradeDeal(any(ForexTradeDealReq.class)))
 		.thenAnswer(invocation -> {
 			ForexTradeDealReq req = (ForexTradeDealReq)invocation.getArgument(0);
-			LocalDateTime timestamp = LocalDateTime.now();
-			return Mono.just(new ForexTradeDeal(1l, UUID.randomUUID().toString(),  timestamp, req.getBaseCurrency(), req.getCounterCurrency(),
-					 req.getRate(), req.getBaseCurrencyAmount(), 1l));
+			return Mono.just(
+					ForexTradeDeal.builder()
+					.id(1l).dealRef(UUID.randomUUID().toString())
+					.timestamp(LocalDateTime.now())
+					.baseCurrency(req.getBaseCurrency()).counterCurrency(req.getCounterCurrency())
+					.rate(req.getRate()).baseCurrencyAmount(req.getBaseCurrencyAmount()).customerId(req.getCustomerId())
+					.tradeAction(req.getTradeAction())
+					.build()
+				);
 		});
 			
 		ForexTradeDealReq req = new ForexTradeDealReq();
@@ -84,14 +104,34 @@ public class ForexTradeDealRestControllerTest {
 	
 	@DisplayName("getDeal - Success case")
 	@Test
-	public void getDeals() throws Exception {
+	void getDeals() throws Exception {
+				
+		ForexTradeDeal deal1 = 
+				ForexTradeDeal.builder()
+				.id(1l).dealRef(UUID.randomUUID().toString())
+				.timestamp(LocalDateTime.now())
+				.baseCurrency("GBP").counterCurrency("USD")
+				.rate(Math.random()).baseCurrencyAmount(BigDecimal.valueOf(1000)).customerId(1l)
+				.tradeAction(TradeAction.BUY)
+				.build();
 
-		ForexTradeDeal deal1 = new ForexTradeDeal(UUID.randomUUID().toString(), LocalDateTime.now(), "GBP", "USD",  Math.random(),
-				BigDecimal.valueOf(1000), 1l);
-		ForexTradeDeal deal2 = new ForexTradeDeal(UUID.randomUUID().toString(), LocalDateTime.now(), "GBP", "USD",  Math.random(),
-				BigDecimal.valueOf(1000), 1l);
-		ForexTradeDeal deal3 = new ForexTradeDeal(UUID.randomUUID().toString(), LocalDateTime.now(), "GBP", "USD",  Math.random(),
-				BigDecimal.valueOf(1000), 1l);
+		ForexTradeDeal deal2 = 
+				ForexTradeDeal.builder()
+				.id(1l).dealRef(UUID.randomUUID().toString())
+				.timestamp(LocalDateTime.now())
+				.baseCurrency("GBP").counterCurrency("USD")
+				.rate(Math.random()).baseCurrencyAmount(BigDecimal.valueOf(1000)).customerId(1l)
+				.tradeAction(TradeAction.BUY)
+				.build();
+
+		ForexTradeDeal deal3 = 
+				ForexTradeDeal.builder()
+				.id(1l).dealRef(UUID.randomUUID().toString())
+				.timestamp(LocalDateTime.now())
+				.baseCurrency("GBP").counterCurrency("USD")
+				.rate(Math.random()).baseCurrencyAmount(BigDecimal.valueOf(1000)).customerId(1l)
+				.tradeAction(TradeAction.BUY)
+				.build();
 				
 		when(tradeService.retrieveTradeDealByCustomer((anyLong())))
 		.thenReturn(Flux.just(deal1, deal2, deal3));

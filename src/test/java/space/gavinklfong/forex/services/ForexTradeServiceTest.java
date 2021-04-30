@@ -22,6 +22,7 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 import space.gavinklfong.forex.models.ForexTradeDeal;
 import space.gavinklfong.forex.dto.ForexTradeDealReq;
+import space.gavinklfong.forex.dto.TradeAction;
 import space.gavinklfong.forex.exceptions.InvalidRateBookingException;
 import space.gavinklfong.forex.exceptions.UnknownCustomerException;
 import space.gavinklfong.forex.models.Customer;
@@ -60,8 +61,15 @@ public class ForexTradeServiceTest {
 		
 		when(rateService.validateRateBooking(any(ForexRateBooking.class))).thenReturn(Mono.just(true));
 				
-		ForexTradeDealReq req = new ForexTradeDealReq("GBP", "USD", 0.25, BigDecimal.valueOf(10000),
-				 1l,  "ABC");
+		ForexTradeDealReq req = ForexTradeDealReq.builder()
+				.tradeAction(TradeAction.BUY)
+				.baseCurrency("GBP")
+				.counterCurrency("USD")
+				.rate(0.25)
+				.baseCurrencyAmount(BigDecimal.valueOf(10000))
+				.customerId(1l)
+				.rateBookingRef("ABC")
+				.build();			
 		
 		Mono<ForexTradeDeal> deal = tradeService.postTradeDeal(req);
 		StepVerifier.create(deal)
@@ -81,10 +89,17 @@ public class ForexTradeServiceTest {
 		when(customerRepo.findById(anyLong()))
 		.thenReturn(Mono.just(new Customer(1l, "Tester 1", 1)));
 		
-		when(rateService.validateRateBooking(any(ForexRateBooking.class))).thenReturn(Mono.just(false));
-				
-		ForexTradeDealReq req = new ForexTradeDealReq("GBP", "USD", 0.25, BigDecimal.valueOf(10000),
-				 1l,  "ABC");
+		when(rateService.validateRateBooking(any(ForexRateBooking.class))).thenReturn(Mono.just(false));				
+		
+		ForexTradeDealReq req = ForexTradeDealReq.builder()
+				.tradeAction(TradeAction.BUY)
+				.baseCurrency("GBP")
+				.counterCurrency("USD")
+				.rate(0.25)
+				.baseCurrencyAmount(BigDecimal.valueOf(10000))
+				.customerId(1l)
+				.rateBookingRef("ABC")
+				.build();			
 		
 		Mono<ForexTradeDeal> deal = tradeService.postTradeDeal(req);
 		StepVerifier.create(deal)
@@ -106,9 +121,15 @@ public class ForexTradeServiceTest {
 		
 		when(rateService.validateRateBooking(any(ForexRateBooking.class))).thenReturn(Mono.just(true));
 				
-		ForexTradeDealReq req = new ForexTradeDealReq("GBP", "USD", 0.25, BigDecimal.valueOf(10000),
-				 1l,  "ABC");
-		
+		ForexTradeDealReq req = ForexTradeDealReq.builder()
+				.tradeAction(TradeAction.BUY)
+				.baseCurrency("GBP")
+				.counterCurrency("USD")
+				.rate(0.25)
+				.baseCurrencyAmount(BigDecimal.valueOf(10000))
+				.customerId(1l)
+				.rateBookingRef("ABC")
+				.build();	
 		
 		Mono<ForexTradeDeal> deal = tradeService.postTradeDeal(req);
 		StepVerifier.create(deal)
@@ -119,12 +140,29 @@ public class ForexTradeServiceTest {
 	@Test
 	public void retrieveTradeDealByCustomerTest() {
 		
-		ForexTradeDeal deal1 = new ForexTradeDeal(UUID.randomUUID().toString(), LocalDateTime.now(), "GBP", "USD",  Math.random(),
-				BigDecimal.valueOf(1000), 1l);
-		ForexTradeDeal deal2 = new ForexTradeDeal(UUID.randomUUID().toString(), LocalDateTime.now(), "GBP", "USD",  Math.random(),
-				BigDecimal.valueOf(1000), 1l);
-		ForexTradeDeal deal3 = new ForexTradeDeal(UUID.randomUUID().toString(), LocalDateTime.now(), "GBP", "USD",  Math.random(),
-				BigDecimal.valueOf(1000), 1l);
+		ForexTradeDeal deal1 = ForexTradeDeal.builder()
+				.id(1l).dealRef(UUID.randomUUID().toString())
+				.timestamp(LocalDateTime.now())
+				.baseCurrency("GBP").counterCurrency("USD")
+				.rate(1.25d).baseCurrencyAmount(new BigDecimal(1000)).customerId(1l)
+				.tradeAction(TradeAction.BUY)
+				.build();
+
+		ForexTradeDeal deal2 = ForexTradeDeal.builder()
+				.id(1l).dealRef(UUID.randomUUID().toString())
+				.timestamp(LocalDateTime.now())
+				.baseCurrency("GBP").counterCurrency("USD")
+				.rate(1.25d).baseCurrencyAmount(new BigDecimal(1000)).customerId(1l)
+				.tradeAction(TradeAction.SELL)
+				.build();
+
+		ForexTradeDeal deal3 = ForexTradeDeal.builder()
+				.id(1l).dealRef(UUID.randomUUID().toString())
+				.timestamp(LocalDateTime.now())
+				.baseCurrency("GBP").counterCurrency("USD")
+				.rate(Math.random()).baseCurrencyAmount(new BigDecimal(1000)).customerId(1l)
+				.tradeAction(TradeAction.SELL)
+				.build();
 				
 		List<ForexTradeDeal> deals = new ArrayList<>();
 		deals.add(deal1);
