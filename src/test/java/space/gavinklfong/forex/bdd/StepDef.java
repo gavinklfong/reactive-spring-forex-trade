@@ -78,22 +78,20 @@ public class StepDef  {
 		
 		jsonArray.forEach(item -> {
 			JSONObject json = (JSONObject) item;
-			assertTrue(json.getDouble("rate") > 0);
+			assertTrue(json.getDouble("buyRate") > 0);
+			assertTrue(json.getDouble("sellRate") > 0);
 			assertEquals(baseCurrency, json.getString("baseCurrency"));
-			if (json.getString("counterCurrency").contentEquals(baseCurrency)) {
-				assertEquals(1, json.getDouble("rate"));
-			}
 		});
 	}
 	
-	@When("I request for a rate booking with parameters: {string}, {string}, {long}, {long}")
-	public void i_request_for_a_rate_booking_with_parameters(String base, String counter, Long amount, Long customerId) throws URISyntaxException, IOException, InterruptedException {
+	@When("I request for a rate booking with parameters: {string}, {string}, {string}, {long}, {long}")
+	public void i_request_for_a_rate_booking_with_parameters(String tradeAction, String base, String counter, Long amount, Long customerId) throws URISyntaxException, IOException, InterruptedException {
 		
 		this.baseCurrency = base;
 		this.counterCurrency = counter;
 			
-		String url = String.format(apiServiceUrl + "/rates/book?baseCurrency=%s&counterCurrency=%s&baseCurrencyAmount=%d&customerId=%d",
-				base, counter, amount, customerId);
+		String url = String.format(apiServiceUrl + "/rates/book?tradeAction=%s&baseCurrency=%s&counterCurrency=%s&baseCurrencyAmount=%d&customerId=%d",
+				tradeAction, base, counter, amount, customerId);
 		
 		HttpClient client = HttpClient.newHttpClient();
 		HttpRequest request = HttpRequest
@@ -121,10 +119,11 @@ public class StepDef  {
 		this.rateBooking = json;
 	}	
 	
-	@When("I submit a forex trade deal with rate booking and parameters: {string}, {string}, {long}, {long}")
-	public void i_submit_a_forex_trade_deal_with_rate_booking_and_parameters(String base, String counter, Long amount, Long customerId) throws URISyntaxException, IOException, InterruptedException {
+	@When("I submit a forex trade deal with rate booking and parameters: {string}, {string}, {string}, {long}, {long}")
+	public void i_submit_a_forex_trade_deal_with_rate_booking_and_parameters(String tradeAction, String base, String counter, Long amount, Long customerId) throws URISyntaxException, IOException, InterruptedException {
 		
 		JSONObject tradeDeal = new JSONObject();
+		tradeDeal.put("tradeAction", tradeAction);
 		tradeDeal.put("baseCurrency", base);
 		tradeDeal.put("counterCurrency", counter);
 		tradeDeal.put("baseCurrencyAmount", amount);
