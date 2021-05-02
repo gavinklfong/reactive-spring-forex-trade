@@ -2,6 +2,7 @@ package space.gavinklfong.forex.controllers;
 
 import static org.mockserver.mock.OpenAPIExpectation.openAPIExpectation;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 
 import org.junit.jupiter.api.Tag;
@@ -20,7 +21,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import reactor.core.publisher.Mono;
 import space.gavinklfong.forex.apiclients.ForexRateApiClient;
+import space.gavinklfong.forex.dto.ForexRateBookingReq;
+import space.gavinklfong.forex.dto.ForexTradeDealReq;
+import space.gavinklfong.forex.dto.TradeAction;
 import space.gavinklfong.forex.exceptions.UnknownCustomerException;
 import space.gavinklfong.forex.models.ForexRateBooking;
 
@@ -91,19 +96,33 @@ class ForexRateRestControllerIntegrationTest {
 	    );
 		
 		// fire request to book rate and verify the response
-		webTestClient.get()
-		.uri(uriBuilder -> uriBuilder
-				.path("/rates/book")
-				.queryParam("baseCurrency", "GBP")
-				.queryParam("counterCurrency", "USD")
-				.queryParam("baseCurrencyAmount", 1000)
-				.queryParam("tradeAction", "BUY")
-				.queryParam("customerId", 1)
-				.build()
-				)
+		ForexRateBookingReq req = ForexRateBookingReq.builder()
+				.baseCurrency("GBP").counterCurrency("USD")
+				.baseCurrencyAmount(BigDecimal.valueOf(10000.25))
+				.tradeAction(TradeAction.BUY).customerId(1l).build();		
+		
+		webTestClient.post()
+		.uri("/rates/book")
+		.contentType(MediaType.APPLICATION_JSON)
+		.body(Mono.just(req), ForexTradeDealReq.class)
+		.accept(MediaType.APPLICATION_JSON)
 		.exchange()
 		.expectStatus().isOk()
 		.expectBody(ForexRateBooking.class);
+		
+//		webTestClient.get()
+//		.uri(uriBuilder -> uriBuilder
+//				.path("/rates/book")
+//				.queryParam("baseCurrency", "GBP")
+//				.queryParam("counterCurrency", "USD")
+//				.queryParam("baseCurrencyAmount", 1000)
+//				.queryParam("tradeAction", "BUY")
+//				.queryParam("customerId", 1)
+//				.build()
+//				)
+//		.exchange()
+//		.expectStatus().isOk()
+//		.expectBody(ForexRateBooking.class);
 		
 	}
 	

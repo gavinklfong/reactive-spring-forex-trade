@@ -90,13 +90,28 @@ public class StepDef  {
 		this.baseCurrency = base;
 		this.counterCurrency = counter;
 			
-		String url = String.format(apiServiceUrl + "/rates/book?tradeAction=%s&baseCurrency=%s&counterCurrency=%s&baseCurrencyAmount=%d&customerId=%d",
-				tradeAction, base, counter, amount, customerId);
+		JSONObject bookingReq = new JSONObject();
+		bookingReq.put("tradeAction", tradeAction);
+		bookingReq.put("baseCurrency", base);
+		bookingReq.put("counterCurrency", counter);
+		bookingReq.put("baseCurrencyAmount", amount);
+		bookingReq.put("customerId", customerId);
 		
 		HttpClient client = HttpClient.newHttpClient();
 		HttpRequest request = HttpRequest
-				.newBuilder(new URI(url))
-				.header("accept", "application/json").build();	
+				.newBuilder(new URI(apiServiceUrl + "/rates/book"))
+				.POST(HttpRequest.BodyPublishers.ofString(bookingReq.toString()))		
+				.header("accept", "application/json")
+				.header("Content-Type", "application/json")
+				.build();
+		
+//		String url = String.format(apiServiceUrl + "/rates/book?tradeAction=%s&baseCurrency=%s&counterCurrency=%s&baseCurrencyAmount=%d&customerId=%d",
+//				tradeAction, base, counter, amount, customerId);		
+//		HttpClient client = HttpClient.newHttpClient();
+//		HttpRequest request = HttpRequest
+//				.newBuilder(new URI(url))
+//				.header("accept", "application/json").build();
+		
 		this.response = client.send(request, HttpResponse.BodyHandlers.ofString());
 	}
 	

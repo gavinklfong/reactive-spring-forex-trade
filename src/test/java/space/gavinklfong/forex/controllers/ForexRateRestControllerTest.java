@@ -1,12 +1,17 @@
 package space.gavinklfong.forex.controllers;
 
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyString;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
+
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
+import org.assertj.core.util.Arrays;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,15 +19,20 @@ import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
+
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import space.gavinklfong.forex.dto.ForexRate;
-import space.gavinklfong.forex.services.ForexRateService;
 import space.gavinklfong.forex.dto.ForexRateBookingReq;
+import space.gavinklfong.forex.dto.ForexTradeDealReq;
+import space.gavinklfong.forex.dto.TradeAction;
 import space.gavinklfong.forex.exceptions.ErrorBody;
 import space.gavinklfong.forex.exceptions.InvalidRequestException;
 import space.gavinklfong.forex.exceptions.UnknownCustomerException;
 import space.gavinklfong.forex.models.ForexRateBooking;
+import space.gavinklfong.forex.models.ForexTradeDeal;
+import space.gavinklfong.forex.services.ForexPricingService;
+import space.gavinklfong.forex.services.ForexRateService;
 
 /**
  * Unit test for Rate Rest Controller
@@ -35,8 +45,25 @@ class ForexRateRestControllerTest {
 	@MockBean
 	private ForexRateService rateService;
 	
+	@MockBean
+	private ForexPricingService pricingService;
+	
 	@Autowired
 	WebTestClient webTestClient;
+	
+	@Test
+	void findAllBaseCurrecies() {
+		when(pricingService.findAllBaseCurrencies())
+		.thenReturn(List.of("AUD", "CAD", "CHF", "EUR", "GBP", "NZD", "USD"));
+		
+		webTestClient.get()
+		.uri("/rates/base-currencies")
+		.accept(MediaType.APPLICATION_JSON)
+		.exchange()
+		.expectStatus().isOk()
+		.expectBody()
+		.consumeWith(resp -> assertThat(resp.getResponseBody()).isNotNull());
+	}
 	
 	@Test
 	void getLatestRates() throws Exception {
@@ -95,19 +122,33 @@ class ForexRateRestControllerTest {
 					);
 		});
 		
-		webTestClient.get()
-		.uri(uriBuilder -> uriBuilder
-				.path("/rates/book")
-				.queryParam("baseCurrency", "GBP")
-				.queryParam("counterCurrency", "USD")
-				.queryParam("baseCurrencyAmount", 1000)
-				.queryParam("tradeAction", "BUY")
-				.queryParam("customerId", 1)
-				.build()
-				)
+		ForexRateBookingReq req = ForexRateBookingReq.builder()
+				.baseCurrency("GBP").counterCurrency("USD")
+				.baseCurrencyAmount(BigDecimal.valueOf(10000.25))
+				.tradeAction(TradeAction.BUY).customerId(1l).build();
+		
+		webTestClient.post()
+		.uri("/rates/book")
+		.contentType(MediaType.APPLICATION_JSON)
+		.body(Mono.just(req), ForexTradeDealReq.class)
+		.accept(MediaType.APPLICATION_JSON)
 		.exchange()
 		.expectStatus().isOk()
-		.expectBody(ForexRateBooking.class);
+		.expectBody(ForexRateBooking.class);		
+		
+//		webTestClient.get()
+//		.uri(uriBuilder -> uriBuilder
+//				.path("/rates/book")
+//				.queryParam("baseCurrency", "GBP")
+//				.queryParam("counterCurrency", "USD")
+//				.queryParam("baseCurrencyAmount", 1000)
+//				.queryParam("tradeAction", "BUY")
+//				.queryParam("customerId", 1)
+//				.build()
+//				)
+//		.exchange()
+//		.expectStatus().isOk()
+//		.expectBody(ForexRateBooking.class);
 		
 	}
 	

@@ -3,6 +3,7 @@ package space.gavinklfong.forex.controllers;
 import static org.mockserver.mock.OpenAPIExpectation.openAPIExpectation;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 
 import org.junit.jupiter.api.DisplayName;
@@ -25,7 +26,9 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 import space.gavinklfong.forex.apiclients.ForexRateApiClient;
+import space.gavinklfong.forex.dto.ForexRateBookingReq;
 import space.gavinklfong.forex.dto.ForexTradeDealReq;
+import space.gavinklfong.forex.dto.TradeAction;
 import space.gavinklfong.forex.exceptions.ErrorBody;
 import space.gavinklfong.forex.models.ForexRateBooking;
 import space.gavinklfong.forex.models.ForexTradeDeal;
@@ -64,20 +67,35 @@ public class ForexTradeDealRestControllerIntegrationTest {
 	    );
 		
 		// Fire request to obtain rate booking
-		EntityExchangeResult<ForexRateBooking> result = webTestClient.get()
-		.uri(uriBuilder -> uriBuilder
-				.path("/rates/book")
-				.queryParam("baseCurrency", "GBP")
-				.queryParam("counterCurrency", "USD")
-				.queryParam("baseCurrencyAmount", 1000)
-				.queryParam("customerId", 1)
-				.queryParam("tradeAction", "BUY")
-				.build()
-				)
+		ForexRateBookingReq bookingReq = ForexRateBookingReq.builder()
+				.baseCurrency("GBP").counterCurrency("USD")
+				.baseCurrencyAmount(BigDecimal.valueOf(10000.25))
+				.tradeAction(TradeAction.BUY).customerId(1l).build();
+		
+		EntityExchangeResult<ForexRateBooking> result = webTestClient.post()
+		.uri("/rates/book")
+		.contentType(MediaType.APPLICATION_JSON)
+		.body(Mono.just(bookingReq), ForexTradeDealReq.class)
+		.accept(MediaType.APPLICATION_JSON)
 		.exchange()
 		.expectStatus().isOk()
 		.expectBody(ForexRateBooking.class)
 		.returnResult();
+		
+//		EntityExchangeResult<ForexRateBooking> result = webTestClient.get()
+//		.uri(uriBuilder -> uriBuilder
+//				.path("/rates/book")
+//				.queryParam("baseCurrency", "GBP")
+//				.queryParam("counterCurrency", "USD")
+//				.queryParam("baseCurrencyAmount", 1000)
+//				.queryParam("customerId", 1)
+//				.queryParam("tradeAction", "BUY")
+//				.build()
+//				)
+//		.exchange()
+//		.expectStatus().isOk()
+//		.expectBody(ForexRateBooking.class)
+//		.returnResult();
 		
 		ForexRateBooking rateBooking = result.getResponseBody();
 		

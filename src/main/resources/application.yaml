@@ -8,7 +8,11 @@ app:
 debug: false
     
 logging:
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} %p %class{36}.%M - %m%n"
   level:
+    space:
+      gavinklfong: DEBUG
     org:
       springframework:
         r2dbc: DEBUG    

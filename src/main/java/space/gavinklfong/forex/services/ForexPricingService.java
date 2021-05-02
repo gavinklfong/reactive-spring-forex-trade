@@ -94,8 +94,15 @@ public class ForexPricingService {
 		ForexPricing pricing = findAdditionalPip(baseCurrency, counterCurrency);
 		
 		return new ForexRate(LocalDateTime.now(), baseCurrency, counterCurrency, 
-				rate + pricing.getBuyPip() / (double)10000,
-				rate + pricing.getSellPip() / (double)10000); 		
+				roundDecimal(rate + pricing.getBuyPip() / (double)10000, 4),
+				roundDecimal(rate + pricing.getSellPip() / (double)10000, 4)); 		
+	}
+	
+	private double roundDecimal(double value, int decimalPlaces) {
+		
+		double factor = Math.pow(10, decimalPlaces);
+		
+		return Math.round(value * factor) / factor; 
 	}
 	
 	

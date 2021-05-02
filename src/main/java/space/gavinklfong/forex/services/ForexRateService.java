@@ -80,6 +80,32 @@ public class ForexRateService {
 		});
 	}
 	
+	/**
+	 * Retrieve the latest forex rate for the given base currency and counter currency
+	 * 
+	 * @param baseCurrency
+	 * @param counterCurrency
+	 * @return Mono<ForexRate>
+	 * @throws InvalidRequestException
+	 */
+	public Mono<ForexRate> fetchLatestRate(String baseCurrency, String counterCurrency) throws InvalidRequestException {
+		
+		List<ForexPricing> counterCurrencyPricingList = forexPriceService.findCounterCurrencies(baseCurrency);
+		
+		if (counterCurrencyPricingList.isEmpty())
+			throw new InvalidRequestException("base currency", "Invalid base currency");			
+		
+		if (counterCurrencyPricingList.stream().noneMatch(c -> c.getCounterCurrency().equalsIgnoreCase(counterCurrency)))
+			throw new InvalidRequestException("base currency", "Invalid counter currency");		
+			
+		return forexRateApiClient.fetchLatestRate(baseCurrency, counterCurrency)
+				.map(resp -> 
+						forexPriceService.obtainForexPrice(
+									baseCurrency, 
+									counterCurrency, 
+									resp.getRates().get(counterCurrency)));
+	}	
+	
 	
 	/**
 	 * Generate rate booking based on the latest rate and customer tier

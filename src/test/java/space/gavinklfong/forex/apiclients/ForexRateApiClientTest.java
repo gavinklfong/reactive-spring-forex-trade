@@ -61,13 +61,12 @@ public class ForexRateApiClientTest {
 		assertEquals(rawData.getBase(), "GBP");
 		
 		Map<String, Double> rates = rawData.getRates();
-		assertTrue(rates.size() > 10);
+		assertEquals(4, rates.size());
 		
+		assertTrue(rates.containsKey("USD"));
+		assertTrue(rates.containsKey("EUR"));
 		assertTrue(rates.containsKey("CAD"));
-		assertTrue(rates.containsKey("PHP"));
-		assertTrue(rates.containsKey("DKK"));
-		assertTrue(rates.containsKey("GBP"));
-		assertEquals(1, rates.get("GBP"));
+		assertTrue(rates.containsKey("JPY"));
 
 	}
 	
