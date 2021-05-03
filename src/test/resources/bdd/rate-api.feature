@@ -2,18 +2,19 @@
 Feature: Rate Service
 	Verify Rate Service Functionalities
 	
-	Scenario: Fetch the latest rate with base currency '<baseCurrency>'
+	Scenario Outline: Fetch the latest rate for base currency '<baseCurrency>'
 		Given API Service is started
-		When I request for the latest rate with base currency '<baseCurrency>'
-		Then I should receive list of currency rate
+		When I request for the latest rate for base currency '<baseCurrency>'
+		Then I should receive a list of currency rates
 		Examples:
 		| baseCurrency |
 		| GBP |
+		| USD |
 	
-	Scenario: Make a rate booking
+	Scenario Outline: Make a rate booking
 		Given API Service is started
 		When I request for a rate booking with parameters: '<tradeAction>', '<baseCurrency>', '<counterCurrency>', <baseCurrencyAmount>, <customerId>
-		Then I should receive a valid rate booking
+		Then I should receive a rate booking with expiry time in the future
 		Examples:
 		| tradeAction 	| baseCurrency	| counterCurrency 	| baseCurrencyAmount	| customerId |
 		|  BUY			| GBP 			| USD 				| 1000					| 1 		 |
@@ -22,4 +23,3 @@ Feature: Rate Service
 		|  SELL			| GBP 			| USD 				| 3000					| 1 		 |
 		|  SELL			| EUR 			| USD 				| 1500					| 1 		 |
 		|  BUY			| EUR 			| GBP 				| 100000				| 1 		 |
-		

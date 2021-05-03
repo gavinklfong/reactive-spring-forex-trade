@@ -226,6 +226,7 @@
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <configuration>
                     <skipITs>${maven.failsafe.skip}</skipITs>
+                    <testFailureIgnore>true</testFailureIgnore>
                     <!-- Maven FailSafe does not recognize JUnit 5 tag -->
 <!--                     <groups>${test.groups}</groups> -->
 					<includes>
@@ -319,7 +320,7 @@
                             <!-- optional, set true to get a final report with latest results of the same test from different test runs -->
                             <mergeFeaturesWithRetest>false</mergeFeaturesWithRetest>
                             <!-- optional, set true to fail build on test failures -->
-                            <checkBuildResult>false</checkBuildResult>
+                            <checkBuildResult>true</checkBuildResult>
                         </configuration>
                     </execution>
                 </executions>

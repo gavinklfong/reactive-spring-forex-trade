@@ -3,6 +3,7 @@ package space.gavinklfong.forex.bdd;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -17,9 +18,11 @@ import java.time.format.DateTimeFormatter;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import io.cucumber.java.Before;
+import io.cucumber.java.Scenario;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -40,6 +43,13 @@ public class StepDef  {
 	
 	private JSONObject rateBooking;
 	
+    private Scenario scenario;
+
+    @Before
+    public void before(Scenario scenario) {
+        this.scenario = scenario;
+    }
+	
 	@Given("^API Service is started$")
 	public void api_service_is_started() throws IOException {
 
@@ -52,7 +62,7 @@ public class StepDef  {
 				
 	}
 	
-	@When("I request for the latest rate with base currency {string}")
+	@When("I request for the latest rate for base currency {string}")
 	public void i_request_for_the_latest_rate_with_base_currency(String base) throws URISyntaxException, IOException, InterruptedException {
 
 		this.baseCurrency = base;
@@ -62,13 +72,19 @@ public class StepDef  {
 		HttpRequest request = HttpRequest
 				.newBuilder(new URI(apiServiceUrl + "/rates/latest/" + base))
 				.header("accept", "application/json").build();	
+		
+		scenario.log(String.format("Request: %1$s", request.toString()));
+
+		
 		this.response = client.send(request, HttpResponse.BodyHandlers.ofString());
 		
 	}
 	
-	@Then("I should receive list of currency rate")
+	@Then("I should receive a list of currency rates")
 	public void i_should_receive_list_of_currency_rate() {
 
+		scenario.log(String.format("Status Code: %1$s, Body: %2$s", response.statusCode(), response.body()));
+		
 		assertEquals(200, response.statusCode());		
 		
 		JSONArray jsonArray = new JSONArray(response.body());
@@ -112,13 +128,15 @@ public class StepDef  {
 //				.newBuilder(new URI(url))
 //				.header("accept", "application/json").build();
 		
+		scenario.log(String.format("Request: %1$s", request.toString()));
+		
 		this.response = client.send(request, HttpResponse.BodyHandlers.ofString());
 	}
 	
-	@Then("I should receive a valid rate booking")
+	@Then("I should receive a rate booking with expiry time in the future")
 	public void i_should_receive_a_valid_rate_booking() {
 
-		logger.debug(response.body());
+		scenario.log(String.format("Status Code: %1$s, \nBody: %2$s", response.statusCode(), response.body()));
 		
 		assertEquals(200, response.statusCode());
 		
@@ -153,11 +171,16 @@ public class StepDef  {
 				.header("accept", "application/json")
 				.header("Content-Type", "application/json")
 				.build();	
+		
+		scenario.log(String.format("Request: %1$s", request.toString()));
+		
 		this.response = client.send(request, HttpResponse.BodyHandlers.ofString());
 	}
 	
 	@Then("I should get the forex trade deal successfully posted")
 	public void i_should_get_the_forex_trade_deal_successfully_posted() {
+	
+		scenario.log(String.format("Status Code: %1$s, \nBody: %2$s", response.statusCode(), response.body()));		
 		
 		assertEquals(200, response.statusCode());
 		
@@ -177,21 +200,30 @@ public class StepDef  {
 		HttpRequest request = HttpRequest
 				.newBuilder(new URI(apiServiceUrl + "/deals?customerId=" + customerId))
 				.header("accept", "application/json").build();	
+		
+		scenario.log(String.format("Request: %1$s", request.toString()));
+		
 		this.response = client.send(request, HttpResponse.BodyHandlers.ofString());			
 	}
 	
 	@Then("I should get a list of forex trade deal for {long}")
 	public void i_should_get_a_list_of_forex_trade_deal_for(Long customer) {
 		
-		JSONArray jsonArray = new JSONArray(response.body());
+		scenario.log(String.format("Status Code: %1$s, Body: %2$s", response.statusCode(), response.body()));		
 		
-		assertTrue(jsonArray.length() > 0);
-		jsonArray.forEach(item -> {
-			JSONObject json = (JSONObject) item;
-			assertTrue(json.getString("dealRef").trim().length() > 0);
-			assertNotNull(json.getString("baseCurrency"));
-			assertNotNull(json.getString("counterCurrency"));
-		});
+		try {
+			JSONArray jsonArray = new JSONArray(response.body());
+			
+			assertTrue(jsonArray.length() > 0);
+			jsonArray.forEach(item -> {
+				JSONObject json = (JSONObject) item;
+				assertTrue(json.getString("dealRef").trim().length() > 0);
+				assertNotNull(json.getString("baseCurrency"));
+				assertNotNull(json.getString("counterCurrency"));
+			});
+		} catch (Exception e) {
+			fail(e);
+		}
 		
 	}
 

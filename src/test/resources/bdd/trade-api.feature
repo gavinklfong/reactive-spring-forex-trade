@@ -4,7 +4,7 @@ Feature: Forex Trade Service
 	Scenario: Submit a forex trade deal
 		Given API Service is started
 		And  I request for a rate booking with parameters: '<tradeAction>', '<baseCurrency>', '<counterCurrency>', <baseCurrencyAmount>, <customerId>
-		And  I should receive a valid rate booking
+		And  I should receive a rate booking with expiry time in the future
 		When I submit a forex trade deal with rate booking and parameters: '<tradeAction>', '<baseCurrency>', '<counterCurrency>', <baseCurrencyAmount>, <customerId>
 		Then I should get the forex trade deal successfully posted
 		Examples:
@@ -19,7 +19,7 @@ Feature: Forex Trade Service
 	Scenario: Retrieve trade deal by customer
 		Given API Service is started
 		And I request for a rate booking with parameters: '<tradeAction>', '<baseCurrency>', '<counterCurrency>', <baseCurrencyAmount>, <customerId>
-		And I should receive a valid rate booking
+		And I should receive a rate booking with expiry time in the future
 		And I submit a forex trade deal with rate booking and parameters: '<tradeAction>', '<baseCurrency>', '<counterCurrency>', <baseCurrencyAmount>, <customerId>
 		And I should get the forex trade deal successfully posted
 		When I request for forex trade deal by <customerId>
