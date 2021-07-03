@@ -27,55 +27,162 @@
 		},
 		{	
 			"rates": {
-	          "JPY": 109.3,
-			  "CAD": 1.2,
-			  "CHF": 0.91			  
-	        },
+	          "JPY": 77.79,
+			  "CAD": 0.86544,
+			  "CHF": 0.64557
+			},
 			"id": "USD",
 	        "base": "USD",
 	        "date": "2020-01-20"
-		},		
+		},
+		{
+			"rates": {
+				"CAD": 0.9271,
+				"CHF": 0.92396,
+				"JPY": 83.34,
+				"NZD": 1.07102,
+				"USD": 0.74848
+			},
+			"id": "AUD",
+			"base": "AUD",
+			"date": "2020-01-20"
+		},
+		{
+			"rates": {
+				"CHF": 0.74577,
+				"JPY": 89.87
+			},
+			"id": "CAD",
+			"base": "CAD",
+			"date": "2020-01-20"
+		},
+		{
+			"rates": {
+				"JPY": 0.0083
+			},
+			"id": "CHF",
+			"base": "CHF",
+			"date": "2020-01-20"
+		},
+		{
+			"rates": {
+				"AUD": 1.58217,
+				"CAD": 1.46719,
+				"CHF": 1.09452,
+				"GBP": 0.85914,
+				"JPY": 131.89,
+				"NZD": 1.69455,
+				"USD": 1.18451
+			},
+			"id": "EUR",
+			"base": "EUR",
+			"date": "2020-01-20"
+		},
 		{	
 			"rates": {
-	          "CAD": 1.7611110473
-	        },
+	          "CAD": 1.70728
+			},
 			"id": "GBP-CAD",
 	        "base": "GBP",
 	        "date": "2020-01-20"
 		},
-		{	
+		{
 			"rates": {
-	          "USD": 1.7611110473
-	        },
+				"CHF": 1.27376
+			},
+			"id": "GBP-CHF",
+			"base": "GBP",
+			"date": "2020-01-20"
+		},
+		{
+			"rates": {
+	          "USD": 1.37835
+			},
 			"id": "GBP-USD",
 	        "base": "GBP",
 	        "date": "2020-01-20"
 		},
 		{	
 			"rates": {
-	          "JPY": 151.24
-	        },
+	          "JPY": 153.47
+			},
 			"id": "GBP-JPY",
 	        "base": "GBP",
 	        "date": "2020-01-20"
-		},		
+		},
+		{
+			"rates": {
+				"NZD": 1.97184
+			},
+			"id": "GBP-NZD",
+			"base": "GBP",
+			"date": "2020-01-20"
+		},
+		{
+			"rates": {
+				"AUD": 1.84088
+			},
+			"id": "GBP-AUD",
+			"base": "GBP",
+			"date": "2020-01-20"
+		},
 		{	
 			"rates": {
-	          "USD": 1.2
-	        },
+	          "USD": 1.18451
+			},
 			"id": "EUR-USD",
 	        "base": "EUR",
 	        "date": "2020-01-20"
 		},	
 		{	
 			"rates": {
-	          "GBP": 0.78
-	        },
+	          "GBP": 0.85914
+			},
 			"id": "EUR-GBP",
 	        "base": "EUR",
 	        "date": "2020-01-20"
-		},				
-		{	
+		},
+		{
+			"rates": {
+				"AUD": 1.58217
+			},
+			"id": "EUR-AUD",
+			"base": "EUR",
+			"date": "2020-01-20"
+		},
+		{
+			"rates": {
+				"CAD": 1.46719
+			},
+			"id": "EUR-CAD",
+			"base": "EUR",
+			"date": "2020-01-20"
+		},
+		{
+			"rates": {
+				"CHF": 1.09452
+			},
+			"id": "EUR-CHF",
+			"base": "EUR",
+			"date": "2020-01-20"
+		},
+		{
+			"rates": {
+				"JPY": 131.89
+			},
+			"id": "EUR-JPY",
+			"base": "EUR",
+			"date": "2020-01-20"
+		},
+		{
+			"rates": {
+				"NZD": 1.69455
+			},
+			"id": "EUR-NZD",
+			"base": "EUR",
+			"date": "2020-01-20"
+		},
+		{
 			"rates": {
 	          "GBP": 0.7
 	        },
@@ -85,8 +192,8 @@
 		},
 		{	
 			"rates": {
-	          "JPY": 109.30
-	        },
+	          "JPY": 77.79
+			},
 			"id": "USD-JPY",
 	        "base": "USD",
 	        "date": "2020-01-20"
@@ -106,7 +213,15 @@
 			"id": "CAD-CHF",
 	        "base": "CAD",
 	        "date": "2020-01-20"
-		},		
+		},
+		{
+			"rates": {
+				"JPY": 89.87
+			},
+			"id": "CAD-JPY",
+			"base": "CAD",
+			"date": "2020-01-20"
+		},
 		{	
 			"rates": {
 	          "USD": 2.1
@@ -130,9 +245,102 @@
 			"id": "GBP-HKD",
 	        "base": "GBP",
 	        "date": "2020-01-20"
-		}						
-
-		
-								
+		},
+		{
+			"rates": {
+				"CAD": 0.9271
+			},
+			"id": "AUD-CAD",
+			"base": "AUD",
+			"date": "2020-01-20"
+		},
+		{
+			"rates": {
+				"CHF": 0.92396
+			},
+			"id": "AUD-CHF",
+			"base": "AUD",
+			"date": "2020-01-20"
+		},
+		{
+			"rates": {
+				"JPY": 83.34
+			},
+			"id": "AUD-JPY",
+			"base": "AUD",
+			"date": "2020-01-20"
+		},
+		{
+			"rates": {
+				"NZD": 1.07102
+			},
+			"id": "AUD-NZD",
+			"base": "AUD",
+			"date": "2020-01-20"
+		},
+		{
+			"rates": {
+				"USD": 0.74848
+			},
+			"id": "AUD-USD",
+			"base": "AUD",
+			"date": "2020-01-20"
+		},
+		{
+			"rates": {
+				"JPY": 0.0083
+			},
+			"id": "CHF-JPY",
+			"base": "CHF",
+			"date": "2020-01-20"
+		},
+		{
+			"rates": {
+				"CAD": 0.86544
+			},
+			"id": "NZD-CAD",
+			"base": "NZD",
+			"date": "2020-01-20"
+		},
+		{
+			"rates": {
+				"CHF": 0.64557
+			},
+			"id": "NZD-CHF",
+			"base": "NZD",
+			"date": "2020-01-20"
+		},
+		{
+			"rates": {
+				"JPY": 77.79
+			},
+			"id": "NZD-JPY",
+			"base": "NZD",
+			"date": "2020-01-20"
+		},
+		{
+			"rates": {
+				"USD": 0.6987
+			},
+			"id": "NZD-USD",
+			"base": "NZD",
+			"date": "2020-01-20"
+		},
+		{
+			"rates": {
+				"CAD": 0.86544
+			},
+			"id": "USD-CAD",
+			"base": "NZD",
+			"date": "2020-01-20"
+		},
+		{
+			"rates": {
+				"CHF": 0.64557
+			},
+			"id": "USD-CHF",
+			"base": "USD",
+			"date": "2020-01-20"
+		}
 	]
 }
