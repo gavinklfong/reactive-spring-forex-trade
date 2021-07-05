@@ -12,9 +12,9 @@ logging:
     console: "%d{yyyy-MM-dd HH:mm:ss} %p %class{36}.%M - %m%n"
   level:
     space:
-      gavinklfong: DEBUG
+      gavinklfong: INFO
     org:
       springframework:
-        r2dbc: DEBUG    
+        r2dbc: INFO
         
        

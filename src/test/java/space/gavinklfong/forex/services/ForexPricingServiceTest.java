@@ -41,6 +41,7 @@ class ForexPricingServiceTest {
 		List<String> baseCurrencies = forexPriceService.findAllBaseCurrencies();
 						
 		baseCurrencies.forEach(c -> {
+			log.info("===> " + c);
 			assertTrue(Arrays.binarySearch(BASE_CURRENCIES, c) > -1); 
 		});
 		
