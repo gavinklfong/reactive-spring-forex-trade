@@ -167,10 +167,15 @@ public class ForexRateService {
 				.doOnNext(record -> log.debug(record.toString()))
 				.map(record -> {
 					if (record.getExpiryTime().isBefore(LocalDateTime.now())) {
-						log.debug("booking request already exired");
+						log.debug("booking request already expired");
 						return false;
 					}
-					
+
+					if (!record.getBaseCurrency().equalsIgnoreCase(rateBooking.getBaseCurrency())
+							|| !record.getCounterCurrency().equalsIgnoreCase(rateBooking.getCounterCurrency())) {
+						return false;
+					}
+
 					if (record.getBaseCurrencyAmount().compareTo(rateBooking.getBaseCurrencyAmount()) != 0) {
 						log.debug("amount is not the same");
 						return false;

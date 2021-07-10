@@ -1,35 +1,24 @@
 package space.gavinklfong.forex.services;
 
+import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvValidationException;
+import lombok.extern.slf4j.Slf4j;
+import space.gavinklfong.forex.dto.ForexPricing;
+import space.gavinklfong.forex.dto.ForexRate;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
-
-import org.apache.commons.collections4.keyvalue.MultiKey;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
-import com.opencsv.CSVReader;
-import com.opencsv.exceptions.CsvValidationException;
-
-import lombok.extern.slf4j.Slf4j;
-import space.gavinklfong.forex.dto.ForexPricing;
-import space.gavinklfong.forex.dto.ForexRate;
-import space.gavinklfong.forex.dto.ForexRateBookingReq;
-import space.gavinklfong.forex.models.Customer;
-import space.gavinklfong.forex.models.ForexRateBooking;
 
 @Slf4j
 public class ForexPricingService {
 		
-	private List<ForexPricing> forexPricingList = new ArrayList<>();	
+	private final List<ForexPricing> forexPricingList = new ArrayList<>();
 	
 	public ForexPricingService() {
 		super();
@@ -40,8 +29,8 @@ public class ForexPricingService {
 		log.debug("initialize...");
 		
 		try (
-			CSVReader csvReader = new CSVReader(new InputStreamReader(inStream));
-			) {
+			CSVReader csvReader = new CSVReader(new InputStreamReader(inStream))
+		) {
 			csvReader.skip(1);	// skip the header line
 			String[] values = null;
 			while ((values = csvReader.readNext()) != null) {				
@@ -104,9 +93,5 @@ public class ForexPricingService {
 		
 		return Math.round(value * factor) / factor; 
 	}
-	
-	
-	
-	
 
 }
