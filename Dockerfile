@@ -6,7 +6,7 @@ RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash - \
     && apt-get install -y nodejs \
     && npm install -g json-server
 
-COPY json-mock-server/mock-data.json /app/mock-data.json
+COPY mock-server/mock-data.json /app/mock-data.json
 
 ARG JAR_FILE=target/*.jar
 COPY ${JAR_FILE} /app/app.jar

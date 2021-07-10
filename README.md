@@ -42,7 +42,7 @@ You can follow the commands below:
 `mvn install`
 
 ** Start up forex rate API **
-`json-server ./json-mock-server/mock-data.json`
+`json-server ./mock-server/mock-data.json`
 
 **Run:**
 `mvn spring-boot:run`
