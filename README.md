@@ -38,16 +38,22 @@ This is Maven project, you can clone this repository to your local machine and t
 
 You can follow the commands below:
 
+**Start up the mock forex rate API:**
+`json-server ./mock-server/mock-data.json`
+
 **Build:**
 `mvn install`
-
-** Start up forex rate API **
-`json-server ./mock-server/mock-data.json`
 
 **Run:**
 `mvn spring-boot:run`
 
+## Docker Image
+
+Alternatively, you can run this application using the published docker image.
+
+`docker run --rm -p 8080:8080 whalebig27/reactive-spring-forex-trade`
 	
+
 ## Use Case
 
 
