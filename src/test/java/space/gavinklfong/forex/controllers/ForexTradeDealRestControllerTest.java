@@ -133,7 +133,7 @@ public class ForexTradeDealRestControllerTest {
 				.tradeAction(TradeAction.BUY)
 				.build();
 				
-		when(tradeService.retrieveTradeDealByCustomer((anyLong())))
+		when(tradeService.retrieveTradeDealByCustomer(anyLong(), any()))
 		.thenReturn(Flux.just(deal1, deal2, deal3));
 		
 		webTestClient.get()

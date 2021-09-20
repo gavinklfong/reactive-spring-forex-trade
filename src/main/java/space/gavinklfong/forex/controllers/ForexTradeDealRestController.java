@@ -21,6 +21,8 @@ import space.gavinklfong.forex.exceptions.InvalidRequestException;
 import space.gavinklfong.forex.models.ForexTradeDeal;
 import space.gavinklfong.forex.services.ForexTradeService;
 
+import java.util.Optional;
+
 @Slf4j
 @RestController
 @RequestMapping("/deals")
@@ -40,13 +42,13 @@ public class ForexTradeDealRestController {
 	 * @return List of forex trade deal records. The framework formats it into JSON format when sending HTTP response
 	 */
 	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-	public Flux<ForexTradeDeal> getDeals(@RequestParam Long customerId) {
+	public Flux<ForexTradeDeal> getDeals(@RequestParam Long customerId, @RequestParam Optional<String>dealRef) {
 		
 		if (customerId == null) {
 			return Flux.error(new InvalidRequestException("customerId", "customer Id cannot be blank"));
 		}
-				
-		return tradeService.retrieveTradeDealByCustomer(customerId);
+
+		return tradeService.retrieveTradeDealByCustomer(customerId, dealRef);
 	}
 	
 	/**
@@ -64,7 +66,9 @@ public class ForexTradeDealRestController {
 	 */
 	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public Mono<ForexTradeDeal> submitDeal(@Valid @RequestBody ForexTradeDealReq req) {
-		
+
+		log.info("submitDeal() {}", req);
+
 		// submit trade deal
 		return tradeService.postTradeDeal(req);
 

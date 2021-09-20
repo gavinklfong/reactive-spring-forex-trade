@@ -2,6 +2,7 @@ package space.gavinklfong.forex.services;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,13 +55,13 @@ public class ForexTradeService {
 				.switchIfEmpty(Mono.error(new UnknownCustomerException()))
 				.flatMap(c -> {
 					ForexRateBooking rateBooking = new ForexRateBooking(req.getBaseCurrency(), req.getCounterCurrency(), req.getRate(), req.getBaseCurrencyAmount(), req.getRateBookingRef());	
+					log.info("validate rate booking");
 					return rateService.validateRateBooking(rateBooking);
 				})
 				.flatMap(isValid -> {
 					if (isValid) {
-						// build and save trade deal record											
-						return tradeDealRepo.save(
-								ForexTradeDeal.builder()
+						// build and save trade deal record
+						ForexTradeDeal deal = ForexTradeDeal.builder()
 								.dealRef(UUID.randomUUID().toString())
 								.timestamp(LocalDateTime.now())
 								.baseCurrency(req.getBaseCurrency())
@@ -69,8 +70,11 @@ public class ForexTradeService {
 								.baseCurrencyAmount(req.getBaseCurrencyAmount())
 								.customerId(req.getCustomerId())
 								.tradeAction(req.getTradeAction())
-								.build()
-							);
+								.build();
+
+						log.info("tradeDealRepo.save() {}", deal);
+
+						return tradeDealRepo.save(deal);
 						
 					} else {
 						// throw exception if rate booking is invalid
@@ -85,10 +89,13 @@ public class ForexTradeService {
 	 * @param customerId 
 	 * @return List of trade deal wrapped in Flux data type
 	 */
-	public Flux<ForexTradeDeal> retrieveTradeDealByCustomer(Long customerId) {
-		
-		return tradeDealRepo.findByCustomerId(customerId);
+	public Flux<ForexTradeDeal> retrieveTradeDealByCustomer(Long customerId, Optional<String> dealRef) {
 
+		if (dealRef.isPresent()) {
+			return tradeDealRepo.findByCustomerIdAndDealRef(customerId, dealRef.get());
+		} else {
+			return tradeDealRepo.findByCustomerId(customerId);
+		}
 	}
 	
 }

@@ -1,0 +1,251 @@
+{
+	"info": {
+		"_postman_id": "0c471d31-351e-4cb0-b348-1324cfd85ee6",
+		"name": "Forex Trade",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Book Rate",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var tradeActions = [\"BUY\", \"SELL\"];",
+							"var randomTradeAction = tradeActions[Math.floor(Math.random() * tradeActions.length)];",
+							"pm.collectionVariables.set(\"tradeAction\", randomTradeAction);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Extract booking reference and rate from response and store in variables",
+							"var responseJson = pm.response.json();",
+							"pm.collectionVariables.set(\"bookingRef\", responseJson.bookingRef);",
+							"pm.collectionVariables.set(\"bookingRate\", responseJson.rate);",
+							"",
+							"",
+							"// Construct test case title",
+							"var testCaseName = \"Currency Pair \" ",
+							"+ pm.variables.get(\"baseCurrency\") ",
+							"+ \"/\" + pm.variables.get(\"counterCurrency\") ",
+							"+ \" - \" + pm.variables.get(\"tradeAction\") ",
+							"+ \" - \" + pm.variables.get(\"baseCurrency\") ",
+							"+ \" \" + pm.variables.get(\"baseCurrencyAmount\") ",
+							"+ \" (Rate: \" + responseJson.rate + \")\";",
+							"",
+							"// Verify response status and print the test case title",
+							"pm.test(testCaseName, function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "{{apiKey}}",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "X-API-KEY",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"baseCurrency\": \"{{baseCurrency}}\",\n\t\"counterCurrency\": \"{{counterCurrency}}\",\n\t\"baseCurrencyAmount\": {{baseCurrencyAmount}},\n\t\"tradeAction\": \"{{tradeAction}}\",\n\t\"customerId\": {{customerId}}\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/rates/book",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"rates",
+						"book"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Submit Deal",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var json = pm.response.json();",
+							"",
+							"pm.test(\"Deal Ref: \" + json.dealRef, function () {",
+							"    pm.response.to.have.status(200);",
+							"    pm.collectionVariables.set(\"dealRef\", json.dealRef);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "{{apiKey}}",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "X-API-KEY",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"baseCurrency\": \"{{baseCurrency}}\",\n  \"counterCurrency\": \"{{counterCurrency}}\",\n  \"rate\": {{bookingRate}},\n  \"baseCurrencyAmount\": {{baseCurrencyAmount}},\n  \"tradeAction\": \"{{tradeAction}}\",\n  \"rateBookingRef\": \"{{bookingRef}}\",\n  \"customerId\": {{customerId}}\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/deals",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"deals"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Deal By Customer Id & Reference",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var dealRef = pm.variables.get(\"dealRef\");",
+							"",
+							"pm.test(\"Deal record created\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData[0].dealRef).to.eql(dealRef);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/deals?customerId={{customerId}}&dealRef={{dealRef}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"deals"
+					],
+					"query": [
+						{
+							"key": "customerId",
+							"value": "{{customerId}}"
+						},
+						{
+							"key": "dealRef",
+							"value": "{{dealRef}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseCurrency",
+			"value": "GBP"
+		},
+		{
+			"key": "counterCurrency",
+			"value": "USD"
+		},
+		{
+			"key": "baseCurrencyAmount",
+			"value": "1000"
+		},
+		{
+			"key": "customerId",
+			"value": "1"
+		},
+		{
+			"key": "tradeAction",
+			"value": "BUY"
+		},
+		{
+			"key": "bookingRef",
+			"value": "2a4e2fda-ac8c-4ca0-bf67-28133861e0a6"
+		},
+		{
+			"key": "bookingRate",
+			"value": 1.4037
+		},
+		{
+			"key": "bookingAmount",
+			"value": 1000
+		},
+		{
+			"key": "dealRef",
+			"value": "e0f82272-2bd2-4c89-b2e0-51fb462f5eba"
+		}
+	]
+}

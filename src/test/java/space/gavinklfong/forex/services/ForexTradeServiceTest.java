@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Tag;
@@ -171,7 +172,7 @@ public class ForexTradeServiceTest {
 		
 		when(tradeDealRepo.findByCustomerId(anyLong())).thenReturn(Flux.fromIterable(deals) );
 		
-		Flux<ForexTradeDeal> result = tradeService.retrieveTradeDealByCustomer(1l);
+		Flux<ForexTradeDeal> result = tradeService.retrieveTradeDealByCustomer(1l, Optional.empty());
 		
 		StepVerifier
 		.create(result)
@@ -187,7 +188,7 @@ public class ForexTradeServiceTest {
 		
 		when(tradeDealRepo.findByCustomerId(anyLong())).thenReturn(Flux.empty());
 		
-		Flux<ForexTradeDeal> result = tradeService.retrieveTradeDealByCustomer(1l);
+		Flux<ForexTradeDeal> result = tradeService.retrieveTradeDealByCustomer(1l, Optional.empty());
 		
 		StepVerifier
 		.create(result)
